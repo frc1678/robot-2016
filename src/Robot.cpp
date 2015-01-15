@@ -25,11 +25,14 @@ private:
 	Solenoid *sinSol;
 	DoubleSolenoid *dbSol;
 
-	VictorSP *vic;
+	VictorSP *right;
+	VictorSP *left;
 
 	CitrusButton *gearUp;
 	CitrusButton *gearDown;
-	CitrusButton *trigger;
+	CitrusButton *forward;
+	CitrusButton *backward;
+	CitrusButton *single;
 
 
 
@@ -42,7 +45,10 @@ private:
 		driverR = new Joystick(1);
 		manipulator = new Joystick(2);
 
-		drivetrain = new RobotDrive(3, 1);
+		left = new VictorSP(0);
+		right = new VictorSP(1);
+
+		drivetrain = new RobotDrive(left, right);
 		drivetrain->SetSafetyEnabled(false);
 
 		elevator = new ElevatorSystem();
@@ -52,11 +58,14 @@ private:
 		sinSol = new Solenoid(7);
 		dbSol = new DoubleSolenoid(0, 1);
 
-		vic = new VictorSP(0);
 
-		gearUp = new CitrusButton(manipulator, 1);
-		gearDown = new CitrusButton(manipulator, 2);
-		trigger = new CitrusButton(manipulator, 3);
+
+		gearUp = new CitrusButton(driverL, 2);
+		gearDown = new CitrusButton(driverR, 2);
+
+		forward = new CitrusButton(manipulator, 3);
+		backward = new CitrusButton(manipulator, 4);
+		single = new CitrusButton(manipulator, 5);
 	}
 
 	void DisabledInit() {
@@ -98,6 +107,8 @@ private:
 
 	}
 
+
+
 	void TeleopPeriodic()
 	{
 		compressor->SetClosedLoopControl(true);
@@ -110,11 +121,36 @@ private:
 		SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
 
 
+
+		if(gearUp->ButtonClicked()){
+			dbSol->Set(DoubleSolenoid::Value::kReverse);
+		}
+		else if(gearDown->ButtonClicked()){
+			dbSol->Set(DoubleSolenoid::Value::kForward);
+		}
+		else {
+
+			dbSol->Set(DoubleSolenoid::Value::kOff);
+		}
+
+
+
+
+
+		UpdateButtons();
+
 	}
 
 	void TestPeriodic()
 	{
 		lw->Run();
+	}
+
+
+	void UpdateButtons() {
+		gearDown->Update();
+		gearUp->Update();
+
 	}
 };
 
