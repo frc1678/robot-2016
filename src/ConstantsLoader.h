@@ -18,9 +18,9 @@ using namespace std;
 class ConstantsLoader {
 	ifstream constantsFile;
 	map<string, double> constantsMap;
-	string file;
+	string filepath;
 public:
-	ConstantsLoader(string filepath = "home/admin/constants/coefficients.txt");
+	ConstantsLoader(string file = "coefficients.txt");
 	virtual ~ConstantsLoader();
 	void reload();
 	double getConstant(string n, double defaultVal = 0);

@@ -13,7 +13,8 @@
 
 using namespace std;
 
-ConstantsLoader::ConstantsLoader(string filepath) {
+ConstantsLoader::ConstantsLoader(string file) {
+	filepath = "/home/admin/constants/" + file;
 	constantsFile.open(filepath);
 	string key;
 	double value;
@@ -37,7 +38,7 @@ double ConstantsLoader::getConstant(string key, double defaultValue){
 
 void ConstantsLoader::reload()
 {
-	constantsFile.open(file);
+	constantsFile.open(filepath);
 	string key;
 	double value;
 	while (constantsFile >> key >> value) {

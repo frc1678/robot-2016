@@ -1,8 +1,12 @@
+#include <string>
 #include "WPILib.h"
 #include "Drivetrain.h"
 #include "ElevatorSystem.h"
 #include "ControlLoop.h"
 #include "CitrusButton.h"
+#include "FileSave.h"
+#include "ConstantsLoader.h"
+
 
 class Robot: public IterativeRobot
 {
@@ -22,6 +26,8 @@ private:
 
 	Compressor *compressor;
 
+	Gyro *gyro;
+
 	Solenoid *sinSol;
 	DoubleSolenoid *dbSol;
 
@@ -33,7 +39,6 @@ private:
 	CitrusButton *forward;
 	CitrusButton *backward;
 	CitrusButton *single;
-
 
 
 	void RobotInit()
@@ -86,7 +91,7 @@ private:
 			elevator->Calibrate();
 		}
 
-		SmartDashboard::PutNumber("Counter", elevator->elvEncoder->Get());
+		SmartDashboard::PutNumber("Counter", static_cast<double>(elevator->elvEncoder->Get()));
 		SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
 	}
 
@@ -132,8 +137,6 @@ private:
 
 			dbSol->Set(DoubleSolenoid::Value::kOff);
 		}
-
-
 
 
 
