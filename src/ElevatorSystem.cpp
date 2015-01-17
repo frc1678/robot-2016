@@ -205,6 +205,10 @@ void ElevatorSystem::MoveToMagnet(int magnet) {
 
 }
 
+bool ElevatorSystem::AtPosition() {
+	return done;
+}
+
 void ElevatorSystem::Logging(float clicks, float motorOutput) {
 	encoderErrorFile.open("/home/admin/logs/elevator_error.csv", ios::app);
 	encoderErrorFile << clicks << endl;

@@ -12,7 +12,8 @@ using namespace std;
 
 
 const float ABS_MAG_CLICKS[6] = {-12.5, -840, -863.5, -1264.5, -1289.5, -1681.5};
-const float uKP = -0.0038, uKI = -0.00025, uKD = 0, dKP = -0.0032, dKI = -0.0013, dKD = 0.0;
+const float uKP = -0.0038, uKI = -0.00025, uKD = 0,
+		dKP = -0.0025, dKI = -0.001, dKD = 0.0;
 
 const int termination = 10;
 
@@ -75,6 +76,8 @@ public:
 	void MoveToAbsEncoderPosition(int encoderPos);
 
 	void MoveToMagnet(int magnet);
+
+	bool AtPosition();
 
 	void Logging (float clicks, float motorOutput);
 
