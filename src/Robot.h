@@ -3,11 +3,11 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+#include <logs/ConstantsLoader.h>
 #include "WPILib.h"
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
-#include "ConstantsLoader.h"
 
 using namespace std;
 class Robot: public IterativeRobot
@@ -33,7 +33,7 @@ private:
 	Gyro *gyro;
 
 	Solenoid *sinSol;
-	DoubleSolenoid *dbSol;
+	DoubleSolenoid *shifting;
 
 	VictorSP *right;
 	VictorSP *left;
