@@ -29,7 +29,7 @@ private:
 	Gyro *gyro;
 
 	Solenoid *sinSol;
-	DoubleSolenoid *dbSol;
+	DoubleSolenoid *shifting;
 
 	VictorSP *right;
 	VictorSP *left;
@@ -42,9 +42,6 @@ private:
 	bool triggered3;
 	bool triggered4;
 
-//	Talon *elv1;
-//	Talon *elv2;
-
 
 	FileSave* fsave;
 
@@ -55,7 +52,7 @@ private:
 		lw = LiveWindow::GetInstance();
 		SmartDashboard::init();
 		
-		kLoad = new ConstantsLoader();
+		kLoad = new ConstantsLoader("auto.txt");
 		fsave = new FileSave("log.csv");
 
 		driverL = new Joystick(0);
@@ -73,7 +70,7 @@ private:
 		compressor = new Compressor(0);
 
 		sinSol = new Solenoid(7);
-		dbSol = new DoubleSolenoid(0, 1);
+		shifting = new DoubleSolenoid(0, 1);
 
 
 
@@ -83,12 +80,10 @@ private:
 		mag4 = new CitrusButton(manipulator, 4);
 		
 		fsave->start();
-		fsave->logRobotInit();
+		//fsave->logRobotInit();
 		fsave->flush();
 
-//
-//		elv1 = new Talon(4);
-//		elv2 = new Talon(5);
+
 	}
 
 	void DisabledInit() {
@@ -139,7 +134,7 @@ private:
 		compressor->SetClosedLoopControl(true);
 		
 		fsave->start();
-		fsave->logRobot(test, test, leftEncoder, rightEncoder, ds);
+		//fsave->logRobot(test, test, leftEncoder, rightEncoder, ds);
 		fsave->flush();
 
 
@@ -164,8 +159,6 @@ private:
 
 		elevator->MoveToMagnet(1);
 
-//		elv1->Set(driverL->GetY());
-//		elv2->Set(driverL->GetY());
 
 		SmartDashboard::PutNumber("Counter", elevator->elvEncoder->Get());
 		SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
@@ -173,14 +166,14 @@ private:
 
 
 		if(gearUp->ButtonClicked()){
-			dbSol->Set(DoubleSolenoid::Value::kReverse);
+			shifting->Set(DoubleSolenoid::Value::kReverse);
 		}
 		else if(gearDown->ButtonClicked()){
-			dbSol->Set(DoubleSolenoid::Value::kForward);
+			shifting->Set(DoubleSolenoid::Value::kForward);
 		}
 		else {
 
-			dbSol->Set(DoubleSolenoid::Value::kOff);
+			shifting->Set(DoubleSolenoid::Value::kOff);
 		}
 
 
