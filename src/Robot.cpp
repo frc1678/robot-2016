@@ -4,12 +4,12 @@
 #include "ElevatorSystem.h"
 #include "ControlLoop.h"
 #include "CitrusButton.h"
-#include "FileSave.h"
 #include "ConstantsLoader.h"
+#include "Robot.h"
 
-
-class Robot: public IterativeRobot
+void Robot::RobotInit()
 {
+<<<<<<< HEAD
 private:
 	LiveWindow *lw;
 
@@ -30,23 +30,34 @@ private:
 
 	Solenoid *sinSol;
 	DoubleSolenoid *shifting;
+=======
+	lw = LiveWindow::GetInstance();
+	SmartDashboard::init();
+>>>>>>> 923cdd1b233348349f32bc899e233045f2e9abc1
 
-	VictorSP *right;
-	VictorSP *left;
+	kLoad = new ConstantsLoader();
 
-	CitrusButton *gearUp;
-	CitrusButton *gearDown;
-	CitrusButton *mag3;
-	CitrusButton *mag4;
+	driverL = new Joystick(0);
+	driverR = new Joystick(1);
+	manipulator = new Joystick(2);
 
-	bool triggered3;
-	bool triggered4;
+	left = new VictorSP(1);
+	right = new VictorSP(0);
 
+<<<<<<< HEAD
+=======
+	drivetrain = new RobotDrive(left, right);
+	drivetrain->SetSafetyEnabled(false);
 
-	FileSave* fsave;
+	elevator = new ElevatorSystem();
+>>>>>>> 923cdd1b233348349f32bc899e233045f2e9abc1
 
-	ConstantsLoader* kLoad;
+	compressor = new Compressor(0);
 
+	sinSol = new Solenoid(7);
+	dbSol = new DoubleSolenoid(0, 1);
+
+<<<<<<< HEAD
 	void RobotInit()
 	{
 		lw = LiveWindow::GetInstance();
@@ -54,21 +65,25 @@ private:
 		
 		kLoad = new ConstantsLoader("auto.txt");
 		fsave = new FileSave("log.csv");
+=======
+>>>>>>> 923cdd1b233348349f32bc899e233045f2e9abc1
 
-		driverL = new Joystick(0);
-		driverR = new Joystick(1);
-		manipulator = new Joystick(2);
 
-		left = new VictorSP(1);
-		right = new VictorSP(0);
+	gearUp = new CitrusButton(driverL, 2);
+	gearDown = new CitrusButton(driverR, 2);
+	mag3 = new CitrusButton(manipulator, 3);
+	mag4 = new CitrusButton(manipulator, 4);
 
-		drivetrain = new RobotDrive(left, right);
-		drivetrain->SetSafetyEnabled(false);
+	//
+	//		elv1 = new Talon(4);
+	//		elv2 = new Talon(5);
+}
 
-		elevator = new ElevatorSystem();
+void Robot::DisabledInit() {
 
-		compressor = new Compressor(0);
+	compressor->SetClosedLoopControl(false);
 
+<<<<<<< HEAD
 		sinSol = new Solenoid(7);
 		shifting = new DoubleSolenoid(0, 1);
 
@@ -84,51 +99,53 @@ private:
 		fsave->flush();
 
 
+=======
+	if(!elevator->FullyCalibrated()){
+		elevator->Reset();
+>>>>>>> 923cdd1b233348349f32bc899e233045f2e9abc1
 	}
 
-	void DisabledInit() {
+}
 
-		compressor->SetClosedLoopControl(false);
+void Robot::DisabledPeriodic() {
 
-		if(!elevator->FullyCalibrated()){
-			elevator->Reset();
-		}
+	compressor->SetClosedLoopControl(false);
 
+	if(!elevator->FullyCalibrated()){
+		elevator->Calibrate();
 	}
 
-	void DisabledPeriodic() {
+	SmartDashboard::PutNumber("Counter", static_cast<double>(elevator->elvEncoder->Get()));
+	SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
+}
 
-		compressor->SetClosedLoopControl(false);
+void Robot::AutonomousInit()
+{
 
-		if(!elevator->FullyCalibrated()){
-			elevator->Calibrate();
-		}
+}
 
-		SmartDashboard::PutNumber("Counter", static_cast<double>(elevator->elvEncoder->Get()));
-		SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
-	}
+void Robot::AutonomousPeriodic()
+{
 
-	void AutonomousInit()
-	{
+}
 
-	}
+void Robot::TeleopInit()
+{
+	compressor->SetClosedLoopControl(true);
+	elevator->StartPIDMag(1);
 
-	void AutonomousPeriodic()
-	{
-
-	}
-
-	void TeleopInit()
-	{
-		compressor->SetClosedLoopControl(true);
-		elevator->StartPIDMag(1);
-
-		triggered3 = false;
-		triggered4 = false;
-	}
+	triggered3 = false;
+	triggered4 = false;
+}
 
 
 
+void Robot::TeleopPeriodic()
+{
+	compressor->SetClosedLoopControl(true);
+
+
+<<<<<<< HEAD
 	void TeleopPeriodic()
 	{
 		compressor->SetClosedLoopControl(true);
@@ -136,35 +153,43 @@ private:
 		fsave->start();
 		//fsave->logRobot(test, test, leftEncoder, rightEncoder, ds);
 		fsave->flush();
+=======
+>>>>>>> 923cdd1b233348349f32bc899e233045f2e9abc1
 
 
-//		runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain);
+	//		runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain);
 
-//		if(mag3->ButtonClicked()) {
-//			elevator->StartPIDMag(1);
-//			triggered3 = true;
-//		}
-//		else if (mag4->ButtonClicked()) {
-//			elevator->StartPIDMag(3);
-//			triggered4 = true;
-//		}
-//
-//		if (triggered3 && !elevator->AtPosition()) {
-//			elevator->MoveToMagnet(1);
-//		}
-//
-//		if (triggered4 && !elevator->AtPosition()) {
-//			elevator->MoveToMagnet(3);
-//		}
+	//		if(mag3->ButtonClicked()) {
+	//			elevator->StartPIDMag(1);
+	//			triggered3 = true;
+	//		}
+	//		else if (mag4->ButtonClicked()) {
+	//			elevator->StartPIDMag(3);
+	//			triggered4 = true;
+	//		}
+	//
+	//		if (triggered3 && !elevator->AtPosition()) {
+	//			elevator->MoveToMagnet(1);
+	//		}
+	//
+	//		if (triggered4 && !elevator->AtPosition()) {
+	//			elevator->MoveToMagnet(3);
+	//		}
 
-		elevator->MoveToMagnet(1);
+	elevator->MoveToMagnet(1);
+
+<<<<<<< HEAD
+=======
+	//		elv1->Set(driverL->GetY());
+	//		elv2->Set(driverL->GetY());
+>>>>>>> 923cdd1b233348349f32bc899e233045f2e9abc1
+
+	SmartDashboard::PutNumber("Counter", elevator->elvEncoder->Get());
+	SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
 
 
-		SmartDashboard::PutNumber("Counter", elevator->elvEncoder->Get());
-		SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
 
-
-
+<<<<<<< HEAD
 		if(gearUp->ButtonClicked()){
 			shifting->Set(DoubleSolenoid::Value::kReverse);
 		}
@@ -175,24 +200,35 @@ private:
 
 			shifting->Set(DoubleSolenoid::Value::kOff);
 		}
-
-
-
-		UpdateButtons();
-
+=======
+	if(gearUp->ButtonClicked()){
+		dbSol->Set(DoubleSolenoid::Value::kReverse);
 	}
-
-	void TestPeriodic()
-	{
-		lw->Run();
+	else if(gearDown->ButtonClicked()){
+		dbSol->Set(DoubleSolenoid::Value::kForward);
 	}
+	else {
 
-
-	void UpdateButtons() {
-		gearDown->Update();
-		gearUp->Update();
-
+		dbSol->Set(DoubleSolenoid::Value::kOff);
 	}
-};
+>>>>>>> 923cdd1b233348349f32bc899e233045f2e9abc1
+
+
+
+	UpdateButtons();
+
+}
+
+void Robot::TestPeriodic()
+{
+	lw->Run();
+}
+
+
+void Robot::UpdateButtons() {
+	gearDown->Update();
+	gearUp->Update();
+
+}
 
 START_ROBOT_CLASS(Robot);
