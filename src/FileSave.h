@@ -1,3 +1,7 @@
+
+#ifndef FILESAVE_H
+#define FILESAVE_H
+
 #include "WPILib.h"
 
 #include <iostream>
@@ -5,27 +9,26 @@
 #include <ctime>
 #include <sys/time.h>
 #include <string>
+#define LOG_STAMP "line "+to_string(__LINE__)+" in function "+__FUNCTION__+" file "+__FILE__+": "
 using namespace std;
-
-#ifndef FILESAVE_H
-#define FILESAVE_H
 
 class FileSave {
 	ofstream outfile;
 	string filename;
 	Timer *curTime;
+	void logRobotInit();
+	void logInit();
 public:
 	FileSave(string fileName);
 	~FileSave();
-
 	void reset();
-
 	void log(string value);
 	void start();
 	void flush();
 	void logTime();
-	void logRobotInit();
-	void logRobot(Joystick* j1, Joystick* j2, Encoder* e1, Encoder* e2, DoubleSolenoid* ds);
+	void logRobot(Joystick* JoystickRight, Joystick* JoystickLeft,
+			Encoder* DriveEncoderRight, Encoder* DriveEncoderLeft,
+			DoubleSolenoid* DriveSolenoid);
 };
 
 
