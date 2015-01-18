@@ -7,24 +7,50 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
-#include "FileSave.h"
 #include "ConstantsLoader.h"
+
 using namespace std;
 class Robot: public IterativeRobot
 {
 private:
 	friend class FileSave;
-	LiveWindow *lw;
-	RobotDrive *drivetrain;
-	ConstantsLoader* kLoad;
-	ConstantsLoader* kAuto;
-	Joystick *rightJoystick;
-	Joystick *leftJoystick;
-	DoubleSolenoid *ds;
 
-	Encoder *rightEncoder;
-	Encoder *leftEncoder;
-	FileSave *fsave;
+	LiveWindow *lw;
+
+	// Joysticks that Takumi drives with
+	Joystick *driverL;
+	Joystick *driverR;
+	Joystick *manipulator;
+
+	// For the driving of the robot
+	RobotDrive *drivetrain;
+
+	// The elevator
+	ElevatorSystem *elevator;
+
+	Compressor *compressor;
+
+	Gyro *gyro;
+
+	Solenoid *sinSol;
+	DoubleSolenoid *dbSol;
+
+	VictorSP *right;
+	VictorSP *left;
+
+	CitrusButton *gearUp;
+	CitrusButton *gearDown;
+	CitrusButton *mag3;
+	CitrusButton *mag4;
+
+	bool triggered3;
+	bool triggered4;
+
+//	Talon *elv1;
+//	Talon *elv2;
+
+
+	ConstantsLoader* kLoad;
 
 	void RobotInit();
 
@@ -39,8 +65,10 @@ private:
 	void TestPeriodic();
 
 	void DisabledInit();
-};
 
-START_ROBOT_CLASS(Robot);
+	void DisabledPeriodic();
+
+	void UpdateButtons();
+};
 
 #endif
