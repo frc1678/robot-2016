@@ -82,46 +82,7 @@ void Robot::TeleopInit() {
 void Robot::TeleopPeriodic() {
 	//	compressor->SetClosedLoopControl(true);
 	SmartDashboard::PutNumber("Speed", speedJoystick->GetY());
-	float speed = speedJoystick->GetY();
-
-	float LOutputRel=MIN(1, steeringWheel->GetX()*2+1);
-	float ROutputRel=MIN(1, -steeringWheel->GetX()*2+1);
-	SmartDashboard::PutNumber("LOutputRel", LOutputRel);
-	SmartDashboard::PutNumber("ROutputRel", ROutputRel);
-	float LOutputDrive=LOutputRel*speed;
-	float ROutputDrive=ROutputRel*speed;
-	SmartDashboard::PutNumber("LOutputDrive", LOutputDrive);
-	SmartDashboard::PutNumber("ROutputDrive", ROutputDrive);
-
-	float lCoeff = 1 + steeringWheel->GetX();
-	float rCoeff = 1 - steeringWheel->GetX();
-
-
-	//TODO: add a dead zone
-	if (-.2 < speed && .2 > speed && (steeringWheel->GetX() < -.15 || steeringWheel->GetX() > .15))
-	{
-
-		speed = -.5;
-		if (steeringWheel->GetX() < 0)
-		{
-			rCoeff -= .15;
-			lCoeff = -rCoeff;
-		}
-		else if (steeringWheel->GetX() > 0)
-		{
-			lCoeff -= .15;
-			rCoeff = -lCoeff;
-		}
-		else
-		{
-			rCoeff = 0;
-			lCoeff = 0;
-		}
-	}
-
-//	drivetrain->TankDrive(lCoeff * speed, rCoeff * speed);
-	drivetrain->TankDrive(LOutputDrive, ROutputDrive);
-
+	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain);
 
 	//		if(mag3->ButtonClicked()) {
 	//			elevator->StartPIDMag(1);

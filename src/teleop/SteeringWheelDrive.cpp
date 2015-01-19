@@ -5,7 +5,7 @@
  *      Author: Citrus Circuits
  */
 
-#include "SteeringWheelDrive.h"
+#include <teleop/SteeringWheelDrive.h>
 
 SteeringWheelDrive::SteeringWheelDrive(RobotDrive* drive, Joystick* wheel, Joystick* speed) {
 	// TODO Auto-generated constructor stub
