@@ -29,6 +29,8 @@ PincherSystem::PincherSystem() {
 
 	pinchersOpen = false; // Could changed, depends on solenoid
 	proxyTriggered = false;
+	rightOpen = false;
+	leftOpen = false;
 
 }
 
@@ -53,6 +55,17 @@ void PincherSystem::TogglePinchers() {
 	rightPincher->Set(pinchersOpen);
 	leftPincher->Set(pinchersOpen);
 }
+
+void PincherSystem::OpenRight() {
+	rightOpen = true;
+	rightPincher->Set(true);
+}
+
+ void PincherSystem::OpenLeft() {
+	 leftOpen = false;
+	 leftPincher->Set(false);
+}
+
 
 // http://wpilib.screenstepslive.com/s/4485/m/13810/l/241876-analog-inputs
 bool PincherSystem::ProximityTriggered() {
@@ -106,11 +119,8 @@ void PincherSystem::ReversePinchersSlow() {
 }
 
 void PincherSystem::HumanLoad() {
-	if (ProximityTriggered()) {
-		proxyTriggered = true;
-	}
 
-	if (proxyTriggered) {
+	if (ProximityTriggered()) {
 		RunToteAccel();
 	}
 	else {
@@ -127,5 +137,6 @@ void PincherSystem::StopPinchers() {
 	leftRollers->Set(0.0);
 	rightToteAccel->Set(0.0);
 	leftToteAccel->Set(0.0);
+
 }
 

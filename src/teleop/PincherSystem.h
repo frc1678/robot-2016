@@ -17,7 +17,9 @@ class PincherSystem {
 	AnalogInput *bottomSensor;
 
 	bool pinchersOpen;
-	bool proxyTriggered;
+
+	bool rightOpen;
+	bool leftOpen;
 
 public:
 
@@ -30,6 +32,11 @@ public:
 	void ClosePinchers();
 	void TogglePinchers();
 	void StopPinchers();
+
+	void OpenRight();
+	void OpenLeft();
+	void CloseRight();
+	void CloseLeft();
 
 	bool ProximityTriggered();
 	bool OpenState();
