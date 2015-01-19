@@ -22,13 +22,13 @@ PincherSystem::PincherSystem() {
 
 	// True = open
 	// False = closed
+	// NEEDS TO BE CONSISTANT THROUGHOUT
 	rightPincher = new Solenoid(1); // TODO ports galore
 	leftPincher = new Solenoid(2);
 
 	bottomSensor = new AnalogInput(1);
 
-	pinchersOpen = false; // Could changed, depends on solenoid
-	proxyTriggered = false;
+	pinchersOpen = false; // Could changed, depends on solenoid. However, this shouldn't change.
 	rightOpen = false;
 	leftOpen = false;
 

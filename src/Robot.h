@@ -3,17 +3,22 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#include <logs/ConstantsLoader.h>
+//#include <logs/ConstantsLoader.h>
 #include "WPILib.h"
-#include <iostream>
-#include <fstream>
-#include <stdlib.h>
+//#include "logs/ConstantsLoader.h"
+#include "teleop/CitrusButton.h"
+#include "teleop/ElevatorSystem.h"
+#include "teleop/Drivetrain.h"
+//#include <iostream>
+//#include <fstream>
+//#include <stdlib.h>
 
-using namespace std;
+//using namespace std;
 class Robot: public IterativeRobot
 {
-private:
-	friend class FileSave;
+
+public:
+
 
 	LiveWindow *lw;
 
@@ -30,27 +35,21 @@ private:
 
 	Compressor *compressor;
 
-	Gyro *gyro;
-
-	Solenoid *sinSol;
 	DoubleSolenoid *shifting;
 
-	VictorSP *right;
-	VictorSP *left;
 
 	CitrusButton *gearUp;
 	CitrusButton *gearDown;
-	CitrusButton *mag3;
-	CitrusButton *mag4;
-
-	bool triggered3;
-	bool triggered4;
-
-//	Talon *elv1;
-//	Talon *elv2;
+//	CitrusButton *mag3;
+//	CitrusButton *mag4;
+//
+//	bool triggered3;
+//	bool triggered4;
 
 
-	ConstantsLoader* kLoad;
+
+
+	//ConstantsLoader* kLoad;
 
 	void RobotInit();
 
