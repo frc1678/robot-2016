@@ -16,7 +16,7 @@ TextLogger::~TextLogger() {
 	file.close();
 }
 
-void TextLogger::log(std::string msg, std::string cat, std::string codestamp)
+void TextLogger::TextLog(std::string msg, std::string cat, std::string codestamp)
 {
 	/**LOG THE TIME**/
 	time_t rawtime;

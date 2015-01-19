@@ -73,6 +73,10 @@ private:
 	void DisabledPeriodic();
 
 	void UpdateButtons();
+
+	void logDrive(float leftEncoderVal, float rightEncoderVal, float REncoderRate, float LEncoderRate, double joy1, double joy2, float LeftMotorOutput, float RightMotorOutput);
+
+	void CSVlogDrive(float LMotorOutput, float RMotorOutput, float LEncoderRate, float REncoderRate);
 };
 
 #endif
