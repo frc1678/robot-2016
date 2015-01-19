@@ -17,7 +17,6 @@ class PincherSystem {
 	AnalogInput *bottomSensor;
 
 	bool pinchersOpen;
-	bool proxyTriggered;
 
 	bool rightOpen;
 	bool leftOpen;
