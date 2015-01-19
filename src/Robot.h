@@ -22,6 +22,9 @@ private:
 	Joystick *driverR;
 	Joystick *manipulator;
 
+	Joystick* steeringWheel;
+	Joystick* speedJoystick;
+
 	// For the driving of the robot
 	RobotDrive *drivetrain;
 
@@ -42,6 +45,7 @@ private:
 	CitrusButton *gearDown;
 	CitrusButton *mag3;
 	CitrusButton *mag4;
+	CitrusButton *SteeringWheelChoice;
 
 	bool triggered3;
 	bool triggered4;
