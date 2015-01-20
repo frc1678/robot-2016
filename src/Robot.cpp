@@ -135,4 +135,25 @@ void Robot::UpdateButtons()
 	gearUp->Update();
 }
 
+void Robot::logDrive(float leftEncoderVal, float rightEncoderVal, float REncoderRate, float LEncoderRate, double joy1, double joy2, float LeftMotorOutput, float RightMotorOutput)
+{
+	driveLogger->TextLog(std::to_string(leftEncoderVal), "LEFT_ENCODER_VAL", CODE_STAMP);
+	driveLogger->TextLog(std::to_string(rightEncoderVal), "RIGHT_ENCODER_VAL", CODE_STAMP);
+	driveLogger->TextLog(std::to_string(LEncoderRate), "LEFT_ENCODER_RATE", CODE_STAMP);
+	driveLogger->TextLog(std::to_string(REncoderRate), "RIGHT_ENCODER_RATE", CODE_STAMP);
+	driveLogger->TextLog(std::to_string(joy1), "JOYSTICK 1", CODE_STAMP);
+	driveLogger->TextLog(std::to_string(joy2), "JOYSTICK 2", CODE_STAMP);
+	driveLogger->TextLog(std::to_string(LeftMotorOutput), "LEFT_MOTOR_OUTPUT", CODE_STAMP);
+	driveLogger->TextLog(std::to_string(RightMotorOutput), "RIGHT_MOTOR_OUTPUT", CODE_STAMP);
+}
+
+void Robot::CSVlogDrive(float LMotorOutput, float RMotorOutput, float LEncoderRate, float REncoderRate)
+{
+	CSVdriveLogger->StartNewCycle();
+	CSVdriveLogger->LogValue(to_string(LMotorOutput));
+	CSVdriveLogger->LogValue(to_string(RMotorOutput));
+	CSVdriveLogger->LogValue(to_string(LEncoderRate));
+	CSVdriveLogger->LogValue(to_string(REncoderRate));
+}
+
 START_ROBOT_CLASS(Robot);

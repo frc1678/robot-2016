@@ -21,7 +21,7 @@ class TextLogger {
 public:
 	TextLogger(std::string filename);
 	virtual ~TextLogger();
-	void log(std::string msg, std::string cat, std::string stamp);
+	void TextLog(std::string msg, std::string cat, std::string stamp);
 };
 
 #endif /* SRC_LOGS_TEXTLOGGER_H_ */
