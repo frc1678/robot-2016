@@ -9,6 +9,8 @@
 #include <fstream>
 #include <stdlib.h>
 #include "teleop/SteeringWheelDrive.h"
+#include "logs/CSVLogger.h"
+#include "logs/TextLogger.h"
 
 using namespace std;
 class Robot: public IterativeRobot
@@ -29,6 +31,9 @@ private:
 	// For the driving of the robot
 	RobotDrive *drivetrain;
 	SteeringWheelDrive* swd;
+
+	CSVLogger* CSVdriveLogger;
+	TextLogger* driveLogger;
 
 	// The elevator
 	ElevatorSystem *elevator;
