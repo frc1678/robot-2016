@@ -14,6 +14,17 @@
 //#include <stdlib.h>
 
 //using namespace std;
+
+#include <iostream>
+#include <fstream>
+#include <stdlib.h>
+#include "teleop/SteeringWheelDrive.h"
+#include "logs/CSVLogger.h"
+#include "logs/TextLogger.h"
+
+using namespace std;
+
+
 class Robot: public IterativeRobot
 {
 
@@ -27,8 +38,15 @@ public:
 	Joystick *driverR;
 	Joystick *manipulator;
 
+	Joystick* steeringWheel;
+	Joystick* speedJoystick;
+
 	// For the driving of the robot
 	RobotDrive *drivetrain;
+	SteeringWheelDrive* swd;
+
+	CSVLogger* CSVdriveLogger;
+	TextLogger* driveLogger;
 
 	// The elevator
 	ElevatorSystem *elevator;
@@ -40,11 +58,17 @@ public:
 
 	CitrusButton *gearUp;
 	CitrusButton *gearDown;
+
 //	CitrusButton *mag3;
 //	CitrusButton *mag4;
 //
 //	bool triggered3;
 //	bool triggered4;
+
+	CitrusButton *mag3;
+	CitrusButton *mag4;
+	CitrusButton *SteeringWheelChoice;
+
 
 
 
@@ -68,6 +92,10 @@ public:
 	void DisabledPeriodic();
 
 	void UpdateButtons();
+
+	void logDrive(float leftEncoderVal, float rightEncoderVal, float REncoderRate, float LEncoderRate, double joy1, double joy2, float LeftMotorOutput, float RightMotorOutput);
+
+	void CSVlogDrive(float LMotorOutput, float RMotorOutput, float LEncoderRate, float REncoderRate);
 };
 
 #endif
