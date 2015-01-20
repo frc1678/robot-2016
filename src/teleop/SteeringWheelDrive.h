@@ -3,11 +3,14 @@
 #ifndef STEERINGWHEELDRIVE_H_
 #define STEERINGWHEELDRIVE_H_
 
+#include <logs/ConstantsLoader.h>
+
 class SteeringWheelDrive {
 public:
-	SteeringWheelDrive(RobotDrive* drive, Joystick* wheel, Joystick* speed);
+	float deadZoneSteering, deadZoneSpeed;
+	SteeringWheelDrive(RobotDrive* drive, Joystick* wheel, Joystick* speed, ConstantsLoader* k);
 	virtual ~SteeringWheelDrive();
-	void drive();
+	void drive(int mode = 0);
 protected:
 	RobotDrive* driveTrain;
 	Joystick* steeringWheel;

@@ -21,6 +21,7 @@ void Robot::RobotInit() {
 	//	driverR = new Joystick(1);
 	steeringWheel = new Joystick(0);
 	speedJoystick = new Joystick(1);
+	swd = new SteeringWheelDrive(drivetrain, steeringWheel, speedJoystick, new ConstantsLoader("joystick.txt"));
 
 	//	gearUp = new CitrusButton(driverL, 2);
 	//	gearDown = new CitrusButton(driverR, 2);
@@ -82,7 +83,8 @@ void Robot::TeleopInit() {
 void Robot::TeleopPeriodic() {
 	//	compressor->SetClosedLoopControl(true);
 	SmartDashboard::PutNumber("Speed", speedJoystick->GetY());
-	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain);
+	// runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain);
+	swd->drive(SteeringWheelChoice->ButtonPressed() ? 1 : 0);
 
 	//		if(mag3->ButtonClicked()) {
 	//			elevator->StartPIDMag(1);
@@ -117,7 +119,7 @@ void Robot::TeleopPeriodic() {
 	//
 	//		shifting->Set(DoubleSolenoid::Value::kOff);
 	//	}
-
+	SteeringWheelChoice->Update();
 	//	UpdateButtons();
 
 }

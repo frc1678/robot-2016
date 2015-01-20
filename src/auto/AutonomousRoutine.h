@@ -8,6 +8,7 @@
 #ifndef SRC_AUTO_AUTONOMOUSROUTINE_H_
 #define SRC_AUTO_AUTONOMOUSROUTINE_H_
 #include "WPILib.h"
+#include <logs/ConstantsLoader.h>
 
 class AutonomousRoutine {
 	RobotDrive* drive;

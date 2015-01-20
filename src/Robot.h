@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
+#include "teleop/SteeringWheelDrive.h"
 
 using namespace std;
 class Robot: public IterativeRobot
@@ -27,6 +28,7 @@ private:
 
 	// For the driving of the robot
 	RobotDrive *drivetrain;
+	SteeringWheelDrive* swd;
 
 	// The elevator
 	ElevatorSystem *elevator;
