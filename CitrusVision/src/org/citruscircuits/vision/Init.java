@@ -14,9 +14,10 @@ import org.opencv.objdetect.*;
 import org.opencv.photo.*;
 import org.opencv.utils.*;
 import org.opencv.video.*;
+import com.atul.JavaOpenCV.*;
 
 public class Init {
-
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
