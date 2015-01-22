@@ -5,8 +5,8 @@
  *      Author: Citrus Circuits
  */
 
-#ifndef SRC_LOGS_CONSTANTSLOADER_H_
-#define SRC_LOGS_CONSTANTSLOADER_H_
+#ifndef ROBOT_2015_SRC_LOGS_CONSTANTSLOADER_H_
+#define ROBOT_2015_SRC_LOGS_CONSTANTSLOADER_H_
 
 #include <iostream>
 #include <fstream>
@@ -26,4 +26,4 @@ public:
 	double getConstant(string n, double defaultVal = 0);
 };
 
-#endif /* SRC_LOGS_CONSTANTSLOADER_H_ */
+#endif /* ROBOT_2015_SRC_LOGS_CONSTANTSLOADER_H_ */

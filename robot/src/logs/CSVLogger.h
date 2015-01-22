@@ -5,8 +5,8 @@
  *      Author: Citrus CAD
  */
 
-#ifndef SRC_LOGS_CSVLOGGER_H_
-#define SRC_LOGS_CSVLOGGER_H_
+#ifndef ROBOT_2015_SRC_LOGS_CSVLOGGER_H_
+#define ROBOT_2015_SRC_LOGS_CSVLOGGER_H_
 
 #include <iostream>
 #include <fstream>
@@ -24,4 +24,4 @@ public:
 	void StartNewCycle();
 };
 
-#endif /* SRC_LOGS_CSVLOGGER_H_ */
+#endif /* ROBOT_2015_SRC_LOGS_CSVLOGGER_H_ */

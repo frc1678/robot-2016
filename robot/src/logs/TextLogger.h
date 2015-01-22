@@ -5,15 +5,15 @@
  *      Author: Citrus CAD
  */
 
-#ifndef SRC_LOGS_TEXTLOGGER_H_
-#define SRC_LOGS_TEXTLOGGER_H_
+#ifndef ROBOT_2015_SRC_LOGS_TEXTLOGGER_H_
+#define ROBOT_2015_SRC_LOGS_TEXTLOGGER_H_
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <ctime>
 #include <sys/time.h>
 
-#define CODE_STAMP "at line "+to_string(__LINE__)+" of "+__FILE__+" in function "+__FUNCTION__
+#define CODE_STAMP "at line "+std::to_string(__LINE__)+" of "+__FILE__+" in function "+__FUNCTION__
 
 class TextLogger {
 	std::ofstream file;
@@ -24,4 +24,4 @@ public:
 	void TextLog(std::string msg, std::string cat, std::string stamp);
 };
 
-#endif /* SRC_LOGS_TEXTLOGGER_H_ */
+#endif /* ROBOT_2015_SRC_LOGS_TEXTLOGGER_H_ */

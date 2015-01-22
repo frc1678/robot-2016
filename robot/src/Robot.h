@@ -21,6 +21,7 @@
 #include "teleop/SteeringWheelDrive.h"
 #include "logs/CSVLogger.h"
 #include "logs/TextLogger.h"
+#include "logs/BunchLogger.h"
 
 using namespace std;
 
@@ -44,9 +45,6 @@ public:
 	// For the driving of the robot
 	RobotDrive *drivetrain;
 	SteeringWheelDrive* swd;
-
-	CSVLogger* CSVdriveLogger;
-	TextLogger* driveLogger;
 
 	// The elevator
 	ElevatorSystem *elevator;
@@ -93,9 +91,6 @@ public:
 
 	void UpdateButtons();
 
-	void logDrive(float leftEncoderVal, float rightEncoderVal, float REncoderRate, float LEncoderRate, double joy1, double joy2, float LeftMotorOutput, float RightMotorOutput);
-
-	void CSVlogDrive(float LMotorOutput, float RMotorOutput, float LEncoderRate, float REncoderRate);
 };
 
 #endif
