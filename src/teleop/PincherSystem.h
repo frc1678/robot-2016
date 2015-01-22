@@ -14,6 +14,7 @@ class PincherSystem {
 	Solenoid *rightPincher;
 	Solenoid *leftPincher;
 
+	AnalogInput *topSensor;
 	AnalogInput *bottomSensor;
 
 	bool pinchersOpen;
@@ -39,15 +40,18 @@ public:
 	void CloseRight();
 	void CloseLeft();
 
-	bool ProximityTriggered();
+	bool TopProximityTriggered();
+	bool BottomProximityTriggered();
 	bool OpenState();
 
 	void RunToteAccel();
 	void RunPinchers();
+	void RunRollers();
 	void RunAt(float x);
 
 	void ReverseToteAccel();
 	void ReversePinchers();
+	void ReverseRollers();
 	void ReversePinchersSlow();
 
 	void HumanLoad();

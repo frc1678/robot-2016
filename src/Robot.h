@@ -9,6 +9,7 @@
 #include "teleop/CitrusButton.h"
 #include "teleop/ElevatorSystem.h"
 #include "teleop/Drivetrain.h"
+#include "teleop/PincherSystem.h"
 //#include <iostream>
 //#include <fstream>
 //#include <stdlib.h>
@@ -59,8 +60,8 @@ public:
 	CitrusButton *gearUp;
 	CitrusButton *gearDown;
 
-//	CitrusButton *mag3;
-//	CitrusButton *mag4;
+	CitrusButton *deployedLeft;
+	CitrusButton *deployedRight;
 //
 //	bool triggered3;
 //	bool triggered4;
@@ -69,6 +70,7 @@ public:
 	CitrusButton *mag4;
 	CitrusButton *SteeringWheelChoice;
 
+	PincherSystem *pinchers;
 
 
 

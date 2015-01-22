@@ -7,6 +7,9 @@
 
 
 void PrepHumanLoad();
+
+void LoadRC();
+
 void LoadFromHumanPlayer();
 
 
