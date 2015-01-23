@@ -11,13 +11,11 @@ class PincherSystem {
 	VictorSP *leftRollers;
 
 
-	Solenoid *rightPincher;
-	Solenoid *leftPincher;
+	DoubleSolenoid *openPinchers;
 
 	AnalogInput *bottomSensor;
 
 	bool pinchersOpen;
-	bool proxyTriggered;
 
 	bool rightOpen;
 	bool leftOpen;
@@ -36,8 +34,6 @@ public:
 
 	void OpenRight();
 	void OpenLeft();
-	void CloseRight();
-	void CloseLeft();
 
 	bool ProximityTriggered();
 	bool OpenState();

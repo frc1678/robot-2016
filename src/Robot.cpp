@@ -11,27 +11,31 @@ void Robot::RobotInit() {
 	//kLoad = new ConstantsLoader("auto.txt");
 
 	drivetrain = new RobotDrive(2, 7, 1, 8);
-	//	driverL = new Joystick(0);
-	//	driverR = new Joystick(1);
-	steeringWheel = new Joystick(0);
-	speedJoystick = new Joystick(1);
-	swd = new SteeringWheelDrive(drivetrain, steeringWheel, speedJoystick, new ConstantsLoader("joystick.txt"));
+	driverL = new Joystick(0);
+	driverR = new Joystick(1);
+	manipulator = new Joystick(2);
+	//steeringWheel = new Joystick(0);
+	//speedJoystick = new Joystick(1);
+	//swd = new SteeringWheelDrive(drivetrain, steeringWheel, speedJoystick, new ConstantsLoader("joystick.txt"));
 
 	//	gearUp = new CitrusButton(driverL, 2);
 	//	gearDown = new CitrusButton(driverR, 2);
 	// mag3 = new CitrusButton(manipulator, 3);
 	// mag4 = new CitrusButton(manipulator, 4);
-	SteeringWheelChoice = new CitrusButton(speedJoystick, 5);
+	openPinchers = new CitrusButton(manipulator, 1);
+	closePinchers = new CitrusButton(manipulator, 2);
+	runPinchers = new CitrusButton(manipulator, 3);
+	//SteeringWheelChoice = new CitrusButton(speedJoystick, 5);
 
 
 	shifting = new DoubleSolenoid(1, 2);
 
-	drivetrain = new RobotDrive(2, 7, 1, 8);
+	//drivetrain = new RobotDrive(2, 7, 1, 8);
 	drivetrain->SetSafetyEnabled(false);
 
-	elevator = new ElevatorSystem();
+	//elevator = new ElevatorSystem();
 
-
+	pinchers = new PincherSystem();
 
 }
 
@@ -105,9 +109,23 @@ void Robot::TeleopInit() {
 
 void Robot::TeleopPeriodic() {
 	//	compressor->SetClosedLoopControl(true);
-	SmartDashboard::PutNumber("Speed", speedJoystick->GetY());
+//	SmartDashboard::PutNumber("Speed", speedJoystick->GetY());
 	// runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain);
-	swd->drive(SteeringWheelChoice->ButtonPressed() ? 1 : 0);
+	//swd->drive(SteeringWheelChoice->ButtonPressed() ? 1 : 0);
+
+	if(runPinchers->ButtonPressed()) {
+		pinchers->RunPinchers();
+	}
+	else {
+		pinchers->StopPinchers();
+	}
+
+	if(openPinchers->ButtonClicked()) {
+		pinchers->OpenPinchers();
+	}
+	else if (closePinchers->ButtonClicked()) {
+		pinchers->ClosePinchers();
+	}
 
 	//		if(mag3->ButtonClicked()) {
 	//			elevator->StartPIDMag(1);
@@ -142,7 +160,7 @@ void Robot::TeleopPeriodic() {
 	//
 	//		shifting->Set(DoubleSolenoid::Value::kOff);
 	//	}
-	SteeringWheelChoice->Update();
+	//SteeringWheelChoice->Update();
 	//	UpdateButtons();
 
 
@@ -157,6 +175,9 @@ void Robot::UpdateButtons()
 {
 	gearDown->Update();
 	gearUp->Update();
+	openPinchers->Update();
+	closePinchers->Update();
+	runPinchers->Update();
 }
 
 START_ROBOT_CLASS(Robot);

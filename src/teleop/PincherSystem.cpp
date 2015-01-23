@@ -14,17 +14,16 @@
 
 PincherSystem::PincherSystem() {
 
-	rightToteAccel = new VictorSP(3); // TODO ports for all of these
-	leftToteAccel = new VictorSP(4);
-	rightRollers = new VictorSP(5);
-	leftRollers = new VictorSP(6);
+	rightToteAccel = new VictorSP(6); // TODO ports for all of these
+	leftToteAccel = new VictorSP(3);
+	rightRollers = new VictorSP(9);
+	leftRollers = new VictorSP(0);
 
 
 	// True = open
 	// False = closed
 	// NEEDS TO BE CONSISTANT THROUGHOUT
-	rightPincher = new Solenoid(1); // TODO ports galore
-	leftPincher = new Solenoid(2);
+	openPinchers = new DoubleSolenoid(0, 3);
 
 	bottomSensor = new AnalogInput(1);
 
@@ -40,31 +39,26 @@ PincherSystem::~PincherSystem() { }
 
 void PincherSystem::OpenPinchers() {
 	pinchersOpen = true;
-	rightPincher->Set(true);
-	leftPincher->Set(true);
+	openPinchers->Set(DoubleSolenoid::Value::kForward);
 }
 
  void PincherSystem::ClosePinchers() {
 	 pinchersOpen = false;
-	 rightPincher->Set(false);
-	 leftPincher->Set(false);
+	 openPinchers->Set(DoubleSolenoid::Value::kReverse);
 }
 
 void PincherSystem::TogglePinchers() {
 	pinchersOpen = !pinchersOpen;
-	rightPincher->Set(pinchersOpen);
-	leftPincher->Set(pinchersOpen);
+	if(pinchersOpen) {
+		openPinchers->Set(DoubleSolenoid::Value::kForward);
+	}
+	else {
+		openPinchers->Set(DoubleSolenoid::Value::kReverse);
+	}
+
 }
 
-void PincherSystem::OpenRight() {
-	rightOpen = true;
-	rightPincher->Set(true);
-}
 
- void PincherSystem::OpenLeft() {
-	 leftOpen = false;
-	 leftPincher->Set(false);
-}
 
 
 // http://wpilib.screenstepslive.com/s/4485/m/13810/l/241876-analog-inputs
