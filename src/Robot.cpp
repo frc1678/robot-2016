@@ -18,8 +18,8 @@ void Robot::RobotInit() {
 	//speedJoystick = new Joystick(1);
 	//swd = new SteeringWheelDrive(drivetrain, steeringWheel, speedJoystick, new ConstantsLoader("joystick.txt"));
 
-	//	gearUp = new CitrusButton(driverL, 2);
-	//	gearDown = new CitrusButton(driverR, 2);
+	gearUp = new CitrusButton(driverL, 2);
+	gearDown = new CitrusButton(driverR, 2);
 	// mag3 = new CitrusButton(manipulator, 3);
 	// mag4 = new CitrusButton(manipulator, 4);
 	openPinchers = new CitrusButton(manipulator, 1);
@@ -54,11 +54,7 @@ void Robot::DisabledInit() {
 	//
 	//	sinSol = new Solenoid(7);
 	//
-	//	gearUp = new CitrusButton(driverL, 2);
-	//	gearDown = new CitrusButton(driverR, 2);
-	//	mag3 = new CitrusButton(manipulator, 3);
-	//	mag4 = new CitrusButton(manipulator, 4);
-	//
+
 	//	if (!elevator->FullyCalibrated()) {
 	//		elevator->Reset();
 	//	}
@@ -110,7 +106,8 @@ void Robot::TeleopInit() {
 void Robot::TeleopPeriodic() {
 	//	compressor->SetClosedLoopControl(true);
 //	SmartDashboard::PutNumber("Speed", speedJoystick->GetY());
-	// runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain);
+	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain);
+	//drivetrain->TankDrive(driverL->GetY(), driverR->GetY());
 	//swd->drive(SteeringWheelChoice->ButtonPressed() ? 1 : 0);
 
 	if(runPinchers->ButtonPressed()) {
@@ -152,14 +149,14 @@ void Robot::TeleopPeriodic() {
 	//	SmartDashboard::PutNumber("Counter", elevator->elvEncoder->Get());
 	//	SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
 	//
-	//	if (gearUp->ButtonClicked()) {
-	//		shifting->Set(DoubleSolenoid::Value::kReverse);
-	//	} else if (gearDown->ButtonClicked()) {
-	//		shifting->Set(DoubleSolenoid::Value::kForward);
-	//	} else {
-	//
-	//		shifting->Set(DoubleSolenoid::Value::kOff);
-	//	}
+		if (gearUp->ButtonClicked()) {
+			shifting->Set(DoubleSolenoid::Value::kReverse);
+		} else if (gearDown->ButtonClicked()) {
+			shifting->Set(DoubleSolenoid::Value::kForward);
+		} else {
+
+			shifting->Set(DoubleSolenoid::Value::kOff);
+		}
 	//SteeringWheelChoice->Update();
 	//	UpdateButtons();
 
