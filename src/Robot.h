@@ -9,12 +9,11 @@
 #include "teleop/CitrusButton.h"
 #include "teleop/ElevatorSystem.h"
 #include "teleop/Drivetrain.h"
-#include "teleop/PincherSystem.h"
-//#include <iostream>
-//#include <fstream>
-//#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <stdlib.h>
 
-//using namespace std;
+using namespace std;
 
 #include <iostream>
 #include <fstream>
@@ -22,6 +21,7 @@
 #include "teleop/SteeringWheelDrive.h"
 #include "logs/CSVLogger.h"
 #include "logs/TextLogger.h"
+#include "logs/BunchLogger.h"
 
 using namespace std;
 
@@ -46,9 +46,6 @@ public:
 	RobotDrive *drivetrain;
 	SteeringWheelDrive* swd;
 
-	CSVLogger* CSVdriveLogger;
-	TextLogger* driveLogger;
-
 	// The elevator
 	ElevatorSystem *elevator;
 
@@ -60,8 +57,8 @@ public:
 	CitrusButton *gearUp;
 	CitrusButton *gearDown;
 
-	CitrusButton *deployedLeft;
-	CitrusButton *deployedRight;
+//	CitrusButton *mag3;
+//	CitrusButton *mag4;
 //
 //	bool triggered3;
 //	bool triggered4;
@@ -70,7 +67,6 @@ public:
 	CitrusButton *mag4;
 	CitrusButton *SteeringWheelChoice;
 
-	PincherSystem *pinchers;
 
 
 
@@ -95,9 +91,6 @@ public:
 
 	void UpdateButtons();
 
-	void logDrive(float leftEncoderVal, float rightEncoderVal, float REncoderRate, float LEncoderRate, double joy1, double joy2, float LeftMotorOutput, float RightMotorOutput);
-
-	void CSVlogDrive(float LMotorOutput, float RMotorOutput, float LEncoderRate, float REncoderRate);
 };
 
 #endif

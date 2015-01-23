@@ -44,56 +44,10 @@
  *
  */
 
-bool preppingToLoad = false;
-bool donePrepping = false;
-bool liftingRC = false;
-bool finishedLifting = false;
-bool loading = false;
-
-
-// Must be called first
-void PrepHumanLoad() {
-	preppingToLoad = true;
-	donePrepping = false;
-	liftingRC = false;
-	finishedLifting = false;
-	loading = false;
-
-}
-
-void LoadRC(ElevatorSystem *elevator, PincherSystem *pinchers) {
-	// PICK UP THE RECYCLING CONTAINER
-	if (!pinchers->BottomProximityTriggered() && !liftingRC) {
-		pinchers->RunRollers();
-	}
-	else if (pinchers->BottomProximityTriggered() ) {
-		liftingRC = true;
-	}
-	else {
-		pinchers->StopPinchers();
-	}
-
-	if(liftingRC){
-		// GO TO STATIONARY HANDOFF POSITION
-		//elevator->
-
-		// IF THERE, SET "liftingRC" TO "false" AND "finishedLifting" TO "true"
-		// THEN COME BACK DOWN TO HP WAIT
-
-		//
-	}
-
+void PrepHumanLoad(ElevatorSystem *elevator) {
+//	elevat
 }
 
 void LoadFromHumanPlayer() {
 
-//	if (!pinchers->BottomProximityTriggered()) {
-//			pinchers->RunPinchers();
-//		}
-//		else if (pinchers->BottomProximityTriggered() ) {
-//			pinchers->RunToteAccel();
-//		}
-//		else {
-//			pinchers->StopPinchers();
-//		}
 }
