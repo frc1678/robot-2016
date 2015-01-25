@@ -19,7 +19,6 @@ const int termination = 10;
 
 class ElevatorSystem {
 
-	//Preferences *prefs;
 
 	bool oldstate;
 	bool goingDown = false;
