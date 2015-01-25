@@ -62,4 +62,5 @@ void AutonomousRoutine::start() {
 		// TODO Find out how to use the winch
 		delayMillis(5);
 	}
+	// TODO How does even fold
 }

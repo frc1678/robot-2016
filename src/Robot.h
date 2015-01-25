@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
+#include <auto/AutonomousRoutine.h>
 
 using namespace std;
 
@@ -22,7 +23,7 @@ using namespace std;
 #include "teleop/SteeringWheelDrive.h"
 #include "logs/CSVLogger.h"
 #include "logs/TextLogger.h"
-#include "logs/BunchLogger.h"
+#include <logs/SystemLogger.h>
 
 using namespace std;
 
@@ -31,7 +32,7 @@ class Robot: public IterativeRobot
 {
 
 public:
-
+	AutonomousRoutine* autoCode;
 
 	LiveWindow *lw;
 
@@ -40,8 +41,9 @@ public:
 	Joystick *driverR;
 	Joystick *manipulator;
 
-	Joystick* steeringWheel;
-	Joystick* speedJoystick;
+	//for wheel drive
+//	Joystick* steeringWheel;
+//	Joystick* speedJoystick;
 
 	// For the driving of the robot
 	RobotDrive *drivetrain;
@@ -68,6 +70,7 @@ public:
 	CitrusButton *mag4;
 	CitrusButton *SteeringWheelChoice;
 	CitrusButton *runPinchers;
+	CitrusButton *reversePinchers;
 	CitrusButton *openPinchers;
 	CitrusButton *closePinchers;
 

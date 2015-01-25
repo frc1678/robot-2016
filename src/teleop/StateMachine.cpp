@@ -119,7 +119,7 @@ bool StateMachine::Run_One(bool b) {
 //	}
 }
 
-// Second state functions
+// Second state functions, not being used right now
 
 void StateMachine::Prep_Two(bool b) {
 
@@ -132,7 +132,7 @@ bool StateMachine::Run_Two(bool b) {
 // Third state functions
 
 void StateMachine::Prep_Three(bool b) {
-
+	system->StartPIDPosition(1);
 }
 
 bool StateMachine::Run_Three(bool b) {
@@ -142,7 +142,7 @@ bool StateMachine::Run_Three(bool b) {
 // Fourth state functions
 
 void StateMachine::Prep_Four(bool b) {
-
+	system->StartPIDPosition(2);
 }
 
 bool StateMachine::Run_Four(bool b) {
@@ -172,7 +172,7 @@ bool StateMachine::Run_Six(bool b) {
 // Seventh state functions
 
 void StateMachine::Prep_Seven(bool b) {
-
+	system->StartPIDPosition(3);
 }
 
 bool StateMachine::Run_Seven(bool b) {
@@ -182,7 +182,7 @@ bool StateMachine::Run_Seven(bool b) {
 // Eight state functions
 
 void StateMachine::Prep_Eight(bool b) {
-
+	system->StartPIDPosition(4);
 }
 
 bool StateMachine::Run_Eight(bool b) {
