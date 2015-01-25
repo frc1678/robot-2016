@@ -1,4 +1,3 @@
-
 #include "Robot.h"
 
 #define MIN(a, b) a < b ? a : b
@@ -24,9 +23,9 @@ void Robot::RobotInit() {
 	// mag4 = new CitrusButton(manipulator, 4);
 	openPinchers = new CitrusButton(manipulator, 1);
 	closePinchers = new CitrusButton(manipulator, 2);
-	runPinchers = new CitrusButton(manipulator, 3);
+	runPinchers = new CitrusButton(driverR, 1);
+	reversePinchers = new CitrusButton(driverL, 1);
 	//SteeringWheelChoice = new CitrusButton(speedJoystick, 5);
-
 
 	shifting = new DoubleSolenoid(1, 2);
 
@@ -41,11 +40,6 @@ void Robot::RobotInit() {
 
 void Robot::DisabledInit() {
 
-
-
-
-
-
 	//	if (!elevator->FullyCalibrated()) {
 	//		elevator->Reset();
 	//	}
@@ -59,11 +53,9 @@ void Robot::DisabledInit() {
 	//		elevator->Reset();
 	//	}
 
-
 }
 
 void Robot::DisabledPeriodic() {
-
 
 	//	if (!elevator->FullyCalibrated()) {
 	//		elevator->Calibrate();
@@ -101,8 +93,6 @@ void Robot::TeleopInit() {
 	//	triggered4 = false;
 }
 
-
-
 void Robot::TeleopPeriodic() {
 	//	compressor->SetClosedLoopControl(true);
 //	SmartDashboard::PutNumber("Speed", speedJoystick->GetY());
@@ -110,17 +100,15 @@ void Robot::TeleopPeriodic() {
 	//drivetrain->TankDrive(driverL->GetY(), driverR->GetY());
 	//swd->drive(SteeringWheelChoice->ButtonPressed() ? 1 : 0);
 
-	if(runPinchers->ButtonPressed()) {
-		pinchers->RunPinchers();
-	}
-	else {
-		pinchers->StopPinchers();
-	}
+//	if (runPinchers->ButtonPressed()) {
+//		pinchers->RunPinchers();
+//	} else {
+//		pinchers->StopPinchers();
+//	}
 
-	if(openPinchers->ButtonClicked()) {
+	if (openPinchers->ButtonClicked()) {
 		pinchers->OpenPinchers();
-	}
-	else if (closePinchers->ButtonClicked()) {
+	} else if (closePinchers->ButtonClicked()) {
 		pinchers->ClosePinchers();
 	}
 
@@ -149,27 +137,38 @@ void Robot::TeleopPeriodic() {
 	//	SmartDashboard::PutNumber("Counter", elevator->elvEncoder->Get());
 	//	SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
 	//
-		if (gearUp->ButtonClicked()) {
-			shifting->Set(DoubleSolenoid::Value::kReverse);
-		} else if (gearDown->ButtonClicked()) {
-			shifting->Set(DoubleSolenoid::Value::kForward);
-		} else {
+	if (gearUp->ButtonClicked()) {
+		shifting->Set(DoubleSolenoid::Value::kReverse);
+	} else if (gearDown->ButtonClicked()) {
+		shifting->Set(DoubleSolenoid::Value::kForward);
+	} else {
 
-			shifting->Set(DoubleSolenoid::Value::kOff);
-		}
+		shifting->Set(DoubleSolenoid::Value::kOff);
+	}
 	//SteeringWheelChoice->Update();
 	//	UpdateButtons();
-
+	runPinchers->Update();
+	reversePinchers->Update();
+	SmartDashboard::PutNumber("SensorValue", pinchers->bottomSensor->GetValue());
+	if (runPinchers->ButtonPressed()){
+		if(pinchers->ProximityTriggered()){
+			SmartDashboard::PutBoolean("PinchersThingy", true);
+		}
+		else
+		{
+			SmartDashboard::PutBoolean("PinchersThingy", false);
+		}
+	}
+	pinchers->HumanLoad(runPinchers->ButtonPressed(), reversePinchers->ButtonPressed());
+	SmartDashboard::PutBoolean("Trigger", runPinchers->ButtonPressed());
 
 }
 
-void Robot::TestPeriodic()
-{
+void Robot::TestPeriodic() {
 	//	lw->Run();
 }
 
-void Robot::UpdateButtons()
-{
+void Robot::UpdateButtons() {
 	gearDown->Update();
 	gearUp->Update();
 	openPinchers->Update();

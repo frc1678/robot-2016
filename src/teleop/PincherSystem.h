@@ -13,7 +13,6 @@ class PincherSystem {
 
 	DoubleSolenoid *openPinchers;
 
-	AnalogInput *bottomSensor;
 
 	bool pinchersOpen;
 
@@ -21,7 +20,7 @@ class PincherSystem {
 	bool leftOpen;
 
 public:
-
+	AnalogInput *bottomSensor;
 
 	PincherSystem();
 
@@ -46,7 +45,7 @@ public:
 	void ReversePinchers();
 	void ReversePinchersSlow();
 
-	void HumanLoad();
+	void HumanLoad(bool pressed, bool reverse);
 
 };
 
