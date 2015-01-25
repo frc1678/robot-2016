@@ -87,8 +87,11 @@ void StateMachine::DoRunActionForState(ElevatorState s, bool b) {
 	else if(s == Eight) {
 		result = Run_Eight(b);
 	}
-	else {
-
+	else if(s == Done) {
+		result = Run_Done(b);
+	}
+	else if(s == Pause) {
+		result = Run_Pause(b);
 	}
 
 	isCurrentStateComplete = result;
