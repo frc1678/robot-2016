@@ -13,6 +13,8 @@ ElevatorSystem::ElevatorSystem() {
 	left = new Talon(5);
 	right = new Talon(4);
 
+//	upPIDOne = new ControlLoop()
+
 	upPID = new ControlLoop(uKP, uKI, uKD);
 	downPID = new ControlLoop(dKP, dKI, dKD);
 	pidLoop = NULL;
@@ -113,6 +115,52 @@ bool ElevatorSystem::FullyCalibrated() {
 
 void ElevatorSystem::StartPIDMag(int mag) {
 	StartPID(ABS_MAG_CLICKS[mag]);
+}
+
+void ElevatorSystem::StartPIDPosition(int pos) {
+	int absPos = elvEncoder->Get() - AvgOffset();
+	int error = absPos - ABS_ELEVATOR_POSITIONS[pos];
+
+	if(pos == 0) {
+		if (error >= 0) {
+			pidLoop = upPIDOne;
+		} else {
+			pidLoop = downPIDOne;
+		}
+	}
+	else if(pos == 1){
+		if (error >= 0) {
+			pidLoop = upPIDThree;
+		} else {
+			pidLoop = downPIDThree;
+		}
+	}
+	else if(pos == 2) {
+		if (error >= 0) {
+			pidLoop = upPIDFour;
+		} else {
+			pidLoop = downPIDFour;
+		}
+	}
+	else if (pos == 3) {
+		if (error >= 0) {
+			pidLoop = upPIDSeven;
+		} else {
+			pidLoop = downPIDSeven;
+		}
+	}
+	else if(pos == 4) {
+		if (error >= 0) {
+			pidLoop = upPIDEight;
+		} else {
+			pidLoop = downPIDEight;
+		}
+	}
+
+	done = false;
+
+	pidLoop->StartLoop();
+
 }
 
 void ElevatorSystem::StartPID(int encoderPos) {
@@ -219,5 +267,198 @@ void ElevatorSystem::Logging(float clicks, float motorOutput) {
 	motorOutputErrorFile.close();
 }
 
+void ElevatorSystem::MoveToGround() {
+	if (done) {
+		return;
+	}
+
+	int absPos = elvEncoder->Get() - AvgOffset();
+	int error = absPos - ABS_ELEVATOR_POSITIONS[0];
+
+	SmartDashboard::PutNumber("Abs_pos", absPos);
+	SmartDashboard::PutNumber("Elevator error", error);
+
+	float pidOut = 0;
+	done = abs(error) < termination;
+
+	if (!done) {
+
+		pidOut = pidLoop->CalibrateLoop(error);
+	}
+
+	Logging(error, pidOut);
 
 
+	if (pidOut > 1) {
+		pidOut = 1;
+	}
+	if (pidOut < -1) {
+		pidOut = -1;
+	}
+
+	left->Set(pidOut);
+	right->Set(pidOut);
+
+
+	if (done) {
+		StopPID();
+	}
+
+}
+
+void ElevatorSystem::MoveToScoringPosition() {
+	if (done) {
+		return;
+	}
+
+	int absPos = elvEncoder->Get() - AvgOffset();
+	int error = absPos - ABS_ELEVATOR_POSITIONS[1];
+
+	SmartDashboard::PutNumber("Abs_pos", absPos);
+	SmartDashboard::PutNumber("Elevator error", error);
+
+	float pidOut = 0;
+	done = abs(error) < termination;
+
+	if (!done) {
+
+		pidOut = pidLoop->CalibrateLoop(error);
+	}
+
+	Logging(error, pidOut);
+
+
+	if (pidOut > 1) {
+		pidOut = 1;
+	}
+	if (pidOut < -1) {
+		pidOut = -1;
+	}
+
+	left->Set(pidOut);
+	right->Set(pidOut);
+
+
+	if (done) {
+		StopPID();
+	}
+
+
+}
+
+void ElevatorSystem::MoveToHPLoadOne() {
+	if (done) {
+		return;
+	}
+
+	int absPos = elvEncoder->Get() - AvgOffset();
+	int error = absPos - ABS_ELEVATOR_POSITIONS[2];
+
+	SmartDashboard::PutNumber("Abs_pos", absPos);
+	SmartDashboard::PutNumber("Elevator error", error);
+
+	float pidOut = 0;
+	done = abs(error) < termination;
+
+	if (!done) {
+
+		pidOut = pidLoop->CalibrateLoop(error);
+	}
+
+	Logging(error, pidOut);
+
+
+	if (pidOut > 1) {
+		pidOut = 1;
+	}
+	if (pidOut < -1) {
+		pidOut = -1;
+	}
+
+	left->Set(pidOut);
+	right->Set(pidOut);
+
+
+	if (done) {
+		StopPID();
+	}
+
+}
+
+void ElevatorSystem::MoveToHPLoadTwo() {
+	if (done) {
+		return;
+	}
+
+	int absPos = elvEncoder->Get() - AvgOffset();
+	int error = absPos - ABS_ELEVATOR_POSITIONS[3];
+
+	SmartDashboard::PutNumber("Abs_pos", absPos);
+	SmartDashboard::PutNumber("Elevator error", error);
+
+	float pidOut = 0;
+	done = abs(error) < termination;
+
+	if (!done) {
+
+		pidOut = pidLoop->CalibrateLoop(error);
+	}
+
+	Logging(error, pidOut);
+
+
+	if (pidOut > 1) {
+		pidOut = 1;
+	}
+	if (pidOut < -1) {
+		pidOut = -1;
+	}
+
+	left->Set(pidOut);
+	right->Set(pidOut);
+
+
+	if (done) {
+		StopPID();
+	}
+
+}
+
+void ElevatorSystem::MoveToStationaryPosition() {
+	if (done) {
+		return;
+	}
+
+	int absPos = elvEncoder->Get() - AvgOffset();
+	int error = absPos - ABS_ELEVATOR_POSITIONS[4];
+
+	SmartDashboard::PutNumber("Abs_pos", absPos);
+	SmartDashboard::PutNumber("Elevator error", error);
+
+	float pidOut = 0;
+	done = abs(error) < termination;
+
+	if (!done) {
+
+		pidOut = pidLoop->CalibrateLoop(error);
+	}
+
+	Logging(error, pidOut);
+
+
+	if (pidOut > 1) {
+		pidOut = 1;
+	}
+	if (pidOut < -1) {
+		pidOut = -1;
+	}
+
+	left->Set(pidOut);
+	right->Set(pidOut);
+
+
+	if (done) {
+		StopPID();
+	}
+
+}

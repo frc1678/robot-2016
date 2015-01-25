@@ -1,7 +1,8 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(ElevatorSystem *s) {
+StateMachine::StateMachine(ElevatorSystem *s, PincherSystem *p) {
 	system = s;
+	pinchers = p;
 	isCurrentStateComplete = false;
 	stateIndex = 0;
 	currentState = ELEVATOR_STATE_TRANSITIONS[0];
@@ -109,11 +110,13 @@ bool StateMachine::Run_NotStarted(bool b) {
 // First state functions
 
 void StateMachine::Prep_One(bool b) {
-
+	system->StartPIDPosition(0);
 }
 
 bool StateMachine::Run_One(bool b) {
-
+//	if(pinchers->ProximityTriggered()) {
+//
+//	}
 }
 
 // Second state functions
