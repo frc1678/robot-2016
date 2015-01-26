@@ -10,11 +10,12 @@
 #include "Equation.h"
 class HermiteSpline : Equation {
 	Point a, b, c, d, e, f;
+protected:
+	virtual void calculateDerivative() override;
 public:
 	HermiteSpline(Point startPos, Point startVel, Point startAcc, Point endPos, Point endVel, Point endAcc);
 	virtual ~HermiteSpline();
 	virtual Point getPoint(double t) override;
-	virtual Equation* getDerivative() override;
 };
 
 #endif /* SRC_SPLINE_HERMITESPLINE_H_ */
