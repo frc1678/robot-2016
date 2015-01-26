@@ -121,6 +121,7 @@ uint16_t GyroInterface::DoRead(uint8_t address) {
 	}
 }
 
+// gets angular velocity
 double GyroInterface::ExtractAngle(uint32_t value) {
 	const int16_t reading = -(int16_t) (value >> 10 & 0xFFFF);
 	return static_cast<double>(reading) * 2.0 * M_PI / 360.0 / 80.0;

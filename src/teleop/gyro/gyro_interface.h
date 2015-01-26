@@ -7,6 +7,7 @@
 #include "logs/CSVLogger.h"
 #include "logs/TextLogger.h"
 
+
 class GyroInterface {
 public:
 	GyroInterface();
