@@ -60,6 +60,8 @@ public:
 	CitrusButton *gearUp;
 	CitrusButton *gearDown;
 
+	CitrusButton* straightButton;
+
 //	CitrusButton *mag3;
 //	CitrusButton *mag4;
 //

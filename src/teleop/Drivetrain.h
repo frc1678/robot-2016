@@ -13,9 +13,9 @@ void driveTrainValues(float stickLeftInput, float stickRightInput, float kJoysti
 
 void deadzone();
 
-void runDrivetrain(float stickLeftInput, float stickRightInput, RobotDrive *drivetrain, float thresh);
+void runDrivetrain(float stickLeftInput, float stickRightInput, RobotDrive *drivetrain, float thresh, bool straight = false);
 
-void runDrivetrain(float stickLeftInput, float stickRightInput, RobotDrive *drivetrain);
+void runDrivetrain(float stickLeftInput, float stickRightInput, RobotDrive *drivetrain, bool straight = false);
 
 void runDrivetrainShift(float stickLeftInput, float stickRightInput, RobotDrive *drivetrain, 
 		float thresh, Solenoid *gearUp, Solenoid *gearDown, Encoder *leftEncoder, Encoder *rightEncoder);

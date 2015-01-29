@@ -18,6 +18,7 @@ double findSpeed(Point p)
 }
 
 TrajectoryFollower::TrajectoryFollower(Equation* toFollow) {
+	progress = 0;
 	this->toFollow = toFollow;
 	Point diff = toFollow->getPoint(progress);
 	diff.x -= toFollow->getPoint(progress + .001).x;
