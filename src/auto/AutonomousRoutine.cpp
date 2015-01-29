@@ -46,11 +46,13 @@ void AutonomousRoutine::start() {
 	// Reset the timer
 	autoTimer->Reset();
 	autoTimer->Start();
+
 	while (autoTimer->Get() < moveAfterTensionDropTime / 1000) {
 		//get to the auto zone
 		drive->TankDrive(-1, -1);
 		delayMillis(5);
 	}
+
 	//stop once we are in the auto zone
 	drive->TankDrive(0.0, 0.0);
 	// Reset the timer
@@ -60,4 +62,5 @@ void AutonomousRoutine::start() {
 		// TODO Find out how to use the winch
 		delayMillis(5);
 	}
+	// TODO How does even fold
 }
