@@ -12,11 +12,11 @@
 
 class AutonomousRoutine {
 	RobotDrive* drive;
-	Solenoid* pin, *disengageHooks;
+	Solenoid* releasePin, *disengageHooks;
 	double stingerTime, moveBeforeTensionDrop, moveAfterTensionDrop, foldTime;
 	Timer* autoTimer;
-	Victor* winch;
-	Encoder* right, *left;
+	Victor* winchMotor;
+	Encoder* rightEncoder, *leftEncoder;
 public:
 	AutonomousRoutine(Solenoid* stingerPin, Solenoid* releaseTension, RobotDrive* drive,
 			ConstantsLoader* autoKLoad, Victor* winch);
