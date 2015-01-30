@@ -5,7 +5,7 @@
 
 #include <atomic>
 
-#include "teleop/gyro/gyro_interface.h"
+#include "gyro_interface.h"
 #include "logs/CSVLogger.h"
 #include "logs/TextLogger.h"
 

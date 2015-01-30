@@ -5,7 +5,7 @@
  *      Author: Developer
  */
 
-#include <accel/AccelInput.h>
+#include "AccelInput.h"
 
 AccelInput::AccelInput() {
 	accel = new BuiltInAccelerometer();

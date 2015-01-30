@@ -1,4 +1,4 @@
-#include "teleop/gyro/gyro_interface.h"
+#include "gyro_interface.h"
 
 #include <inttypes.h>
 #include <cstring>
