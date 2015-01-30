@@ -10,10 +10,19 @@ ElevatorSystem::ElevatorSystem() {
 	sum = 0.0;
 	offset = 0.0;
 
-	left = new Talon(5);
-	right = new Talon(4);
+	elvMotor = new VictorSP(5);
 
-//	upPIDOne = new ControlLoop()
+	// CONTROL LOOPS FOR THE STATE MACHINE
+	upPIDOne = new ControlLoop(uKP1, uKI1, uKD1);
+	downPIDOne = new ControlLoop(dKP1, dKI1, dKD1);
+	upPIDThree = new ControlLoop(uKP3, uKD3, uKD3);
+	downPIDThree = new ControlLoop(dKP3, dKD3, dKD3);
+	upPIDFour = new ControlLoop(uKP4, uKI4, uKD4);
+	downPIDFour = new ControlLoop(dKP4, dKI4, dKD4);
+	upPIDSeven = new ControlLoop(uKP7, uKI7, uKD7);
+	downPIDSeven = new ControlLoop(dKP7, dKI7, dKD7);
+	upPIDEight = new ControlLoop(uKP8, uKI8, uKD8);
+	downPIDEight = new ControlLoop(dKP8, dKI8, dKD8);
 
 	upPID = new ControlLoop(uKP, uKI, uKD);
 	downPID = new ControlLoop(dKP, dKI, dKD);
@@ -24,7 +33,7 @@ ElevatorSystem::ElevatorSystem() {
 	clicks = 0.0;
 //		oldclicks = 0.0;
 
-	elvEncoder = new Encoder(3,2);
+	elvEncoder = new Encoder(3, 2);
 	hallSensor = new DigitalInput(8);
 
 	oldstate = false; // Initializing oldstate because elevator starts on a magnet
@@ -157,6 +166,7 @@ void ElevatorSystem::StartPIDPosition(int pos) {
 		}
 	}
 
+
 	done = false;
 
 	pidLoop->StartLoop();
@@ -206,8 +216,8 @@ void ElevatorSystem::MoveToAbsEncoderPosition(int encoderPos) {
 		pidOut = -1;
 	}
 
-	left->Set(pidOut);
-	right->Set(pidOut);
+	elvMotor->Set(pidOut);
+
 
 	if (done) {
 		StopPID();
@@ -243,8 +253,8 @@ void ElevatorSystem::MoveToMagnet(int magnet) {
 		pidOut = -1;
 	}
 
-	left->Set(pidOut);
-	right->Set(pidOut);
+	elvMotor->Set(pidOut);
+
 
 
 	if (done) {
@@ -296,8 +306,8 @@ void ElevatorSystem::MoveToGround() {
 		pidOut = -1;
 	}
 
-	left->Set(pidOut);
-	right->Set(pidOut);
+	elvMotor->Set(pidOut);
+
 
 
 	if (done) {
@@ -311,6 +321,7 @@ void ElevatorSystem::MoveToScoringPosition() {
 		return;
 	}
 
+//	MoveToAbsEncoderPosition(ABS_ELEVATOR_POSITIONS[1]);
 	int absPos = elvEncoder->Get() - AvgOffset();
 	int error = absPos - ABS_ELEVATOR_POSITIONS[1];
 
@@ -335,8 +346,8 @@ void ElevatorSystem::MoveToScoringPosition() {
 		pidOut = -1;
 	}
 
-	left->Set(pidOut);
-	right->Set(pidOut);
+	elvMotor->Set(pidOut);
+
 
 
 	if (done) {
@@ -375,8 +386,8 @@ void ElevatorSystem::MoveToHPLoadOne() {
 		pidOut = -1;
 	}
 
-	left->Set(pidOut);
-	right->Set(pidOut);
+	elvMotor->Set(pidOut);
+
 
 
 	if (done) {
@@ -414,8 +425,8 @@ void ElevatorSystem::MoveToHPLoadTwo() {
 		pidOut = -1;
 	}
 
-	left->Set(pidOut);
-	right->Set(pidOut);
+	elvMotor->Set(pidOut);
+
 
 
 	if (done) {
@@ -453,8 +464,8 @@ void ElevatorSystem::MoveToStationaryPosition() {
 		pidOut = -1;
 	}
 
-	left->Set(pidOut);
-	right->Set(pidOut);
+	elvMotor->Set(pidOut);
+
 
 
 	if (done) {

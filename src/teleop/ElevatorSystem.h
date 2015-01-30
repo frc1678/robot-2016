@@ -10,7 +10,13 @@ using namespace std;
 
 
 
-const float ABS_ELEVATOR_POSITIONS[5] = {}; // TODO: Figure these out
+const float ABS_ELEVATOR_POSITIONS[5] = {}; // TODO: Figure these out, right????
+const float uKP1 = 0.0, uKI1 = 0.0, uKD1 = 0.0, dKP1 = 0.0, dKI1 = 0.0, dKD1 = 0.0;
+const float uKP3 = 0.0, uKI3 = 0.0, uKD3 = 0.0, dKP3 = 0.0, dKI3 = 0.0, dKD3 = 0.0;
+const float uKP4 = 0.0, uKI4 = 0.0, uKD4 = 0.0, dKP4 = 0.0, dKI4 = 0.0, dKD4 = 0.0;
+const float uKP7 = 0.0, uKI7 = 0.0, uKD7 = 0.0, dKP7 = 0.0, dKI7 = 0.0, dKD7 = 0.0;
+const float uKP8 = 0.0, uKI8 = 0.0, uKD8 = 0.0, dKP8 = 0.0, dKI8 = 0.0, dKD8 = 0.0;
+
 const float ABS_MAG_CLICKS[6] = {-12.5, -840, -863.5, -1264.5, -1289.5, -1681.5};
 const float uKP = -0.0038, uKI = -0.00025, uKD = 0,
 		dKP = -0.0025, dKI = -0.001, dKD = 0.0;
@@ -22,7 +28,7 @@ class ElevatorSystem {
 
 	bool oldstate;
 	bool goingDown = false;
-	bool done = false;
+
 
 	float n;
 	float sum;
@@ -36,19 +42,21 @@ class ElevatorSystem {
 	ofstream motorOutputErrorFile;
 
 	DigitalInput *hallSensor;
-	Talon *left;
-	Talon *right;
+	VictorSP *elvMotor;
 
 	ControlLoop *upPIDOne;
 	ControlLoop *downPIDOne;
+
 	ControlLoop *upPIDThree;
 	ControlLoop *downPIDThree;
+
 	ControlLoop *upPIDFour;
 	ControlLoop *downPIDFour;
 
 	// THESE ARE GOING TO BE VERY SIMILAR
 	ControlLoop *upPIDSeven;
 	ControlLoop *downPIDSeven;
+
 	ControlLoop *upPIDEight;
 	ControlLoop *downPIDEight;
 
@@ -59,6 +67,7 @@ class ElevatorSystem {
 
 public:
 
+	bool done = false;
 	Encoder *elvEncoder;
 
 

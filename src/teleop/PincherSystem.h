@@ -21,6 +21,7 @@ class PincherSystem {
 
 public:
 	AnalogInput *bottomSensor;
+	AnalogInput *topSensor;
 
 	PincherSystem();
 
@@ -34,7 +35,8 @@ public:
 	void OpenRight();
 	void OpenLeft();
 
-	bool ProximityTriggered();
+	bool BottomProximityTriggered();
+	bool TopProximityTriggered();
 	bool OpenState();
 
 	void RunToteAccel();

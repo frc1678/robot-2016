@@ -106,7 +106,7 @@ void StateMachine::Prep_NotStarted(bool b) {
 }
 
 bool StateMachine::Run_NotStarted(bool b) {
-	return b;
+	return b && pinchers->BottomProximityTriggered();
 }
 
 
@@ -117,9 +117,11 @@ void StateMachine::Prep_One(bool b) {
 }
 
 bool StateMachine::Run_One(bool b) {
-//	if(pinchers->ProximityTriggered()) {
-//
-//	}
+
+	system->MoveToStationaryPosition();
+
+	return system->done;
+
 }
 
 // Second state functions, not being used right now
@@ -140,6 +142,9 @@ void StateMachine::Prep_Three(bool b) {
 
 bool StateMachine::Run_Three(bool b) {
 
+	system->MoveToHPLoadOne();
+
+	return system->done;
 }
 
 // Fourth state functions
@@ -150,6 +155,9 @@ void StateMachine::Prep_Four(bool b) {
 
 bool StateMachine::Run_Four(bool b) {
 
+	system->MoveToStationaryPosition();
+
+	return system->done;
 }
 
 // Fifth state functions
@@ -179,7 +187,9 @@ void StateMachine::Prep_Seven(bool b) {
 }
 
 bool StateMachine::Run_Seven(bool b) {
+	system->MoveToHPLoadTwo();
 
+	return system->done;
 }
 
 // Eight state functions
@@ -189,7 +199,7 @@ void StateMachine::Prep_Eight(bool b) {
 }
 
 bool StateMachine::Run_Eight(bool b) {
-
+	system->MoveToScoringPosition();
 }
 
 // Wait state functions
@@ -199,17 +209,19 @@ void StateMachine::Prep_Pause(bool b) {
 }
 
 bool StateMachine::Run_Pause(bool b) {
-
+	return pinchers->TopProximityTriggered(); // TODO: make sure this does what we want it to
 }
 
 // Pause state functions
 
 void StateMachine::Prep_Done(bool b) {
-
+	system->StartPIDPosition(4);
 }
 
 bool StateMachine::Run_Done(bool b) {
+	system->MoveToGround();
 
+	return system->done;
 }
 
 
