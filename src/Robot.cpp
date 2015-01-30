@@ -19,6 +19,7 @@ void Robot::RobotInit() {
 
 	gearUp = new CitrusButton(driverL, 2);
 	gearDown = new CitrusButton(driverR, 2);
+	straightButton = new CitrusButton(driverR, 3);
 	// mag3 = new CitrusButton(manipulator, 3);
 	// mag4 = new CitrusButton(manipulator, 4);
 	openPinchers = new CitrusButton(manipulator, 1);
@@ -35,7 +36,7 @@ void Robot::RobotInit() {
 	//elevator = new ElevatorSystem();
 
 	pinchers = new PincherSystem();
-
+	this->autoCode = new AutonomousRoutine(new Solenoid(1), new Solenoid(0), drivetrain, new ConstantsLoader("joystick.txt"), new Victor(6));
 }
 
 void Robot::DisabledInit() {
@@ -78,7 +79,7 @@ void Robot::DisabledPeriodic() {
 }
 
 void Robot::AutonomousInit() {
-
+	this->autoCode->start();
 }
 
 void Robot::AutonomousPeriodic() {
@@ -94,9 +95,12 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
+	straightButton->Update();
 	//	compressor->SetClosedLoopControl(true);
 //	SmartDashboard::PutNumber("Speed", speedJoystick->GetY());
-	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain);
+	// The dingus has left the building!
+	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain, straightButton->ButtonPressed());
+	// The eagle has left the nest
 	//drivetrain->TankDrive(driverL->GetY(), driverR->GetY());
 	//swd->drive(SteeringWheelChoice->ButtonPressed() ? 1 : 0);
 

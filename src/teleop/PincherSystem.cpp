@@ -26,7 +26,7 @@ PincherSystem::PincherSystem() {
 	openPinchers = new DoubleSolenoid(0, 3);
 
 	bottomSensor = new AnalogInput(1);
-	bottomSensor = new AnalogInput(0);
+	topSensor = new AnalogInput(0);
 
 	pinchersOpen = false; // Could changed, depends on solenoid. However, this shouldn't change.
 	rightOpen = false;
