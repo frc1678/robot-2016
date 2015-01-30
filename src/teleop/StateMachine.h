@@ -1,4 +1,5 @@
 #include "ElevatorSystem.h"
+#include "PincherSystem.h"
 
 #ifndef STATEMACHINE_H
 #define STATEMACHINE_H
@@ -18,12 +19,13 @@ enum ElevatorState {
 	Pause
 };
 
-// notstarted, 1, 2, w, 3, 4, 2, w, 3, 4, 2, w, 3, 4, 5, 6, 7, 8, done
+// not started, 1, 2, w, 3, 4, 2, w, 3, 4, 2, w, 3, 4, 5, 6, 7, 8, done
 // TODO: Change this
 const ElevatorState ELEVATOR_STATE_TRANSITIONS[] = {NotStarted, One, Pause, Three, Four, Pause, Three, Four, Pause, Seven, Eight, Done};
 
 class StateMachine {
 	ElevatorSystem *system;
+	PincherSystem *pinchers;
 	ElevatorState currentState;
 	int stateIndex;
 	bool isCurrentStateComplete;
@@ -67,7 +69,7 @@ class StateMachine {
 
 
 public:
-	StateMachine(ElevatorSystem *s);
+	StateMachine(ElevatorSystem *s, PincherSystem *p);
 	void PeriodicUpdate(bool buttonInput);
 };
 

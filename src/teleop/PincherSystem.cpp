@@ -26,6 +26,7 @@ PincherSystem::PincherSystem() {
 	openPinchers = new DoubleSolenoid(0, 3);
 
 	bottomSensor = new AnalogInput(1);
+	topSensor = new AnalogInput(0);
 
 	pinchersOpen = false; // Could changed, depends on solenoid. However, this shouldn't change.
 	rightOpen = false;
@@ -59,8 +60,17 @@ void PincherSystem::TogglePinchers() {
 
 
 // http://wpilib.screenstepslive.com/s/4485/m/13810/l/241876-analog-inputs
-bool PincherSystem::ProximityTriggered() {
+bool PincherSystem::BottomProximityTriggered() {
 	if (bottomSensor->GetValue() > 1300){ //TODO change based on how close we want the tote
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool PincherSystem::TopProximityTriggered() {
+	if (topSensor->GetValue() > 1300){ //TODO change based on how close we want the tote
 		return true;
 	}
 	else {
@@ -114,7 +124,7 @@ void PincherSystem::HumanLoad(bool pressed, bool reverse) {
 	if (pressed && !reverse)
 	{
 		RunToteAccel();
-		if (ProximityTriggered()) {
+		if (BottomProximityTriggered()) {
 			rightRollers->Set(0.0);
 			leftRollers->Set(0.0);
 		}
@@ -127,19 +137,9 @@ void PincherSystem::HumanLoad(bool pressed, bool reverse) {
 	}
 	else
 	{
-		rightToteAccel->Set(0.0);
-		leftToteAccel->Set(0.0);
-		rightRollers->Set(0.0);
-		leftRollers->Set(0.0);
+		StopPinchers();
 	}
-	if(reverse && pressed){
-		 ReversePinchers();
-		 ReverseToteAccel();
-	}
-	else if(reverse && !pressed){
-		rightRollers->Set(1.0);
-		leftRollers->Set(1.0);
-	}
+
 }
 
 void PincherSystem::StopPinchers() {

@@ -1,7 +1,8 @@
 #include "StateMachine.h"
 
-StateMachine::StateMachine(ElevatorSystem *s) {
+StateMachine::StateMachine(ElevatorSystem *s, PincherSystem *p) {
 	system = s;
+	pinchers = p;
 	isCurrentStateComplete = false;
 	stateIndex = 0;
 	currentState = ELEVATOR_STATE_TRANSITIONS[0];
@@ -105,21 +106,25 @@ void StateMachine::Prep_NotStarted(bool b) {
 }
 
 bool StateMachine::Run_NotStarted(bool b) {
-	return b;
+	return b && pinchers->BottomProximityTriggered();
 }
 
 
 // First state functions
 
 void StateMachine::Prep_One(bool b) {
-
+	system->StartPIDPosition(0);
 }
 
 bool StateMachine::Run_One(bool b) {
 
+	system->MoveToStationaryPosition();
+
+	return system->done;
+
 }
 
-// Second state functions
+// Second state functions, not being used right now
 
 void StateMachine::Prep_Two(bool b) {
 
@@ -132,21 +137,27 @@ bool StateMachine::Run_Two(bool b) {
 // Third state functions
 
 void StateMachine::Prep_Three(bool b) {
-
+	system->StartPIDPosition(1);
 }
 
 bool StateMachine::Run_Three(bool b) {
 
+	system->MoveToHPLoadOne();
+
+	return system->done;
 }
 
 // Fourth state functions
 
 void StateMachine::Prep_Four(bool b) {
-
+	system->StartPIDPosition(2);
 }
 
 bool StateMachine::Run_Four(bool b) {
 
+	system->MoveToStationaryPosition();
+
+	return system->done;
 }
 
 // Fifth state functions
@@ -172,21 +183,23 @@ bool StateMachine::Run_Six(bool b) {
 // Seventh state functions
 
 void StateMachine::Prep_Seven(bool b) {
-
+	system->StartPIDPosition(3);
 }
 
 bool StateMachine::Run_Seven(bool b) {
+	system->MoveToHPLoadTwo();
 
+	return system->done;
 }
 
 // Eight state functions
 
 void StateMachine::Prep_Eight(bool b) {
-
+	system->StartPIDPosition(4);
 }
 
 bool StateMachine::Run_Eight(bool b) {
-
+	system->MoveToScoringPosition();
 }
 
 // Wait state functions
@@ -196,17 +209,19 @@ void StateMachine::Prep_Pause(bool b) {
 }
 
 bool StateMachine::Run_Pause(bool b) {
-
+	return pinchers->TopProximityTriggered(); // TODO: make sure this does what we want it to
 }
 
 // Pause state functions
 
 void StateMachine::Prep_Done(bool b) {
-
+	system->StartPIDPosition(4);
 }
 
 bool StateMachine::Run_Done(bool b) {
+	system->MoveToGround();
 
+	return system->done;
 }
 
 

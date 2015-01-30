@@ -155,7 +155,7 @@ void Robot::TeleopPeriodic() {
 	reversePinchers->Update();
 	SmartDashboard::PutNumber("SensorValue", pinchers->bottomSensor->GetValue());
 	if (runPinchers->ButtonPressed()){
-		if(pinchers->ProximityTriggered()){
+		if(pinchers->BottomProximityTriggered()){
 			SmartDashboard::PutBoolean("PinchersThingy", true);
 		}
 		else
