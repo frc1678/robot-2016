@@ -1,11 +1,15 @@
 #include "StateMachine.h"
 
+
+
 StateMachine::StateMachine(ElevatorSystem *s, PincherSystem *p) {
 	system = s;
 	pinchers = p;
 	isCurrentStateComplete = false;
 	stateIndex = 0;
 	currentState = ELEVATOR_STATE_TRANSITIONS[0];
+
+	stateLog = new TextLogger("CurrentStates.log");
 }
 
 void StateMachine::PeriodicUpdate(bool buttonInput) {
@@ -103,9 +107,11 @@ void StateMachine::DoRunActionForState(ElevatorState s, bool b) {
 
 void StateMachine::Prep_NotStarted(bool b) {
 
+	stateLog->TextLog("State: Prepped Not Started", "INFO", CODE_STAMP);
 }
 
 bool StateMachine::Run_NotStarted(bool b) {
+	stateLog->TextLog("State: Running Not Started", "INFO", CODE_STAMP);
 	return b && pinchers->BottomProximityTriggered();
 }
 
@@ -113,11 +119,12 @@ bool StateMachine::Run_NotStarted(bool b) {
 // First state functions
 
 void StateMachine::Prep_One(bool b) {
+	stateLog->TextLog("State: Prepped One", "INFO", CODE_STAMP);
 	system->StartPIDPosition(0);
 }
 
 bool StateMachine::Run_One(bool b) {
-
+	stateLog->TextLog("State: Running One", "INFO", CODE_STAMP);
 	system->MoveToStationaryPosition();
 
 	return system->done;
@@ -137,11 +144,13 @@ bool StateMachine::Run_Two(bool b) {
 // Third state functions
 
 void StateMachine::Prep_Three(bool b) {
+	stateLog->TextLog("State: Prepped Three", "INFO", CODE_STAMP);
 	system->StartPIDPosition(1);
 }
 
 bool StateMachine::Run_Three(bool b) {
 
+	stateLog->TextLog("State: Running Three", "INFO", CODE_STAMP);
 	system->MoveToHPLoadOne();
 
 	return system->done;
@@ -150,10 +159,13 @@ bool StateMachine::Run_Three(bool b) {
 // Fourth state functions
 
 void StateMachine::Prep_Four(bool b) {
+	stateLog->TextLog("State: Prepped Four", "INFO", CODE_STAMP);
 	system->StartPIDPosition(2);
 }
 
 bool StateMachine::Run_Four(bool b) {
+
+	stateLog->TextLog("State: Running Four", "INFO", CODE_STAMP);
 
 	system->MoveToStationaryPosition();
 
@@ -183,10 +195,13 @@ bool StateMachine::Run_Six(bool b) {
 // Seventh state functions
 
 void StateMachine::Prep_Seven(bool b) {
+	stateLog->TextLog("State: Prepped Seven", "INFO", CODE_STAMP);
 	system->StartPIDPosition(3);
 }
 
 bool StateMachine::Run_Seven(bool b) {
+	stateLog->TextLog("State: Running Seven", "INFO", CODE_STAMP);
+
 	system->MoveToHPLoadTwo();
 
 	return system->done;
@@ -195,30 +210,41 @@ bool StateMachine::Run_Seven(bool b) {
 // Eight state functions
 
 void StateMachine::Prep_Eight(bool b) {
+
+	stateLog->TextLog("State: Prepped Eight", "INFO", CODE_STAMP);
+
 	system->StartPIDPosition(4);
 }
 
 bool StateMachine::Run_Eight(bool b) {
+	stateLog->TextLog("State: Running Eight", "INFO", CODE_STAMP);
+
 	system->MoveToScoringPosition();
 }
 
 // Wait state functions
 
 void StateMachine::Prep_Pause(bool b) {
-
+	stateLog->TextLog("State: Prepped Pause", "INFO", CODE_STAMP);
 }
 
 bool StateMachine::Run_Pause(bool b) {
+	stateLog->TextLog("State: Running Pause", "INFO", CODE_STAMP);
+
 	return pinchers->TopProximityTriggered(); // TODO: make sure this does what we want it to
 }
 
 // Pause state functions
 
 void StateMachine::Prep_Done(bool b) {
+	stateLog->TextLog("State: Prepped Done", "INFO", CODE_STAMP);
+
 	system->StartPIDPosition(4);
 }
 
 bool StateMachine::Run_Done(bool b) {
+	stateLog->TextLog("State: Running Done", "INFO", CODE_STAMP);
+
 	system->MoveToGround();
 
 	return system->done;

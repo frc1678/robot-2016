@@ -44,7 +44,7 @@ void Robot::RobotInit() {
 	ElevLog = new CSVLogger("ElevatorLog","Encoder,MotorOutput,PIDConstant");
 
 	pinchers = new PincherSystem();
-	this->autoCode = new AutonomousRoutine(new Solenoid(1), new Solenoid(0), drivetrain, new ConstantsLoader("joystick.txt"), new Victor(6));
+
 }
 
 void Robot::DisabledInit() {

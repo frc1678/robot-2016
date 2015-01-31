@@ -1,5 +1,6 @@
 #include "ElevatorSystem.h"
 #include "PincherSystem.h"
+#include "logs/TextLogger.h"
 
 #ifndef STATEMACHINE_H
 #define STATEMACHINE_H
@@ -29,6 +30,8 @@ class StateMachine {
 	ElevatorState currentState;
 	int stateIndex;
 	bool isCurrentStateComplete;
+
+	TextLogger *stateLog;
 
 	void UpdateStateMachine(bool b);
 	void DoRunActionForState(ElevatorState s, bool b);
