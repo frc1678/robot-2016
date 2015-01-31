@@ -18,7 +18,7 @@ class AutonomousRoutine {
 	Victor* winchMotor;
 	Encoder* rightEncoder, *leftEncoder;
 public:
-	AutonomousRoutine(Solenoid* stingerPin, Solenoid* releaseTension, RobotDrive* drive,
+	AutonomousRoutine(Solenoid* stingerPin, Solenoid* hooks, RobotDrive* drive,
 			ConstantsLoader* autoKLoad, Victor* winch);
 	virtual ~AutonomousRoutine();
 	void start();

@@ -120,25 +120,22 @@ void PincherSystem::ReversePinchersSlow() {
 }
 
 
-void PincherSystem::HumanLoad(bool pressed, bool reverse) {
-	if (pressed && !reverse)
-	{
-		RunToteAccel();
-		if (BottomProximityTriggered()) {
-			rightRollers->Set(0.0);
-			leftRollers->Set(0.0);
-		}
-		else {
-			RunPinchers();
-		}
-		if(pinchersOpen){
-			ClosePinchers();
-		}
+void PincherSystem::HumanLoad() {
+
+	RunToteAccel();
+	if (BottomProximityTriggered()) {
+		rightRollers->Set(0.0);
+		leftRollers->Set(0.0);
 	}
-	else
-	{
-		StopPinchers();
+	else {
+		RunPinchers();
 	}
+	if(!pinchersOpen){
+		OpenPinchers();
+	}
+
+	StopPinchers();
+
 
 }
 

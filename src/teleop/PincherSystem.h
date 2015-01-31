@@ -47,7 +47,7 @@ public:
 	void ReversePinchers();
 	void ReversePinchersSlow();
 
-	void HumanLoad(bool pressed, bool reverse);
+	void HumanLoad();
 
 };
 
