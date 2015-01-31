@@ -66,8 +66,6 @@ class ElevatorSystem {
 
 public:
 
-	Encoder *encoderForElevator;
-
 	bool done = false;
 	Encoder *elvEncoder;
 

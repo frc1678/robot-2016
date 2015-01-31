@@ -17,6 +17,8 @@ class AutonomousRoutine {
 	Timer* autoTimer;
 	Victor* winchMotor;
 	Encoder* rightEncoder, *leftEncoder;
+	DigitalInput *winchHall;
+
 public:
 	AutonomousRoutine(Solenoid* stingerPin, Solenoid* hooks, RobotDrive* drive,
 			ConstantsLoader* autoKLoad, Victor* winch);
