@@ -70,10 +70,13 @@ void AutonomousRoutine::start() {
 	autoTimer->Reset();
 	autoTimer->Start();
 
+	SmartDashboard::PutBoolean("WinchOn", true);
+	SmartDashboard::PutNumber("Winch Time", foldTime);
 	while (autoTimer->Get() < foldTime / 1000.0) {
 		winchMotor->Set(1.0); // Run the winch
 		delayMillis(5);
 	}
+	SmartDashboard::PutBoolean("WinchOn", false);
 
 	winchMotor->Set(0.0); // Stop the winch
 	disengageHooks->Set(true);
@@ -83,5 +86,6 @@ void AutonomousRoutine::start() {
 	disengageHooks->Set(false);
 
 	SmartDashboard::PutBoolean("Run", false);
+	SmartDashboard::PutNumber("WinchNum", this->winchMotor->GetChannel());
 
 }
