@@ -1,11 +1,59 @@
 #include <teleop/ElevatorSystem.h>
+#define NULL 0
 
-ElevatorSystem::ElevatorSystem() {
+ElevatorSystem::ElevatorSystem(PositioningSystem* pos, RobotDrive* drive, Encoder* right, Encoder* left) {
+	elevTimer = new Timer();
+
+	this->drive = drive;
+	this->pos = pos;
+	this->leftEncoder = left;
+	this->rightEncoder = right;
+
 
 	//prefs = new Preferences();
 	//prefs->GetInstance();
 
 	//prefs->GetFloat("uKP", )
+	ConstantsLoader kLoad("ElevatorConstants.txt");
+	this->driveStraightPID = new ControlLoop(kLoad.getConstant("DRIVESTRAIGHTP"), kLoad.getConstant("DRIVESTRAIGHTI"), kLoad.getConstant("DRIVESTRAIGHTD"));
+	{
+		uKP1 = kLoad.getConstant("UKP1");
+		uKI1 = kLoad.getConstant("UKI1");
+		uKD1 = kLoad.getConstant("UKD1");
+		uKP3 = kLoad.getConstant("UKP3");
+		uKI3 = kLoad.getConstant("UKI3");
+		uKD3 = kLoad.getConstant("UKD3");
+		uKP4 = kLoad.getConstant("UKP4");
+		uKI4 = kLoad.getConstant("UKI4");
+		uKD4 = kLoad.getConstant("UKD4");
+		uKP7 = kLoad.getConstant("UKP7");
+		uKI7 = kLoad.getConstant("UKI7");
+		uKD7 = kLoad.getConstant("UKD7");
+		uKP8 = kLoad.getConstant("UKP8");
+		uKI8 = kLoad.getConstant("UKI8");
+		uKD8 = kLoad.getConstant("UKD8");
+
+		dKP1 = kLoad.getConstant("DKP1");
+		dKI1 = kLoad.getConstant("DKI1");
+		dKD1 = kLoad.getConstant("DKD1");
+		dKP3 = kLoad.getConstant("DKP3");
+		dKI3 = kLoad.getConstant("DKI3");
+		dKD3 = kLoad.getConstant("DKD3");
+		dKP4 = kLoad.getConstant("DKP4");
+		dKI4 = kLoad.getConstant("DKI4");
+		dKD4 = kLoad.getConstant("DKD4");
+		dKP7 = kLoad.getConstant("DKP7");
+		dKI7 = kLoad.getConstant("DKI7");
+		dKD7 = kLoad.getConstant("DKD7");
+		dKP8 = kLoad.getConstant("DKP8");
+		dKI8 = kLoad.getConstant("DKI8");
+		dKD8 = kLoad.getConstant("DKD8");
+	}
+
+	dropTime = kLoad.getConstant("DROPSTACKTIME", 1000);
+	driveClicks = kLoad.getConstant("DRIVESTACKCLICKS", 3000);
+	driveSpeed = kLoad.getConstant("DRIVESTACKSPEED", .3);
+
 	n = 0.0;
 	sum = 0.0;
 	offset = 0.0;
@@ -130,42 +178,37 @@ void ElevatorSystem::StartPIDPosition(int pos) {
 	int absPos = elvEncoder->Get() - AvgOffset();
 	int error = absPos - ABS_ELEVATOR_POSITIONS[pos];
 
-	if(pos == 0) {
+	if (pos == 0) {
 		if (error >= 0) {
 			pidLoop = upPIDOne;
 		} else {
 			pidLoop = downPIDOne;
 		}
-	}
-	else if(pos == 1){
+	} else if (pos == 1) {
 		if (error >= 0) {
 			pidLoop = upPIDThree;
 		} else {
 			pidLoop = downPIDThree;
 		}
-	}
-	else if(pos == 2) {
+	} else if (pos == 2) {
 		if (error >= 0) {
 			pidLoop = upPIDFour;
 		} else {
 			pidLoop = downPIDFour;
 		}
-	}
-	else if (pos == 3) {
+	} else if (pos == 3) {
 		if (error >= 0) {
 			pidLoop = upPIDSeven;
 		} else {
 			pidLoop = downPIDSeven;
 		}
-	}
-	else if(pos == 4) {
+	} else if (pos == 4) {
 		if (error >= 0) {
 			pidLoop = upPIDEight;
 		} else {
 			pidLoop = downPIDEight;
 		}
 	}
-
 
 	done = false;
 
@@ -218,7 +261,6 @@ void ElevatorSystem::MoveToAbsEncoderPosition(int encoderPos) {
 
 	elvMotor->Set(pidOut);
 
-
 	if (done) {
 		StopPID();
 	}
@@ -245,7 +287,6 @@ void ElevatorSystem::MoveToMagnet(int magnet) {
 
 	Logging(error, pidOut);
 
-
 	if (pidOut > 1) {
 		pidOut = 1;
 	}
@@ -254,8 +295,6 @@ void ElevatorSystem::MoveToMagnet(int magnet) {
 	}
 
 	elvMotor->Set(pidOut);
-
-
 
 	if (done) {
 		StopPID();
@@ -298,7 +337,6 @@ void ElevatorSystem::MoveToGround() {
 
 	Logging(error, pidOut);
 
-
 	if (pidOut > 1) {
 		pidOut = 1;
 	}
@@ -307,8 +345,6 @@ void ElevatorSystem::MoveToGround() {
 	}
 
 	elvMotor->Set(pidOut);
-
-
 
 	if (done) {
 		StopPID();
@@ -338,7 +374,6 @@ void ElevatorSystem::MoveToScoringPosition() {
 
 	Logging(error, pidOut);
 
-
 	if (pidOut > 1) {
 		pidOut = 1;
 	}
@@ -348,12 +383,9 @@ void ElevatorSystem::MoveToScoringPosition() {
 
 	elvMotor->Set(pidOut);
 
-
-
 	if (done) {
 		StopPID();
 	}
-
 
 }
 
@@ -378,7 +410,6 @@ void ElevatorSystem::MoveToHPLoadOne() {
 
 	Logging(error, pidOut);
 
-
 	if (pidOut > 1) {
 		pidOut = 1;
 	}
@@ -387,8 +418,6 @@ void ElevatorSystem::MoveToHPLoadOne() {
 	}
 
 	elvMotor->Set(pidOut);
-
-
 
 	if (done) {
 		StopPID();
@@ -417,7 +446,6 @@ void ElevatorSystem::MoveToHPLoadTwo() {
 
 	Logging(error, pidOut);
 
-
 	if (pidOut > 1) {
 		pidOut = 1;
 	}
@@ -426,8 +454,6 @@ void ElevatorSystem::MoveToHPLoadTwo() {
 	}
 
 	elvMotor->Set(pidOut);
-
-
 
 	if (done) {
 		StopPID();
@@ -456,7 +482,6 @@ void ElevatorSystem::MoveToStationaryPosition() {
 
 	Logging(error, pidOut);
 
-
 	if (pidOut > 1) {
 		pidOut = 1;
 	}
@@ -466,10 +491,33 @@ void ElevatorSystem::MoveToStationaryPosition() {
 
 	elvMotor->Set(pidOut);
 
-
-
 	if (done) {
 		StopPID();
 	}
 
+}
+
+void ElevatorSystem::DropStack() {
+	// TODO Drop the stack somehow
+	// Wait for a little bit
+	elevTimer->Reset();
+	elevTimer->Start();
+	while (elevTimer->Get() < dropTime / 1000.0) {
+		delayMillis(5);
+	}
+	// Back off with a PID loop to drive straight
+	elevTimer->Reset();
+	elevTimer->Start();
+	double angleAtStart = pos->getAngle();
+	while (min(rightEncoder->Get(), leftEncoder->Get()) < driveClicks)
+	{
+		double adjustment = driveStraightPID->CalibrateLoop(pos->getAngle() - angleAtStart);
+		double adjustedDriveL = 1, adjustedDriveR = 1;
+		adjustedDriveL = adjustedDriveL * (1 - adjustment);
+		adjustedDriveR = adjustedDriveR * (1 + adjustment);
+		double normalizer = 1.0 / (adjustedDriveL > adjustedDriveR ? adjustedDriveL : adjustedDriveR);
+		adjustedDriveL *= normalizer * driveSpeed;
+		adjustedDriveR *= normalizer * driveSpeed;
+		drive->TankDrive(driveSpeed, driveSpeed);
+	}
 }

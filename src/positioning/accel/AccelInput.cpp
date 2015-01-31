@@ -10,6 +10,7 @@
 AccelInput::AccelInput() {
 	accel = new BuiltInAccelerometer();
 	xPos=0; yPos=0;
+	xVel=0; yVel=0;
 	timer = new timeval();
 	gettimeofday(timer, 0);
 	prevTime=timer->tv_usec;
@@ -27,14 +28,14 @@ void AccelInput::update(double angle)
 	currentTime=timer->tv_usec;
 
 	//calculate the updated positions
-	double xPosRel = (currentTime-prevTime)*accel->GetX();
-	double yPosRel = (currentTime-prevTime)*accel->GetY();
+	double xVelRel = (currentTime-prevTime)*accel->GetX();
+	double yVelRel = (currentTime-prevTime)*accel->GetY();
 
 	prevTime=currentTime;
 
 	//do calculations
-	xPos+=xPosRel*cos(angle)-yPosRel*sin(angle);
-	yPos+=yPosRel*cos(angle)+xPosRel*sin(angle);
+	xPos+=xVelRel*cos(angle)-yVelRel*sin(angle);
+	yPos+=yVelRel*cos(angle)+xVelRel*sin(angle);
 }
 
 double AccelInput::getX()

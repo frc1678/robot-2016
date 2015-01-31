@@ -40,10 +40,10 @@ void Robot::RobotInit() {
 
 	//elevator = new ElevatorSystem();
 
-
 	ElevLog = new CSVLogger("ElevatorLog","Encoder,MotorOutput,PIDConstant");
 
 	pinchers = new PincherSystem();
+	this->pos = new PositioningSystem();
 
 }
 
@@ -103,7 +103,7 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-
+	pos->update();
 	// The dingus has left the building!
 	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain, straightButton->ButtonPressed());
 
@@ -179,10 +179,7 @@ void Robot::TeleopPeriodic() {
 	ElevLog->LogValue(std::to_string(elevator->elvEncoder->Get()));
 	ElevLog->LogValue(std::to_string(elevator->pidLoop->kp));
 
-
-
 	UpdateButtons();
-
 }
 
 void Robot::TestPeriodic() {
