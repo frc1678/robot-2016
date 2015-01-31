@@ -40,18 +40,10 @@ void Robot::RobotInit() {
 
 	//elevator = new ElevatorSystem();
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 4865bc4b49e7aed5baffb35a03e3034ff498973d
 	ElevLog = new CSVLogger("ElevatorLog","Encoder,MotorOutput,PIDConstant");
 
 	pinchers = new PincherSystem();
 	this->autoCode = new AutonomousRoutine(new Solenoid(1), new Solenoid(0), drivetrain, new ConstantsLoader("joystick.txt"), new Victor(6));
-<<<<<<< HEAD
-	pos = new PositioningSystem();
-=======
->>>>>>> 4865bc4b49e7aed5baffb35a03e3034ff498973d
 }
 
 void Robot::DisabledInit() {
@@ -186,13 +178,7 @@ void Robot::TeleopPeriodic() {
 	ElevLog->LogValue(std::to_string(elevator->elvEncoder->Get()));
 	ElevLog->LogValue(std::to_string(elevator->pidLoop->kp));
 
-<<<<<<< HEAD
-=======
-
-
 	UpdateButtons();
-
->>>>>>> 4865bc4b49e7aed5baffb35a03e3034ff498973d
 }
 
 void Robot::TestPeriodic() {
