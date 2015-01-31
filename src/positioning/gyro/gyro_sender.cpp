@@ -1,4 +1,4 @@
-#include "teleop/gyro/gyro_sender.h"
+#include "gyro_sender.h"
 
 #include <inttypes.h>
 

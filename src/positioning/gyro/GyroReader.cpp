@@ -5,7 +5,7 @@
  *      Author: Developer
  */
 
-#include <teleop/gyro/GyroReader.h>
+#include "GyroReader.h"
 
 GyroReader::GyroReader(GyroInterface* g) {
 	gyro = g;
