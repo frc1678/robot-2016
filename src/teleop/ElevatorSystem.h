@@ -63,7 +63,12 @@ class ElevatorSystem {
 	ControlLoop *upPID;
 	ControlLoop *downPID;
 
-
+	double dropTime, driveClicks, driveSpeed;
+	Timer* elevTimer;
+	RobotDrive* drive;
+	Encoder* rightEncoder, *leftEncoder;
+	ControlLoop* driveStraightPID;
+	PositioningSystem* pos;
 public:
 
 	bool done = false;
@@ -71,7 +76,7 @@ public:
 
 	ControlLoop *pidLoop;
 
-	ElevatorSystem ();
+	ElevatorSystem (PositioningSystem* pos, RobotDrive* drive, Encoder* right, Encoder* left);
 
 	~ElevatorSystem();
 
@@ -114,6 +119,7 @@ public:
 
 	void MoveToGround();
 
+	void DropStack();
 };
 
 #endif
