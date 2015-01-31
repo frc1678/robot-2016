@@ -78,7 +78,7 @@ public:
 
 	PincherSystem *pinchers;
 
-
+	CSVLogger *ElevLog;
 
 	//ConstantsLoader* kLoad;
 

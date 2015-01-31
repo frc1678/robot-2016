@@ -13,7 +13,7 @@ class ControlLoop {
 	float integral;
 	float lastErr;
 
-	float kp;
+	//flaot kp is public now
 	float ki;
 	float kd;
 
@@ -21,6 +21,7 @@ class ControlLoop {
 
 public:
 
+	float kp;// has to be public due to logging
 	ControlLoop (float inKP, float inKI, float inKD);
 
 	~ControlLoop ();

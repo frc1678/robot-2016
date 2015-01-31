@@ -60,16 +60,18 @@ class ElevatorSystem {
 	ControlLoop *upPIDEight;
 	ControlLoop *downPIDEight;
 
-
 	ControlLoop *upPID;
 	ControlLoop *downPID;
-	ControlLoop *pidLoop;
+
 
 public:
+
+	Encoder *encoderForElevator;
 
 	bool done = false;
 	Encoder *elvEncoder;
 
+	ControlLoop *pidLoop;
 
 	ElevatorSystem ();
 
