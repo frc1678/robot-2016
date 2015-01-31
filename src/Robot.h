@@ -25,6 +25,8 @@ using namespace std;
 #include "logs/TextLogger.h"
 #include <logs/SystemLogger.h>
 
+#include <positioning/PositioningSystem.h>
+
 using namespace std;
 
 
@@ -32,6 +34,8 @@ class Robot: public IterativeRobot
 {
 
 public:
+	PositioningSystem* pos;
+
 	AutonomousRoutine* autoCode;
 
 	LiveWindow *lw;
