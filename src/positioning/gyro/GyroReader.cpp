@@ -6,7 +6,7 @@
  */
 
 #include "GyroReader.h"
-
+#include "WPILib.h"
 GyroReader::GyroReader(GyroInterface* g) {
 	gyro = g;
 	angle=0;
@@ -26,10 +26,11 @@ double GyroReader::update()
 	currentTime=time.tv_usec;
 
 	//calculate the updated angle
-	angle += (currentTime-prevtime)*gyro->ExtractAngle(0/* we should figure out what this is */);
+	uint32_t reading = gyro->GetReading();
+	angle += (currentTime-prevtime)*gyro->ExtractAngle(reading);
 
 	prevtime=currentTime;
-
+	SmartDashboard::PutNumber("GyroAngle", angle);
 	return angle;
 }
 

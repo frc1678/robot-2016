@@ -16,6 +16,7 @@ protected:
 	timeval *timer;
 	BuiltInAccelerometer *accel;
 	double xPos, yPos;
+	double xVel, yVel;
 	double prevTime;
 public:
 	AccelInput();

@@ -44,6 +44,7 @@ void Robot::RobotInit() {
 
 	pinchers = new PincherSystem();
 	this->autoCode = new AutonomousRoutine(new Solenoid(1), new Solenoid(0), drivetrain, new ConstantsLoader("joystick.txt"), new Victor(6));
+	this->pos = new PositioningSystem();
 }
 
 void Robot::DisabledInit() {
@@ -102,7 +103,7 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-
+	pos->update();
 	// The dingus has left the building!
 	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain, straightButton->ButtonPressed());
 
