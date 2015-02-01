@@ -17,16 +17,19 @@ void Robot::RobotInit() {
 	//speedJoystick = new Joystick(1);
 	//swd = new SteeringWheelDrive(drivetrain, steeringWheel, speedJoystick, new ConstantsLoader("joystick.txt"));
 
-
 	shifting = new DoubleSolenoid(1, 2);
+	diskBreak = new Solenoid(6); // TODO: change this to the right number
+
+	rightEncoder = new Encoder(10, 11);
+	leftEncoder = new Encoder(12, 13);
 
 	drivetrain->SetSafetyEnabled(false);
 
-
 	pinchers = new PincherSystem();
 
-	this->autoCode = new AutonomousRoutine(new Solenoid(4), new Solenoid(5), drivetrain, new ConstantsLoader("joystick.txt"), new Victor(4));
-
+	this->autoCode = new AutonomousRoutine(new Solenoid(4), new Solenoid(5),
+			drivetrain, new ConstantsLoader("joystick.txt"), new Victor(4),
+			rightEncoder, leftEncoder);
 
 	gearUp = new CitrusButton(driverL, 2);
 	gearDown = new CitrusButton(driverR, 2);
@@ -37,52 +40,43 @@ void Robot::RobotInit() {
 	reversePinchers = new CitrusButton(driverL, 1);
 	//SteeringWheelChoice = new CitrusButton(speedJoystick, 5);
 
+	// Testing buttons for going to individual elevator positions: Probably more convenient for tunning.
+	currentElvTarget = -1;
+	e1 = new CitrusButton(driverR, 1);
+	e2 = new CitrusButton(driverR, 2);
+	e3 = new CitrusButton(driverR, 3);
+	e4 = new CitrusButton(driverR, 4);
+	e5 = new CitrusButton(driverR, 5);
+	e6 = new CitrusButton(driverR, 6);
+	e7 = new CitrusButton(driverR, 7);
 
-	//elevator = new ElevatorSystem();
+	elevator = new ElevatorSystem(pos, drivetrain, diskBreak, rightEncoder, leftEncoder);
 
-	ElevLog = new CSVLogger("ElevatorLog","Encoder,MotorOutput,PIDConstant");
+	elevatorStateMachine = new StateMachine(elevator, pinchers);
 
-	pinchers = new PincherSystem();
+	ElevLog = new CSVLogger("ElevatorLog", "Encoder,MotorOutput,PIDConstant");
+
 	this->pos = new PositioningSystem();
 
 }
 
 void Robot::DisabledInit() {
-
-	//	if (!elevator->FullyCalibrated()) {
-	//		elevator->Reset();
-	//	}
-
-	//	compressor->SetClosedLoopControl(false);
-	//
-	//	sinSol = new Solenoid(7);
-	//
-
-	//	if (!elevator->FullyCalibrated()) {
-	//		elevator->Reset();
-	//	}
+//
+	if (!elevator->FullyCalibrated()) {
+		elevator->Reset();
+	}
 
 }
 
 void Robot::DisabledPeriodic() {
+//
+	if (!elevator->FullyCalibrated()) {
+		elevator->Calibrate();
+	}
 
-	//	if (!elevator->FullyCalibrated()) {
-	//		elevator->Calibrate();
-	//	}
-
-	//	SmartDashboard::PutNumber("Counter",
-	//			static_cast<double>(elevator->elvEncoder->Get()));
-	//	SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
-
-	//	compressor->SetClosedLoopControl(false);
-	//
-	//	if (!elevator->FullyCalibrated()) {
-	//		elevator->Calibrate();
-	//	}
-	//
-	//	SmartDashboard::PutNumber("Counter",
-	//			static_cast<double>(elevator->elvEncoder->Get()));
-	//	SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
+	SmartDashboard::PutNumber("Counter",
+			static_cast<double>(elevator->elvEncoder->Get()));
+	SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
 
 }
 
@@ -95,17 +89,17 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
+	// TODO: Constants should get reloaded from the file on TeleopInit, so that we can use new constants without restarting robot code.
+	// However, this seems to break elevator system... fix this!
+//	elevator->ReloadConstants();
 
-	//	elevator->StartPIDMag(1);
-
-	//	triggered3 = false;
-	//	triggered4 = false;
+//	elevator->StartPIDPosition(4);
 }
 
 void Robot::TeleopPeriodic() {
-	pos->update();
+	//pos->update();
 	// The dingus has left the building!
-	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain, straightButton->ButtonPressed());
+//	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain, straightButton->ButtonPressed());
 
 	// The eagle has left the nest
 	//drivetrain->TankDrive(driverL->GetY(), driverR->GetY());
@@ -123,28 +117,11 @@ void Robot::TeleopPeriodic() {
 		pinchers->ClosePinchers();
 	}
 
-	//		if(mag3->ButtonClicked()) {
-	//			elevator->StartPIDMag(1);
-	//			triggered3 = true;
-	//		}
-	//		else if (mag4->ButtonClicked()) {
-	//			elevator->StartPIDMag(3);
-	//			triggered4 = true;
-	//		}
-	//
-	//		if (triggered3 && !elevator->AtPosition()) {
-	//			elevator->MoveToMagnet(1);
-	//		}
-	//
-	//		if (triggered4 && !elevator->AtPosition()) {
-	//			elevator->MoveToMagnet(3);
-	//		}
 
-	//	elevator->MoveToMagnet(1);
-	//
-	//	//		elv1->Set(driverL->GetY());
-	//	//		elv2->Set(driverL->GetY());
-	//
+
+	elevatorStateMachine->PeriodicUpdate(e1->ButtonClicked()); // TODO: Change this to use not a testing button as input to the state machine.
+
+
 	//	SmartDashboard::PutNumber("Counter", elevator->elvEncoder->Get());
 	//	SmartDashboard::PutNumber("Avg", elevator->AvgOffset());
 	//
@@ -158,32 +135,41 @@ void Robot::TeleopPeriodic() {
 		shifting->Set(DoubleSolenoid::Value::kOff);
 	}
 
+	SmartDashboard::PutNumber("LeftEncoder", leftEncoder->Get());
+	SmartDashboard::PutNumber("RightEncoder", rightEncoder->Get());
+	SmartDashboard::PutNumber("ElvEncoder", elevator->elvEncoder->Get());
 
-	SmartDashboard::PutNumber("SensorValue", pinchers->bottomSensor->GetValue());
+//	SmartDashboard::PutNumber("SensorValue", pinchers->bottomSensor->GetValue());
+//
+//
+//	if (runPinchers->ButtonPressed()){
+//		if(pinchers->BottomProximityTriggered()){
+//			SmartDashboard::PutBoolean("PinchersThingy", true);
+//		}
+//		else
+//		{
+//			SmartDashboard::PutBoolean("PinchersThingy", false);
+//		}
+//	}
+//
+//
+//	SmartDashboard::PutBoolean("Trigger", runPinchers->ButtonPressed());
+//
 
-
-	if (runPinchers->ButtonPressed()){
-		if(pinchers->BottomProximityTriggered()){
-			SmartDashboard::PutBoolean("PinchersThingy", true);
-		}
-		else
-		{
-			SmartDashboard::PutBoolean("PinchersThingy", false);
-		}
+//	elevator->MoveElevator(driverR->GetY());
+//	elevator->MoveTo_Five_PrepHPOne();
+//
+	if (elevator->elvEncoder != NULL && elevator->pidLoop != NULL) {
+		ElevLog->StartNewCycle();
+		ElevLog->LogValue(std::to_string(elevator->elvEncoder->Get()));
+		ElevLog->LogValue(std::to_string(elevator->pidLoop->kp));
 	}
-
-
-	SmartDashboard::PutBoolean("Trigger", runPinchers->ButtonPressed());
-
-	ElevLog->StartNewCycle();
-	ElevLog->LogValue(std::to_string(elevator->elvEncoder->Get()));
-	ElevLog->LogValue(std::to_string(elevator->pidLoop->kp));
 
 	UpdateButtons();
 }
 
 void Robot::TestPeriodic() {
-	//	lw->Run();
+
 }
 
 void Robot::UpdateButtons() {
@@ -195,6 +181,74 @@ void Robot::UpdateButtons() {
 	reversePinchers->Update();
 	straightButton->Update();
 
+	e1->Update();
+	e2->Update();
+	e3->Update();
+	e4->Update();
+	e5->Update();
+	e6->Update();
+	e7->Update();
+}
+
+// Call this in TeleopPeriodic() to do per-button testing of the elevator.
+void Robot::TestElevatorWithButtons() {
+	if (e1->ButtonClicked()) {
+		elevator->StopPID();
+		currentElvTarget = 0;
+		elevator->StartPIDPosition(currentElvTarget);
+	}
+	if (e2->ButtonClicked()) {
+		elevator->StopPID();
+		currentElvTarget = 1;
+		elevator->StartPIDPosition(currentElvTarget);
+	}
+	if (e3->ButtonClicked()) {
+		elevator->StopPID();
+		currentElvTarget = 2;
+		elevator->StartPIDPosition(currentElvTarget);
+	}
+	if (e4->ButtonClicked()) {
+		elevator->StopPID();
+		currentElvTarget = 3;
+		elevator->StartPIDPosition(currentElvTarget);
+	}
+	if (e5->ButtonClicked()) {
+		elevator->StopPID();
+		currentElvTarget = 4;
+		elevator->StartPIDPosition(currentElvTarget);
+	}
+	if (e6->ButtonClicked()) {
+		elevator->StopPID();
+		currentElvTarget = 5;
+		elevator->StartPIDPosition(currentElvTarget);
+	}
+	if (e7->ButtonClicked()) {
+		elevator->StopPID();
+		currentElvTarget = 6;
+		elevator->StartPIDPosition(currentElvTarget);
+	}
+
+	if (currentElvTarget == 0) {
+		elevator->MoveTo_One_PickupRC();
+	}
+	if (currentElvTarget == 1) {
+		elevator->MoveTo_Two_BackupFromStack();
+	}
+	if (currentElvTarget == 2) {
+		elevator->MoveTo_Three_PrepStackPickup();
+	}
+	if (currentElvTarget == 3) {
+		elevator->MoveTo_Four_HoldStack();
+	}
+	if (currentElvTarget == 4) {
+		elevator->MoveTo_Five_PrepHPOne();
+	}
+	if (currentElvTarget == 5) {
+		elevator->MoveTo_Six_HPWaitRC();
+	}
+	if (currentElvTarget == 6) {
+		elevator->MoveTo_Seven_HPWaitTote();
+	}
 }
 
 START_ROBOT_CLASS(Robot);

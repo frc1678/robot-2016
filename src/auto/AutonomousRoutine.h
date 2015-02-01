@@ -21,7 +21,7 @@ class AutonomousRoutine {
 
 public:
 	AutonomousRoutine(Solenoid* stingerPin, Solenoid* hooks, RobotDrive* drive,
-			ConstantsLoader* autoKLoad, Victor* winch);
+			ConstantsLoader* autoKLoad, Victor* winch, Encoder *right, Encoder *left);
 	virtual ~AutonomousRoutine();
 	void start();
 };

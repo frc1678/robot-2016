@@ -25,8 +25,8 @@ PincherSystem::PincherSystem() {
 	// NEEDS TO BE CONSISTANT THROUGHOUT
 	openPinchers = new DoubleSolenoid(0, 3);
 
-	bottomSensor = new AnalogInput(1);
-	topSensor = new AnalogInput(0);
+	bottomSensor = new AnalogInput(0);
+	topSensor = new AnalogInput(1);
 
 	pinchersOpen = false; // Could changed, depends on solenoid. However, this shouldn't change.
 	rightOpen = false;
@@ -61,6 +61,7 @@ void PincherSystem::TogglePinchers() {
 
 // http://wpilib.screenstepslive.com/s/4485/m/13810/l/241876-analog-inputs
 bool PincherSystem::BottomProximityTriggered() {
+
 	if (bottomSensor->GetValue() > 1300){ //TODO change based on how close we want the tote
 		return true;
 	}
@@ -70,6 +71,7 @@ bool PincherSystem::BottomProximityTriggered() {
 }
 
 bool PincherSystem::TopProximityTriggered() {
+
 	if (topSensor->GetValue() > 1300){ //TODO change based on how close we want the tote
 		return true;
 	}

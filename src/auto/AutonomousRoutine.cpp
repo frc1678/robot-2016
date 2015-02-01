@@ -9,7 +9,7 @@
 
 AutonomousRoutine::AutonomousRoutine(Solenoid* stingerPin,
 		Solenoid* disengage, RobotDrive* drive,
-		ConstantsLoader* autoKLoad, Victor* winch) {
+		ConstantsLoader* autoKLoad, Victor* winch, Encoder *right, Encoder *left) {
 	this->drive = drive;
 	this->releasePin = stingerPin;
 	this->disengageHooks = disengage;
@@ -21,8 +21,9 @@ AutonomousRoutine::AutonomousRoutine(Solenoid* stingerPin,
 	this->foldTime = autoKLoad->getConstant("KFOLDTIME", 5000);
 	autoTimer = new Timer();
 	this->winchMotor = winch;
-	rightEncoder = new Encoder(0, 1);
-	leftEncoder = new Encoder(2, 3);
+
+	rightEncoder = right;
+	leftEncoder = left;
 }
 
 AutonomousRoutine::~AutonomousRoutine() {

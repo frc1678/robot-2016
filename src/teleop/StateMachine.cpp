@@ -1,13 +1,11 @@
 #include "StateMachine.h"
 
-
-
 StateMachine::StateMachine(ElevatorSystem *s, PincherSystem *p) {
 	system = s;
 	pinchers = p;
-	isCurrentStateComplete = false;
-	stateIndex = 0;
-	currentState = ELEVATOR_STATE_TRANSITIONS[0];
+	isCurrentStateComplete = true;
+	stateIndex = sizeof(ELEVATOR_STATE_TRANSITIONS) / sizeof(ElevatorState) - 1;
+	currentState = ELEVATOR_STATE_TRANSITIONS[stateIndex];
 
 	stateLog = new TextLogger("CurrentStates.log");
 }
@@ -18,9 +16,10 @@ void StateMachine::PeriodicUpdate(bool buttonInput) {
 }
 
 void StateMachine::UpdateStateMachine(bool b) {
-	if(isCurrentStateComplete) {
+	if (isCurrentStateComplete) {
 		stateIndex++;
-		stateIndex = stateIndex % (sizeof(ELEVATOR_STATE_TRANSITIONS) / sizeof(ElevatorState));
+		stateIndex = stateIndex
+				% (sizeof(ELEVATOR_STATE_TRANSITIONS) / sizeof(ElevatorState));
 
 		currentState = ELEVATOR_STATE_TRANSITIONS[stateIndex];
 		DoPrepActionForState(currentState, b);
@@ -28,226 +27,163 @@ void StateMachine::UpdateStateMachine(bool b) {
 	}
 }
 
-
 void StateMachine::DoPrepActionForState(ElevatorState s, bool b) {
-	if(s == NotStarted) {
-		Prep_NotStarted(b);
-	}
-	else if(s == One) {
-		Prep_One(b);
-	}
-	else if(s == Two) {
-		Prep_Two(b);
-	}
-	else if(s == Three) {
-		Prep_Three(b);
-	}
-	else if(s == Four) {
-		Prep_Four(b);
-	}
-	else if(s == Five) {
-		Prep_Five(b);
-	}
-	else if(s == Six) {
-		Prep_Six(b);
-	}
-	else if(s == Seven) {
-		Prep_Seven(b);
-	}
-	else if(s == Eight) {
-		Prep_Eight(b);
-	}
-	else if(s == Done) {
-		Prep_Done(b);
-	}
-	else if(s == Pause) {
-		Prep_Pause(b);
+	if (s == One_PickupRC) {
+		Prep_One_PickupRC(b);
+	} else if (s == Two_BackUpFromStack) {
+		Prep_Two_BackUpFromStack(b);
+	} else if (s == Three_PrepStackPickup) {
+		Prep_Three_PrepStackPickup(b);
+	} else if (s == Four_HoldStack) {
+		Prep_Four_HoldStack(b);
+	} else if (s == Five_PrepHPOne) {
+		Prep_Five_PrepHPOne(b);
+	} else if (s == Six_HPWaitRC) {
+		Prep_Six_HPWaitRC(b);
+	} else if (s == Seven_HPWaitTote) {
+		Prep_Seven_HPWaitTote(b);
 	}
 }
 
 void StateMachine::DoRunActionForState(ElevatorState s, bool b) {
 	bool result;
 
-	if(s == NotStarted) {
-		result = Run_NotStarted(b);
-	}
-	else if(s == One) {
-		result = Run_Two(b);
-	}
-	else if(s == Two) {
-		result = Run_Three(b);
-	}
-	else if(s == Four) {
-		result = Run_Four(b);
-	}
-	else if(s == Five) {
-		result = Run_Five(b);
-	}
-	else if(s == Six) {
-		result = Run_Six(b);
-	}
-	else if(s == Seven) {
-		result = Run_Seven(b);
-	}
-	else if(s == Eight) {
-		result = Run_Eight(b);
-	}
-	else if(s == Done) {
-		result = Run_Done(b);
-	}
-	else if(s == Pause) {
-		result = Run_Pause(b);
+	if (s == One_PickupRC) {
+		result = Run_One_PickupRC(b);
+	} else if (s == Two_BackUpFromStack) {
+		result = Run_Two_BackUpFromStack(b);
+	} else if (s == Three_PrepStackPickup) {
+		result = Run_Three_PrepStackPickup(b);
+	} else if (s == Four_HoldStack) {
+		result = Run_Four_HoldStack(b);
+	} else if (s == Five_PrepHPOne) {
+		result = Run_Five_PrepHPOne(b);
+	} else if (s == Six_HPWaitRC) {
+		result = Run_Six_HPWaitRC(b);
+	} else if (s == Seven_HPWaitTote) {
+		result = Run_Seven_HPWaitTote(b);
 	}
 
 	isCurrentStateComplete = result;
 }
 
 
-// Not started functions
+// First state (Pickup RC) functions
 
-void StateMachine::Prep_NotStarted(bool b) {
-
-	stateLog->TextLog("State: Prepped Not Started", "INFO", CODE_STAMP);
-}
-
-bool StateMachine::Run_NotStarted(bool b) {
-	stateLog->TextLog("State: Running Not Started", "INFO", CODE_STAMP);
-	return b && pinchers->BottomProximityTriggered();
-}
-
-
-// First state functions
-
-void StateMachine::Prep_One(bool b) {
+void StateMachine::Prep_One_PickupRC(bool b) {
 	stateLog->TextLog("State: Prepped One", "INFO", CODE_STAMP);
+	system->SetDiskBreak(false);
 	system->StartPIDPosition(0);
 }
 
-bool StateMachine::Run_One(bool b) {
+bool StateMachine::Run_One_PickupRC(bool b) {
 	stateLog->TextLog("State: Running One", "INFO", CODE_STAMP);
-	system->MoveToStationaryPosition();
+	system->MoveTo_One_PickupRC();
+	// Here, we're externally sucking in the RC
 
-	return system->done;
-
-}
-
-// Second state functions, not being used right now
-
-void StateMachine::Prep_Two(bool b) {
+	return (pinchers->BottomProximityTriggered() && system->done);
 
 }
 
-bool StateMachine::Run_Two(bool b) {
+// Second state (Back up from stack) functions
 
-}
-
-// Third state functions
-
-void StateMachine::Prep_Three(bool b) {
-	stateLog->TextLog("State: Prepped Three", "INFO", CODE_STAMP);
+void StateMachine::Prep_Two_BackUpFromStack(bool b) {
+	stateLog->TextLog("State: Prepped Two", "INFO", CODE_STAMP);
+	system->SetDiskBreak(false);
 	system->StartPIDPosition(1);
 }
 
-bool StateMachine::Run_Three(bool b) {
+bool StateMachine::Run_Two_BackUpFromStack(bool b) {
+	stateLog->TextLog("State: Running Two", "INFO", CODE_STAMP);
+	system->MoveTo_Two_BackupFromStack();
 
-	stateLog->TextLog("State: Running Three", "INFO", CODE_STAMP);
-	system->MoveToHPLoadOne();
-
-	return system->done;
+	return b;
 }
 
-// Fourth state functions
+// Third state (Prep Stack Pickup) functions
 
-void StateMachine::Prep_Four(bool b) {
-	stateLog->TextLog("State: Prepped Four", "INFO", CODE_STAMP);
+void StateMachine::Prep_Three_PrepStackPickup(bool b) {
+	stateLog->TextLog("State: Prepped Three", "INFO", CODE_STAMP);
+	system->SetDiskBreak(false);
 	system->StartPIDPosition(2);
 }
 
-bool StateMachine::Run_Four(bool b) {
+bool StateMachine::Run_Three_PrepStackPickup(bool b) {
 
-	stateLog->TextLog("State: Running Four", "INFO", CODE_STAMP);
-
-	system->MoveToStationaryPosition();
+	stateLog->TextLog("State: Running Three", "INFO", CODE_STAMP);
+	system->MoveTo_Three_PrepStackPickup();
 
 	return system->done;
 }
 
-// Fifth state functions
+// Fourth state (Hold stack) functions
 
-void StateMachine::Prep_Five(bool b) {
-
-}
-
-bool StateMachine::Run_Five(bool b) {
-
-}
-
-// Sixth state functions
-
-void StateMachine::Prep_Six(bool b) {
-
-}
-
-bool StateMachine::Run_Six(bool b) {
-
-}
-
-// Seventh state functions
-
-void StateMachine::Prep_Seven(bool b) {
-	stateLog->TextLog("State: Prepped Seven", "INFO", CODE_STAMP);
+void StateMachine::Prep_Four_HoldStack(bool b) {
+	stateLog->TextLog("State: Prepped Four", "INFO", CODE_STAMP);
+	system->SetDiskBreak(false);
 	system->StartPIDPosition(3);
 }
 
-bool StateMachine::Run_Seven(bool b) {
+bool StateMachine::Run_Four_HoldStack(bool b) {
+	stateLog->TextLog("State: Running Four", "INFO", CODE_STAMP);
+	system->MoveTo_Four_HoldStack();
+
+	if (system->done) {
+		system->SetDiskBreak(true);
+	}
+
+	return b;
+}
+
+// Fifth state (Prep HP One) functions
+
+void StateMachine::Prep_Five_PrepHPOne(bool b) {
+	stateLog->TextLog("State: Prepped Five", "INFO", CODE_STAMP);
+	system->SetDiskBreak(false);
+	system->StartPIDPosition(4);
+}
+
+bool StateMachine::Run_Five_PrepHPOne(bool b) {
+	stateLog->TextLog("State: Running Five", "INFO", CODE_STAMP);
+	system->MoveTo_Five_PrepHPOne();
+
+	return system->done;
+}
+
+// Sixth state (HP Wait RC) functions
+
+void StateMachine::Prep_Six_HPWaitRC(bool b) {
+	stateLog->TextLog("State: Prepped Six", "INFO", CODE_STAMP);
+	system->SetDiskBreak(false);
+	system->StartPIDPosition(5);
+}
+
+bool StateMachine::Run_Six_HPWaitRC(bool b) {
+	stateLog->TextLog("State: Running Six", "INFO", CODE_STAMP);
+	system->MoveTo_Six_HPWaitRC();
+
+	if (system->done) {
+		system->SetDiskBreak(true);
+	}
+
+	return (pinchers->TopProximityTriggered() && system->done);
+}
+
+// Seventh state (HP Wait Tote) functions
+
+void StateMachine::Prep_Seven_HPWaitTote(bool b) {
+	stateLog->TextLog("State: Prepped Seven", "INFO", CODE_STAMP);
+	system->SetDiskBreak(false);
+	system->StartPIDPosition(6);
+}
+
+bool StateMachine::Run_Seven_HPWaitTote(bool b) {
 	stateLog->TextLog("State: Running Seven", "INFO", CODE_STAMP);
+	system->MoveTo_Seven_HPWaitTote();
 
-	system->MoveToHPLoadTwo();
+	if (system->done) {
+		system->SetDiskBreak(true);
+	}
 
-	return system->done;
+	return (pinchers->TopProximityTriggered() && system->done);
 }
-
-// Eight state functions
-
-void StateMachine::Prep_Eight(bool b) {
-
-	stateLog->TextLog("State: Prepped Eight", "INFO", CODE_STAMP);
-
-	system->StartPIDPosition(4);
-}
-
-bool StateMachine::Run_Eight(bool b) {
-	stateLog->TextLog("State: Running Eight", "INFO", CODE_STAMP);
-
-	system->MoveToScoringPosition();
-}
-
-// Wait state functions
-
-void StateMachine::Prep_Pause(bool b) {
-	stateLog->TextLog("State: Prepped Pause", "INFO", CODE_STAMP);
-}
-
-bool StateMachine::Run_Pause(bool b) {
-	stateLog->TextLog("State: Running Pause", "INFO", CODE_STAMP);
-
-	return pinchers->TopProximityTriggered(); // TODO: make sure this does what we want it to
-}
-
-// Pause state functions
-
-void StateMachine::Prep_Done(bool b) {
-	stateLog->TextLog("State: Prepped Done", "INFO", CODE_STAMP);
-
-	system->StartPIDPosition(4);
-}
-
-bool StateMachine::Run_Done(bool b) {
-	stateLog->TextLog("State: Running Done", "INFO", CODE_STAMP);
-
-	system->MoveToGround();
-
-	return system->done;
-}
-
-

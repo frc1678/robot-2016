@@ -10,6 +10,7 @@
 #include "teleop/ElevatorSystem.h"
 #include "teleop/Drivetrain.h"
 #include "teleop/PincherSystem.h"
+#include "teleop/StateMachine.h"
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -38,8 +39,6 @@ public:
 
 	AutonomousRoutine* autoCode;
 
-	LiveWindow *lw;
-
 	// Joysticks that Takumi drives with
 	Joystick *driverL;
 	Joystick *driverR;
@@ -51,6 +50,9 @@ public:
 
 	// For the driving of the robot
 	RobotDrive *drivetrain;
+	Encoder *rightEncoder;
+	Encoder *leftEncoder;
+
 	SteeringWheelDrive* swd;
 
 	// The elevator
@@ -59,6 +61,8 @@ public:
 	Compressor *compressor;
 
 	DoubleSolenoid *shifting;
+
+	Solenoid *diskBreak;
 
 
 	CitrusButton *gearUp;
@@ -84,6 +88,20 @@ public:
 
 	CSVLogger *ElevLog;
 
+
+	CitrusButton *e1;
+	CitrusButton *e2;
+	CitrusButton *e3;
+	CitrusButton *e4;
+	CitrusButton *e5;
+	CitrusButton *e6;
+	CitrusButton *e7;
+
+	int currentElvTarget;
+
+
+	StateMachine *elevatorStateMachine;
+
 	//ConstantsLoader* kLoad;
 
 	void RobotInit();
@@ -104,6 +122,7 @@ public:
 
 	void UpdateButtons();
 
+	void TestElevatorWithButtons();
 };
 
 #endif
