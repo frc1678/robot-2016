@@ -27,15 +27,19 @@ void AccelInput::update(double angle)
 	gettimeofday(timer, 0);
 	currentTime=timer->tv_usec;
 
-	//calculate the updated positions
-	double xVelRel = (currentTime-prevTime)*accel->GetX();
-	double yVelRel = (currentTime-prevTime)*accel->GetY();
+	//calculate the relative increase in velocity
+	double xVelStep = (currentTime-prevTime)*accel->GetX();
+	double yVelStep = (currentTime-prevTime)*accel->GetY();
+
+	//update velocity
+	xVel+=xVelStep*cos(angle)-yVelStep*sin(angle);
+	yVel+=yVelStep*cos(angle)+xVelStep*sin(angle);
+
+	//update position
+	xPos+=(currentTime-prevTime)*xVel;
+	yPos+=(currentTime-prevTime)*yVel;
 
 	prevTime=currentTime;
-
-	//do calculations
-	xPos+=xVelRel*cos(angle)-yVelRel*sin(angle);
-	yPos+=yVelRel*cos(angle)+xVelRel*sin(angle);
 }
 
 double AccelInput::getX()
