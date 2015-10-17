@@ -35,6 +35,9 @@ class Robot: public IterativeRobot
 {
 
 public:
+
+	int x;
+
 	PositioningSystem* pos;
 
 	AutonomousRoutine* autoCode;
@@ -99,6 +102,9 @@ public:
 
 	int currentElvTarget;
 
+	GyroReader *gyror;
+
+	GyroInterface *gyro;
 
 	StateMachine *elevatorStateMachine;
 

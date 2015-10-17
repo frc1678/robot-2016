@@ -23,6 +23,9 @@ void Robot::RobotInit() {
 	rightEncoder = new Encoder(10, 11);
 	leftEncoder = new Encoder(12, 13);
 
+	gyro = new GyroInterface();
+	gyror = new GyroReader(gyro);
+
 	drivetrain->SetSafetyEnabled(false);
 
 	pinchers = new PincherSystem();
@@ -164,6 +167,8 @@ void Robot::TeleopPeriodic() {
 		ElevLog->LogValue(std::to_string(elevator->elvEncoder->Get()));
 		ElevLog->LogValue(std::to_string(elevator->pidLoop->kp));
 	}
+
+	x = gyror->update();
 
 	UpdateButtons();
 }

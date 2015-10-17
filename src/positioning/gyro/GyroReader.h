@@ -13,6 +13,9 @@
 
 class GyroReader {
 public:
+
+	int counter;
+	double gyroPos;
 	GyroReader(GyroInterface* g);
 	double update();
 	double get();

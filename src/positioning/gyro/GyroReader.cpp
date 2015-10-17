@@ -12,6 +12,8 @@ GyroReader::GyroReader(GyroInterface* g) {
 	angle=0;
 	gettimeofday(&time, 0);
 	prevtime=time.tv_usec;
+	counter = 0;
+	gyroPos = 0.0;
 }
 
 GyroReader::~GyroReader() {
@@ -27,10 +29,18 @@ double GyroReader::update()
 
 	//calculate the updated angle
 	uint32_t reading = gyro->GetReading();
-	angle += (currentTime-prevtime)*gyro->ExtractAngle(reading);
+	gyroPos = gyro->ExtractAngle(reading);
+	if( gyroPos > 0.01 || gyroPos < -0.01){
+		angle += gyro->ExtractAngle(reading);
+	}
 
-	prevtime=currentTime;
-	SmartDashboard::PutNumber("GyroAngle", angle);
+	if((counter % 25) == 0){
+		prevtime=currentTime;
+		SmartDashboard::PutNumber("GyroAngleDelta", gyro->ExtractAngle(reading));
+		SmartDashboard::PutNumber("GyroAngle", angle);
+		SmartDashboard::PutNumber("Counter", counter);
+	}
+	counter++;
 	return angle;
 }
 
