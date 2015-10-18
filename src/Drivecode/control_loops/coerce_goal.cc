@@ -53,8 +53,9 @@ Eigen::Matrix<double, 2, 1> DoCoerceGoal(const aos::controls::HPolytope<2> &regi
       }
     }
     if (is_inside) *is_inside = false;
-    return (Eigen::Matrix<double, 2, 1>() << region_vertices(0, closest_i),
-            region_vertices(1, closest_i)).finished();
+//    return (Eigen::Matrix<double, 2, 1>() << region_vertices(0, closest_i),
+//            region_vertices(1, closest_i)).finished();
+    return region_vertices;
   }
 }
 

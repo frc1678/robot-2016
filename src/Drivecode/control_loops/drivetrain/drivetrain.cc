@@ -19,12 +19,12 @@
 // Also figure out how we send to WPILib?
 // I think the way we currently have it is our robot "has-a" thing.
 // Then we just replace everything with structs?
-#include "control_loops/state_feedback_loop.h"
-#include "control_loops/coerce_goal.h"
-#include "control_loops/drivetrain/polydrivetrain_cim_plant.h"
-#include "shifter_hall_effect.h"
-#include "control_loops/drivetrain/drivetrain_dog_motor_plant.h"
-#include "control_loops/drivetrain/polydrivetrain_dog_motor_plant.h"
+#include "Drivecode/control_loops/state_feedback_loop.h"
+#include "Drivecode/control_loops/coerce_goal.h"
+#include "Drivecode/control_loops/drivetrain/polydrivetrain_cim_plant.h"
+#include "Drivecode/shifter_hall_effect.h"
+#include "Drivecode/control_loops/drivetrain/drivetrain_dog_motor_plant.h"
+#include "Drivecode/control_loops/drivetrain/polydrivetrain_dog_motor_plant.h"
 
 // A consistent way to mark code that goes away without shifters.
 #define HAVE_SHIFTERS 1
@@ -620,7 +620,8 @@ class PolyDrivetrain {
           loop_->K() * (loop_->R() - loop_->X_hat()) + FF_volts;
 
       for (int i = 0; i < 2; i++) {
-        loop_->mutable_U()[i] = ::aos::Clip(U_ideal[i], -12, 12);
+    	 // TODO (jasmine) drop static cast
+        loop_->mutable_U()[i] = ::aos::Clip(static_cast<double>(U_ideal[i]), -12, 12);
       }
 
       // TODO(austin): Model this better.
@@ -638,13 +639,14 @@ class PolyDrivetrain {
       const double wiggle =
           (static_cast<double>((counter_ % 20) / 10) - 0.5) * 5.0;
 
+      //TODO(jasmine) figure out Eigen to drop static_casts
       loop_->mutable_U(0, 0) =
-          ::aos::Clip((R_left / Kv)(0, 0) + (IsInGear(left_gear_) ? 0 : wiggle),
+          ::aos::Clip(static_cast<double>((R_left / Kv)(0, 0) + (IsInGear(left_gear_) ? 0 : wiggle)),
                       -12.0, 12.0);
       loop_->mutable_U(1, 0) = ::aos::Clip(
-          (R_right / Kv)(0, 0) + (IsInGear(right_gear_) ? 0 : wiggle), -12.0,
+          static_cast<double>((R_right / Kv)(0, 0) + (IsInGear(right_gear_) ? 0 : wiggle)), -12.0,
           12.0);
-      loop_->mutable_U() *= 12.0 / ::aos::robot_state->voltage_battery;
+      loop_->mutable_U() *= 12.0 / 12.0;//::aos::robot_state->voltage_battery;
 #endif
     }
   }

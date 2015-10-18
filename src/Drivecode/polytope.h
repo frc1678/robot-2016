@@ -2,13 +2,8 @@
 #define AOS_COMMON_CONTROLS_POLYTOPE_H_
 
 #include "Eigen/Dense"
-#ifdef AOS_BAZEL
-#include "third_party/cddlib/lib-src/setoper.h"
-#include "third_party/cddlib/lib-src/cdd.h"
-#else
-#include "libcdd-094g-prefix/include/setoper.h"
-#include "libcdd-094g-prefix/include/cdd.h"
-#endif
+#include "cddlib/lib-src/setoper.h"
+#include "cddlib/lib-src/cdd.h"
 
 namespace aos {
 namespace controls {
@@ -80,7 +75,8 @@ Eigen::Matrix<double, number_of_dimensions, Eigen::Dynamic>
 
   // Copy the data over. TODO(aschuh): Is there a better way?  I hate copying...
   for (int i = 0; i < num_constraints(); ++i) {
-    dd_set_d(matrix->matrix[i][0], k_(i, 0));
+	  //TODO (jasmine): figure out the doubles.
+    dd_set_d(matrix->matrix[i][0], static_cast<double>(k_(i, 0)));
     for (int j = 0; j < ndim(); ++j) {
       dd_set_d(matrix->matrix[i][j + 1], -H_(i, j));
     }

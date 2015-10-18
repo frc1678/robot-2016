@@ -3,10 +3,10 @@
 
 #include "Eigen/Dense"
 
-#include "polytope.h"
+#include "Drivecode/polytope.h"
 //#include "aos/common/util/log_interval.h"
 
-#include "shifter_hall_effect.h"
+#include "Drivecode/shifter_hall_effect.h"
 
 namespace control_loops {
 
