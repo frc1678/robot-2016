@@ -9,7 +9,6 @@
 
 #include "Eigen/Dense"
 
-//#include "logging.h"
 #include "Drivecode/macros.h"
 
 // For everything in this file, "inputs" and "outputs" are defined from the

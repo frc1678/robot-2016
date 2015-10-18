@@ -9,8 +9,8 @@
 
 // You can _probably_ just copy these straight over?
 //#include "aos/common/logging/logging.h"
-#include "polytope.h" // brought this in.
-#include "commonmath.h" // brought this in.
+#include "Drivecode/polytope.h" // brought this in.
+#include "Drivecode/commonmath.h" // brought this in.
 // Basically: you need to figure out how to get rid of (replace) the message/logging.
 //#include "aos/common/logging/queue_logging.h"
 //#include "aos/common/logging/matrix_logging.h"
@@ -19,23 +19,18 @@
 // Also figure out how we send to WPILib?
 // I think the way we currently have it is our robot "has-a" thing.
 // Then we just replace everything with structs?
-#include "control_loops/state_feedback_loop.h" // logging and macros
+#include "control_loops/state_feedback_loop.h"
 #include "control_loops/coerce_goal.h"
 #include "control_loops/drivetrain/polydrivetrain_cim_plant.h"
-// The q's are the tricky part. Since 971 uses them to send messages between processes; how do we get this integrated with our robot?
-#include "control_loops/drivetrain/drivetrain.q"
-//#include "frc971/queues/gyro.q.h"
-#include "shifter_hall_effect.h" // moved over
-#include "control_loops/drivetrain/drivetrain_dog_motor_plant.h" // moved over
-#include "control_loops/drivetrain/polydrivetrain_dog_motor_plant.h" // moved over
-#include "drivetrain.q"
+#include "shifter_hall_effect.h"
+#include "control_loops/drivetrain/drivetrain_dog_motor_plant.h"
+#include "control_loops/drivetrain/polydrivetrain_dog_motor_plant.h"
 
 // A consistent way to mark code that goes away without shifters.
 #define HAVE_SHIFTERS 1
 
 //using ::frc971::sensors::gyro_reading;
 
-namespace bot3 {
 namespace control_loops {
 
 class DrivetrainMotorsSS {
@@ -215,14 +210,14 @@ class DrivetrainMotorsSS {
 
   bool OutputWasCapped() const { return loop_->output_was_capped(); }
 
-//  void SendMotors(DrivetrainQueue::Output *output) const {
-//    if (output) {
-//      output->left_voltage = loop_->U(0, 0);
-//      output->right_voltage = loop_->U(1, 0);
-//      output->left_high = false;
-//      output->right_high = false;
-//    }
-//  }
+  void SendMotors(DrivetrainOutput *output) const {
+    if (output) {
+      output->left_voltage = loop_->U(0, 0);
+      output->right_voltage = loop_->U(1, 0);
+      output->left_high = false;
+      output->right_high = false;
+    }
+  }
 
   const LimitedDrivetrainLoop &loop() const { return *loop_; }
 
@@ -350,12 +345,12 @@ class PolyDrivetrain {
     if (false) {
 
 
-      const double current_left_velocity;// =
-//          (position_.left_encoder - last_position_.left_encoder) /
-//          position_time_delta_;
-      const double current_right_velocity;// =
-//          (position_.right_encoder - last_position_.right_encoder) /
-//          position_time_delta_;
+      const double current_left_velocity =
+          (position_.left_encoder - last_position_.left_encoder) /
+          position_time_delta_;
+      const double current_right_velocity =
+          (position_.right_encoder - last_position_.right_encoder) /
+          position_time_delta_;
 
       Gear left_requested = ComputeGear(kDrivetrainLeftShifter,
                                         current_left_velocity, left_gear_);
@@ -401,7 +396,7 @@ class PolyDrivetrain {
       }
     }
   }
-  void SetPosition(const DrivetrainQueue::Position *position) {
+  void SetPosition(const DrivetrainPosition *position) {
     if (position == NULL) {
       ++stale_count_;
     } else {
@@ -533,18 +528,18 @@ class PolyDrivetrain {
     // calculations.
     ++counter_;
 #if HAVE_SHIFTERS
-    const double current_left_velocity;// =
-//        (position_.left_encoder - last_position_.left_encoder) /
-//        position_time_delta_;
-    const double current_right_velocity;// =
-//        (position_.right_encoder - last_position_.right_encoder) /
-//        position_time_delta_;
-    const double left_motor_speed;// =
-//        MotorSpeed(kDrivetrainLeftShifter, position_.left_shifter_position,
-//                   current_left_velocity);
-    const double right_motor_speed;// =
-//        MotorSpeed(kDrivetrainRightShifter, position_.right_shifter_position,
-//                   current_right_velocity);
+    const double current_left_velocity =
+        (position_.left_encoder - last_position_.left_encoder) /
+        position_time_delta_;
+    const double current_right_velocity =
+        (position_.right_encoder - last_position_.right_encoder) /
+        position_time_delta_;
+    const double left_motor_speed =
+        MotorSpeed(kDrivetrainLeftShifter, position_.left_shifter_position,
+                   current_left_velocity);
+    const double right_motor_speed =
+        MotorSpeed(kDrivetrainRightShifter, position_.right_shifter_position,
+                   current_right_velocity);
 
 // TODO(Jasmine): figure out logging.
 /*    {
@@ -654,7 +649,7 @@ class PolyDrivetrain {
     }
   }
 
-  void SendMotors(DrivetrainQueue::Output *output) {
+  void SendMotors(DrivetrainOutput *output) {
     if (output != NULL) {
       output->left_voltage = loop_->U(0, 0);
       output->right_voltage = loop_->U(1, 0);
@@ -676,8 +671,8 @@ class PolyDrivetrain {
   double position_time_delta_;
   Gear left_gear_;
   Gear right_gear_;
-//  DrivetrainQueue::Position last_position_;
-//  DrivetrainQueue::Position position_;
+  DrivetrainPosition last_position_;
+  DrivetrainPosition position_;
   int counter_;
 };
 constexpr double PolyDrivetrain::kStallTorque;
@@ -692,10 +687,10 @@ constexpr double PolyDrivetrain::kR;
 constexpr double PolyDrivetrain::Kv;
 constexpr double PolyDrivetrain::Kt;
 
-void DrivetrainLoop::RunIteration(const DrivetrainQueue::Goal *goal,
-                                  const DrivetrainQueue::Position *position,
-                                  DrivetrainQueue::Output *output,
-                                  DrivetrainQueue::Status *status) {
+void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
+                                  const DrivetrainPosition *position,
+                                  DrivetrainOutput *output,
+                                  DrivetrainStatus *status) {
   // TODO(aschuh): These should be members of the class.
   static DrivetrainMotorsSS dt_closedloop;
   static PolyDrivetrain dt_openloop;
@@ -781,4 +776,3 @@ void DrivetrainLoop::RunIteration(const DrivetrainQueue::Goal *goal,
 }
 
 }  // namespace control_loops
-}  // namespace bot3

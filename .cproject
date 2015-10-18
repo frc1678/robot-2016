@@ -53,6 +53,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<sourceEntries>
+						<entry excluding="src/Drivecode/controls/control_loop.h|src/Drivecode/control_loops/control_loops/voltage_cap|src/Drivecode/controls/polytope.h|src/Drivecode/controls/replay_control_loop.h|src/Drivecode/controls/control_loop_test.h|src/Drivecode/control_loops/drivetrain/drivetrain.q|src/Drivecode/control_loops/control_loops/state_feedback_loop_test.cc|src/Drivecode/control_loops/position_sensor_sim.cc|src/Drivecode/control_loops/drivetrain/drivetrain_lib_test.cc|src/Drivecode/control_loops/drivetrain/replay_drivetrain.cc|src/Drivecode/controls/control_loop.cc|src/Drivecode/control_loops/control_loops/position_sensor_sim_test.cc|src/Drivecode/control_loops/control_loops/position_sensor_sim.cc|src/Drivecode/controls/control_loop_test.cc" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
@@ -139,10 +142,10 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Debug">
+		<configuration configurationName="Simulate">
 			<resource resourceType="PROJECT" workspacePath="/Robot2"/>
 		</configuration>
-		<configuration configurationName="Simulate">
+		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/Robot2"/>
 		</configuration>
 	</storageModule>

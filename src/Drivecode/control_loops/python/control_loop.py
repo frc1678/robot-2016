@@ -93,7 +93,7 @@ class ControlLoopWriter(object):
       header_guard = self._HeaderGuard(header_file)
       fd.write('#ifndef %s\n'
                '#define %s\n\n' % (header_guard, header_guard))
-      fd.write('#include \"frc971/control_loops/state_feedback_loop.h\"\n')
+      fd.write('#include \"Drivecode/control_loops/state_feedback_loop.h\"\n')
       fd.write('\n')
 
       fd.write(self._namespace_start)
@@ -126,7 +126,7 @@ class ControlLoopWriter(object):
       fd.write('\n')
       fd.write('#include <vector>\n')
       fd.write('\n')
-      fd.write('#include \"frc971/control_loops/state_feedback_loop.h\"\n')
+      fd.write('#include \"Drivecode/control_loops/state_feedback_loop.h\"\n')
       fd.write('\n')
       fd.write(self._namespace_start)
       fd.write('\n\n')

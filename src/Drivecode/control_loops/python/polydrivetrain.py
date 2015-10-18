@@ -406,7 +406,7 @@ def main(argv):
                        vdrivetrain.drivetrain_low_high,
                        vdrivetrain.drivetrain_high_low,
                        vdrivetrain.drivetrain_high_high],
-        namespaces=['bot3', 'control_loops'])
+        namespaces=['control_loops'])
 
     if argv[1][-3:] == '.cc':
       dog_loop_writer.Write(argv[2], argv[1])
@@ -415,7 +415,7 @@ def main(argv):
 
     cim_writer = control_loop.ControlLoopWriter(
         "CIM", [drivetrain.CIM()],
-        namespaces=['bot3', 'control_loops'])
+        namespaces=['control_loops'])
 
     if argv[5][-3:] == '.cc':
       cim_writer.Write(argv[6], argv[5])

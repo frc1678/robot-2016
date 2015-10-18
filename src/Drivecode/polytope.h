@@ -6,8 +6,8 @@
 #include "third_party/cddlib/lib-src/setoper.h"
 #include "third_party/cddlib/lib-src/cdd.h"
 #else
-//#include "libcdd-094g-prefix/include/setoper.h"
-#//include "libcdd-094g-prefix/include/cdd.h"
+#include "libcdd-094g-prefix/include/setoper.h"
+#include "libcdd-094g-prefix/include/cdd.h"
 #endif
 
 namespace aos {
