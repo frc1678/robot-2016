@@ -149,7 +149,7 @@ class DrivetrainMotorsSS {
 
   DrivetrainMotorsSS()
       : loop_(new LimitedDrivetrainLoop(
-            ::bot3::control_loops::MakeDrivetrainLoop())),
+            ::control_loops::MakeDrivetrainLoop())),
         filtered_offset_(0.0),
         gyro_(0.0),
         left_goal_(0.0),
@@ -270,7 +270,7 @@ class PolyDrivetrain {
                  /*[*/ 12 /*]*/,
                  /*[*/ 12 /*]]*/).finished()),
         loop_(new StateFeedbackLoop<2, 2, 2>(
-            ::bot3::control_loops::MakeVelocityDrivetrainLoop())),
+            ::control_loops::MakeVelocityDrivetrainLoop())),
         ttrust_(1.1),
         wheel_(0.0),
         throttle_(0.0),

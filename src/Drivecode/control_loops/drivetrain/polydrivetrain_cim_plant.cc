@@ -1,10 +1,9 @@
-#include "polydrivetrain_cim_plant.h"
+#include "control_loops/control_loops/drivetrain/polydrivetrain_cim_plant.h"
 
 #include <vector>
 
 #include "Drivecode/control_loops/state_feedback_loop.h"
 
-namespace bot3 {
 namespace control_loops {
 
 StateFeedbackPlantCoefficients<1, 1, 1> MakeCIMPlantCoefficients() {
@@ -46,4 +45,3 @@ StateFeedbackLoop<1, 1, 1> MakeCIMLoop() {
 }
 
 }  // namespace control_loops
-}  // namespace bot3

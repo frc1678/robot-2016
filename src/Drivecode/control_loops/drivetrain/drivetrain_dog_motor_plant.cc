@@ -1,10 +1,9 @@
-#include "drivetrain_dog_motor_plant.h"
+#include "control_loops/control_loops/drivetrain/drivetrain_dog_motor_plant.h"
 
 #include <vector>
 
 #include "Drivecode/control_loops/state_feedback_loop.h"
 
-namespace bot3 {
 namespace control_loops {
 
 StateFeedbackPlantCoefficients<4, 2, 2> MakeDrivetrainLowLowPlantCoefficients() {
@@ -130,4 +129,3 @@ StateFeedbackLoop<4, 2, 2> MakeDrivetrainLoop() {
 }
 
 }  // namespace control_loops
-}  // namespace bot3
