@@ -1,5 +1,8 @@
 // With apologies for stripping out all the useful stuff.
 
+namespace aos {
+namespace controls {
+
 class ControlLoop {
  public:
   ControlLoop() {}
@@ -156,4 +159,6 @@ void Iterate() {
   LOG_STRUCT(DEBUG, "status", *status);
   status.Send();
 
+}
+}
 }

@@ -4,7 +4,7 @@
 
 int main() {
   ::aos::Init();
-  bot3::control_loops::DrivetrainLoop drivetrain;
+  DrivetrainLoop drivetrain;
   drivetrain.Run();
   ::aos::Cleanup();
   return 0;

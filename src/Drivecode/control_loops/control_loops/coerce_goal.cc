@@ -46,8 +46,7 @@ Eigen::Matrix<double, 2, 1> DoCoerceGoal(const aos::controls::HPolytope<2> &regi
     double min_distance = INFINITY;
     int closest_i = 0;
     for (int i = 0; i < region_vertices.outerSize(); i++) {
-      const double length = ::std::abs(
-          (perpendicular_vector.transpose() * (region_vertices.col(i)))(0, 0));
+      const double length = ::std::abs((perpendicular_vector.transpose() * (region_vertices.col(i)))(0, 0));
       if (i == 0 || length < min_distance) {
         closest_i = i;
         min_distance = length;

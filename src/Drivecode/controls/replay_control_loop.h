@@ -3,11 +3,11 @@
 
 #include <fcntl.h>
 
-#include "aos/common/queue.h"
-#include "controls/control_loop.h"
+//#include "aos/common/queue.h"
+#include "Drivecode/controls/control_loop.h"
 //#include "aos/linux_code/logging/log_replay.h"
 //#include "aos/common/logging/queue_logging.h"
-#include "aos/common/time.h"
+//#include "aos/common/time.h"
 #include "Drivecode/macros.h"
 
 namespace aos {
@@ -32,24 +32,24 @@ class ControlLoopReplayer {
     // Clear out any old messages which will confuse the code.
     loop_group_->status.FetchLatest();
     loop_group_->output.FetchLatest();
-
-    replayer_.AddDirectQueueSender("wpilib_interface.DSReader",
-                                   "joystick_state", ::aos::joystick_state);
-    replayer_.AddDirectQueueSender("wpilib_interface.SensorReader",
-                                   "robot_state", ::aos::robot_state);
-
-    replayer_.AddHandler(
-        process_name, "position",
-        ::std::function<void(const PositionType &)>(::std::ref(position_)));
-    replayer_.AddHandler(
-        process_name, "output",
-        ::std::function<void(const OutputType &)>(::std::ref(output_)));
-    replayer_.AddHandler(
-        process_name, "status",
-        ::std::function<void(const StatusType &)>(::std::ref(status_)));
-    // The timing of goal messages doesn't matter, and we don't need to look
-    // back at them after running the loop.
-    replayer_.AddDirectQueueSender(process_name, "goal", loop_group_->goal);
+// TODO Kelly did this queue stuff
+//    replayer_.AddDirectQueueSender("wpilib_interface.DSReader",
+//                                   "joystick_state", ::aos::joystick_state);
+//    replayer_.AddDirectQueueSender("wpilib_interface.SensorReader",
+//                                   "robot_state", ::aos::robot_state);
+//
+//    replayer_.AddHandler(
+//        process_name, "position",
+//        ::std::function<void(const PositionType &)>(::std::ref(position_)));
+//    replayer_.AddHandler(
+//        process_name, "output",
+//        ::std::function<void(const OutputType &)>(::std::ref(output_)));
+//    replayer_.AddHandler(
+//        process_name, "status",
+//        ::std::function<void(const StatusType &)>(::std::ref(status_)));
+//    // The timing of goal messages doesn't matter, and we don't need to look
+//    // back at them after running the loop.
+//    replayer_.AddDirectQueueSender(process_name, "goal", loop_group_->goal);
   }
 
   // Replays messages from a file.
@@ -66,7 +66,8 @@ class ControlLoopReplayer {
     CaptureMessage() {}
 
     void operator()(const S &message) {
-      CHECK(!have_new_message_);
+    //Kelly did this.. TODO:
+    	//CHECK(!have_new_message_);
       saved_message_ = message;
       have_new_message_ = true;
     }
@@ -96,26 +97,26 @@ class ControlLoopReplayer {
   // all fields zeroed, so we pick the first one and remember it to compare.
   CaptureMessage<OutputType> zero_output_;
 
-  ::aos::logging::linux_code::LogReplayer replayer_;
+ // ::aos::logging::linux_code::LogReplayer replayer_;
 };
 
 template <class T>
 void ControlLoopReplayer<T>::ProcessFile(const char *filename) {
   int fd;
   if (strcmp(filename, "-") == 0) {
-    fd = STDIN_FILENO;
+ //   fd = STDIN_FILENO;
   } else {
     fd = open(filename, O_RDONLY);
   }
   if (fd == -1) {
-    PLOG(FATAL, "couldn't open file '%s' for reading", filename);
+    //PLOG(FATAL, "couldn't open file '%s' for reading", filename);
   }
 
-  replayer_.OpenFile(fd);
+  //replayer_.OpenFile(fd);
   DoProcessFile();
-  replayer_.CloseCurrentFile();
+  //replayer_.CloseCurrentFile();
 
-  PCHECK(close(fd));
+  //PCHECK(close(fd));
 }
 
 template <class T>
@@ -124,19 +125,19 @@ void ControlLoopReplayer<T>::DoProcessFile() {
     // Dig through messages until we get a status, which indicates the end of
     // the control loop cycle.
     while (!status_.have_new_message()) {
-      if (replayer_.ProcessMessage()) return;
+    //  if (replayer_.ProcessMessage()) return;
     }
 
     // Send out the position message (after adjusting the time offset) so the
     // loop will run right now.
     if (!position_.have_new_message()) {
-      LOG(WARNING, "don't have a new position this cycle -> skipping\n");
+      //LOG(WARNING, "don't have a new position this cycle -> skipping\n");
       status_.clear_new_message();
       position_.clear_new_message();
       output_.clear_new_message();
       continue;
     }
-    ::aos::time::OffsetToNow(position_.saved_message().sent_time);
+//    ::aos::time::OffsetToNow(position_.saved_message().sent_time);
     {
       auto position_message = loop_group_->position.MakeMessage();
       *position_message = position_.saved_message();
@@ -149,8 +150,8 @@ void ControlLoopReplayer<T>::DoProcessFile() {
 
     // Point out if the status is different.
     if (!loop_group_->status->EqualsNoTime(status_.saved_message())) {
-      LOG_STRUCT(WARNING, "expected status", status_.saved_message());
-      LOG_STRUCT(WARNING, "got status", *loop_group_->status);
+  //    LOG_STRUCT(WARNING, "expected status", status_.saved_message());
+    //  LOG_STRUCT(WARNING, "got status", *loop_group_->status);
     }
     status_.clear_new_message();
 
@@ -159,17 +160,17 @@ void ControlLoopReplayer<T>::DoProcessFile() {
     bool loop_new_output = loop_group_->output.FetchLatest();
     if (output_.have_new_message()) {
       if (!loop_new_output) {
-        LOG_STRUCT(WARNING, "no output, expected", output_.saved_message());
+//        LOG_STRUCT(WARNING, "no output, expected", output_.saved_message());
       } else if (!loop_group_->output->EqualsNoTime(output_.saved_message())) {
-        LOG_STRUCT(WARNING, "expected output", output_.saved_message());
-        LOG_STRUCT(WARNING, "got output", *loop_group_->output);
+//        LOG_STRUCT(WARNING, "expected output", output_.saved_message());
+//        LOG_STRUCT(WARNING, "got output", *loop_group_->output);
       }
     } else if (loop_new_output) {
       if (zero_output_.have_new_message()) {
         if (!loop_group_->output->EqualsNoTime(zero_output_.saved_message())) {
-          LOG_STRUCT(WARNING, "expected null output",
-                     zero_output_.saved_message());
-          LOG_STRUCT(WARNING, "got output", *loop_group_->output);
+//          LOG_STRUCT(WARNING, "expected null output",
+//                     zero_output_.saved_message());
+//          LOG_STRUCT(WARNING, "got output", *loop_group_->output);
         }
       } else {
         zero_output_(*loop_group_->output);

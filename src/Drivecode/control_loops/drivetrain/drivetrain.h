@@ -3,12 +3,12 @@
 
 #include "Eigen/Dense"
 
-#include "controls/polytope.h"
-#include "controls/control_loop.h" // Made this stripped_control_loop.h
+#include "Drivecode/controls/polytope.h"
+#include "Drivecode/controls/control_loop.h" // Made this stripped_control_loop.h
 //#include "aos/common/util/log_interval.h"
 
 #include "shifter_hall_effect.h"
-//#include "bot3/control_loops/drivetrain/drivetrain.q.h"
+#include "Drivecode/control_loops/drivetrain/drivetrain.q"
 
 namespace bot3 {
 namespace control_loops {

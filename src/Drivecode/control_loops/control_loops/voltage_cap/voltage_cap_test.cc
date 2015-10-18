@@ -3,10 +3,10 @@
 #include "voltage_cap.h"
 
 #include "gtest/gtest.h"
-#include "queue.h"
-#include "queue_testutils.h"
+//#include "queue.h"
+//#include "queue_testutils.h"
 
-using ::aos::time::Time;
+//using ::aos::time::Time;
 
 namespace frc971 {
 namespace control_loops {
@@ -15,7 +15,7 @@ namespace testing {
 class VoltageTest : public ::testing::Test {
  protected:
   // Bring up and down Core.
-  ::aos::common::testing::GlobalCoreInstance my_core;
+  //::aos::common::testing::GlobalCoreInstance my_core;
 };
 
 // Tests that voltage inputs return the same if inside the box.

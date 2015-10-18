@@ -1,4 +1,4 @@
-#include "control_loops/drivetrain/drivetrain.h"
+#include "Drivecode/control_loops/drivetrain/drivetrain.h"
 
 #include <stdio.h>
 #include <sched.h>
@@ -23,14 +23,15 @@
 #include "control_loops/coerce_goal.h"
 #include "control_loops/drivetrain/polydrivetrain_cim_plant.h"
 // The q's are the tricky part. Since 971 uses them to send messages between processes; how do we get this integrated with our robot?
-//#include "bot3/control_loops/drivetrain/drivetrain.q.h"
+#include "control_loops/drivetrain/drivetrain.q"
 //#include "frc971/queues/gyro.q.h"
 #include "shifter_hall_effect.h" // moved over
 #include "control_loops/drivetrain/drivetrain_dog_motor_plant.h" // moved over
 #include "control_loops/drivetrain/polydrivetrain_dog_motor_plant.h" // moved over
+#include "drivetrain.q"
 
 // A consistent way to mark code that goes away without shifters.
-#define HAVE_SHIFTERS 0
+#define HAVE_SHIFTERS 1
 
 //using ::frc971::sensors::gyro_reading;
 
@@ -284,8 +285,8 @@ class PolyDrivetrain {
         left_gear_(LOW),
         right_gear_(LOW),
         counter_(0) {
-	  	last_position_.Zero();
-	  	position_.Zero();
+	  	//last_position_.Zero();
+	  	//position_.Zero();
   }
   static bool IsInGear(Gear gear) { return gear == LOW || gear == HIGH; }
 
@@ -348,11 +349,11 @@ class PolyDrivetrain {
     Gear requested_gear;
     if (false) {
 
-// TODO Queue stu
-//      const double current_left_velocity =
+
+      const double current_left_velocity;// =
 //          (position_.left_encoder - last_position_.left_encoder) /
 //          position_time_delta_;
-//      const double current_right_velocity =
+      const double current_right_velocity;// =
 //          (position_.right_encoder - last_position_.right_encoder) /
 //          position_time_delta_;
 
@@ -532,18 +533,18 @@ class PolyDrivetrain {
     // calculations.
     ++counter_;
 #if HAVE_SHIFTERS
-    const double current_left_velocity =
-        (position_.left_encoder - last_position_.left_encoder) /
-        position_time_delta_;
-    const double current_right_velocity =
-        (position_.right_encoder - last_position_.right_encoder) /
-        position_time_delta_;
-    const double left_motor_speed =
-        MotorSpeed(kDrivetrainLeftShifter, position_.left_shifter_position,
-                   current_left_velocity);
-    const double right_motor_speed =
-        MotorSpeed(kDrivetrainRightShifter, position_.right_shifter_position,
-                   current_right_velocity);
+    const double current_left_velocity;// =
+//        (position_.left_encoder - last_position_.left_encoder) /
+//        position_time_delta_;
+    const double current_right_velocity;// =
+//        (position_.right_encoder - last_position_.right_encoder) /
+//        position_time_delta_;
+    const double left_motor_speed;// =
+//        MotorSpeed(kDrivetrainLeftShifter, position_.left_shifter_position,
+//                   current_left_velocity);
+    const double right_motor_speed;// =
+//        MotorSpeed(kDrivetrainRightShifter, position_.right_shifter_position,
+//                   current_right_velocity);
 
 // TODO(Jasmine): figure out logging.
 /*    {

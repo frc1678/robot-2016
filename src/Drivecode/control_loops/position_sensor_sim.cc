@@ -5,8 +5,7 @@
 namespace bot3 {
 namespace control_loops {
 
-void PositionSensorSimulator::Initialize(double start_position,
-                                         double hall_effect_position) {
+void PositionSensorSimulator::Initialize(double start_position, double hall_effect_position) {
   hall_effect_position_ = hall_effect_position;
   start_position_ = start_position;
   cur_pos_ = start_position;

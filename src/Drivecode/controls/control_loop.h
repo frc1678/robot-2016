@@ -3,10 +3,10 @@
 
 #include <string.h>
 // TODO Jasmine I got nothing
-#include "aos/common/type_traits.h"
-#include "aos/common/queue.h"
-#include "aos/common/time.h"
-#include "aos/common/util/log_interval.h"
+//#include "aos/common/type_traits.h"
+//#include "aos/common/queue.h"
+//#include "aos/common/time.h"
+//#include "aos/common/util/log_interval.h"
 
 namespace aos {
 namespace controls {
@@ -37,7 +37,8 @@ class SerializableControlLoop : public Runnable {
 };
 
 // Control loops run this often, "starting" at time 0.
-constexpr time::Time kLoopFrequency = time::Time::InSeconds(0.005);
+// TODO kelly did this
+//constexpr time::Time kLoopFrequency = time::Time::InSeconds(0.005);
 
 // Provides helper methods to assist in writing control loops.
 // This template expects to be constructed with a queue group as an argument
@@ -105,12 +106,13 @@ class ControlLoop : public SerializableControlLoop {
     zero_goal.Zero();
     zero_goal.Serialize(buffer);
   }
+// TODO Kelly did this
 
-  void Deserialize(const char *buffer) override {
-    ScopedMessagePtr<GoalType> new_msg = control_loop_->goal.MakeMessage();
-    new_msg->Deserialize(buffer);
-    new_msg.Send();
-  }
+//  void Deserialize(const char *buffer) override {
+//    ScopedMessagePtr<GoalType> new_msg = control_loop_->goal.MakeMessage();
+//    new_msg->Deserialize(buffer);
+//    new_msg.Send();
+//  }
 
   uint32_t UniqueID() override { return control_loop_->hash(); }
 
@@ -133,14 +135,15 @@ class ControlLoop : public SerializableControlLoop {
   const T *queue_group() const { return control_loop_; }
 
  private:
-  static constexpr ::aos::time::Time kStaleLogInterval =
-      ::aos::time::Time::InSeconds(0.1);
-  // The amount of time after the last PWM pulse we consider motors enabled for.
-  // 100ms is the result of using an oscilliscope to look at the input and
-  // output of a Talon. The Info Sheet also lists 100ms for Talon SR, Talon SRX,
-  // and Victor SP.
-  static constexpr ::aos::time::Time kPwmDisableTime =
-      ::aos::time::Time::InMS(100);
+  //TODO Kelly did this
+//  static constexpr ::aos::time::Time kStaleLogInterval =
+//      ::aos::time::Time::InSeconds(0.1);
+//  // The amount of time after the last PWM pulse we consider motors enabled for.
+//  // 100ms is the result of using an oscilliscope to look at the input and
+//  // output of a Talon. The Info Sheet also lists 100ms for Talon SR, Talon SRX,
+//  // and Victor SP.
+//  static constexpr ::aos::time::Time kPwmDisableTime =
+//      ::aos::time::Time::InMS(100);
 
   // Maximum age of driver station packets before the loop will be disabled.
   static const int kDSPacketTimeoutMs = 500;
@@ -150,27 +153,27 @@ class ControlLoop : public SerializableControlLoop {
 
   bool reset_ = false;
   int32_t sensor_reader_pid_ = 0;
-
-  ::aos::time::Time last_pwm_sent_{0, 0};
-
-  typedef ::aos::util::SimpleLogInterval SimpleLogInterval;
-  SimpleLogInterval no_driver_station_ =
-      SimpleLogInterval(kStaleLogInterval, ERROR,
-                        "no driver station packet");
-  SimpleLogInterval driver_station_old_ =
-      SimpleLogInterval(kStaleLogInterval, ERROR,
-                        "driver station packet is too old");
-  SimpleLogInterval no_sensor_state_ =
-      SimpleLogInterval(kStaleLogInterval, ERROR, "no sensor state");
-  SimpleLogInterval motors_off_log_ =
-      SimpleLogInterval(kStaleLogInterval, WARNING, "motors disabled");
-  SimpleLogInterval no_goal_ =
-      SimpleLogInterval(kStaleLogInterval, ERROR, "no goal");
+// TODO Kelly did this
+//  ::aos::time::Time last_pwm_sent_{0, 0};
+//
+//  typedef ::aos::util::SimpleLogInterval SimpleLogInterval;
+//  SimpleLogInterval no_driver_station_ =
+//      SimpleLogInterval(kStaleLogInterval, ERROR,
+//                        "no driver station packet");
+//  SimpleLogInterval driver_station_old_ =
+//      SimpleLogInterval(kStaleLogInterval, ERROR,
+//                        "driver station packet is too old");
+//  SimpleLogInterval no_sensor_state_ =
+//      SimpleLogInterval(kStaleLogInterval, ERROR, "no sensor state");
+//  SimpleLogInterval motors_off_log_ =
+//      SimpleLogInterval(kStaleLogInterval, WARNING, "motors disabled");
+//  SimpleLogInterval no_goal_ =
+//      SimpleLogInterval(kStaleLogInterval, ERROR, "no goal");
 };
 
 }  // namespace controls
 }  // namespace aos
 
-#include "aos/common/controls/control_loop-tmpl.h"  // IWYU pragma: export
+#include "Drivecode/controls/control_loop-tmpl.h"  // IWYU pragma: export
 
 #endif

@@ -3,8 +3,9 @@
 
 #include "gtest/gtest.h"
 
-#include "aos/common/queue_testutils.h"
-#include "aos/common/time.h"
+// TODO Time stuff needs to get resolved big time
+//#include "aos/common/queue_testutils.h"
+//#include "aos/common/time.h"
 
 namespace aos {
 namespace testing {
@@ -26,7 +27,7 @@ class ControlLoopTest : public ::testing::Test {
   void SendMessages(bool enabled);
   // Ticks time for a single control loop cycle.
   void TickTime() {
-    ::aos::time::Time::SetMockTime(current_time_ += kTimeTick);
+ //   ::aos::time::Time::SetMockTime(current_time_ += kTimeTick);
   }
 
   // Simulates everything that happens during 1 loop time step.
@@ -42,17 +43,18 @@ class ControlLoopTest : public ::testing::Test {
   }
 
  private:
-  static constexpr ::aos::time::Time kTimeTick = ::aos::time::Time::InUS(5000);
-  static constexpr ::aos::time::Time kDSPacketTime =
-      ::aos::time::Time::InMS(20);
+//  static constexpr ::aos::time::Time kTimeTick = ::aos::time::Time::InUS(5000);
+//  static constexpr ::aos::time::Time kDSPacketTime =
+//      ::aos::time::Time::InMS(20);
 
   uint16_t team_id_ = 971;
   int32_t reader_pid_ = 1;
 
-  ::aos::time::Time last_ds_time_ = ::aos::time::Time::InSeconds(0);
-  ::aos::time::Time current_time_ = ::aos::time::Time::InSeconds(0);
 
-  ::aos::common::testing::GlobalCoreInstance my_core;
+//  ::aos::time::Time last_ds_time_ = ::aos::time::Time::InSeconds(0);
+//  ::aos::time::Time current_time_ = ::aos::time::Time::InSeconds(0);
+//
+//  ::aos::common::testing::GlobalCoreInstance my_core;
 };
 
 }  // namespace testing
