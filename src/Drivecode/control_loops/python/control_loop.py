@@ -49,7 +49,8 @@ class ControlLoopWriter(object):
     self._constant_list.append(constant)
 
   def _TopDirectory(self):
-    return self._namespaces[0]
+    #return self._namespaces[0]
+    return "Drivecode"
 
   def _HeaderGuard(self, header_file):
     return (self._TopDirectory().upper() + '_CONTROL_LOOPS_' +
