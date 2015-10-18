@@ -1,3 +1,4 @@
+#include <Drivecode/control_loops/control_loops/control_loops.q.h>
 #include <unistd.h>
 
 #include <memory>
@@ -5,7 +6,6 @@
 #include <random>
 
 #include "gtest/gtest.h"
-#include "control_loops.q"
 #include "position_sensor_sim.h"
 #include "aos/common/die.h"
 

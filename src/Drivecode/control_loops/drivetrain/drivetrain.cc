@@ -1,4 +1,4 @@
-#include "bot3/control_loops/drivetrain/drivetrain.h"
+#include "control_loops/drivetrain/drivetrain.h"
 
 #include <stdio.h>
 #include <sched.h>
@@ -9,8 +9,8 @@
 
 // You can _probably_ just copy these straight over?
 //#include "aos/common/logging/logging.h"
-#include "aos/common/controls/polytope.h" // brought this in.
-#include "aos/common/commonmath.h" // brought this in.
+#include "polytope.h" // brought this in.
+#include "commonmath.h" // brought this in.
 // Basically: you need to figure out how to get rid of (replace) the message/logging.
 //#include "aos/common/logging/queue_logging.h"
 //#include "aos/common/logging/matrix_logging.h"
@@ -19,15 +19,15 @@
 // Also figure out how we send to WPILib?
 // I think the way we currently have it is our robot "has-a" thing.
 // Then we just replace everything with structs?
-#include "frc971/control_loops/state_feedback_loop.h" // logging and macros
-#include "frc971/control_loops/coerce_goal.h"
-#include "bot3/control_loops/drivetrain/polydrivetrain_cim_plant.h"
+#include "control_loops/state_feedback_loop.h" // logging and macros
+#include "control_loops/coerce_goal.h"
+#include "control_loops/drivetrain/polydrivetrain_cim_plant.h"
 // The q's are the tricky part. Since 971 uses them to send messages between processes; how do we get this integrated with our robot?
 //#include "bot3/control_loops/drivetrain/drivetrain.q.h"
 //#include "frc971/queues/gyro.q.h"
-#include "frc971/shifter_hall_effect.h" // moved over
-#include "bot3/control_loops/drivetrain/drivetrain_dog_motor_plant.h" // moved over
-#include "bot3/control_loops/drivetrain/polydrivetrain_dog_motor_plant.h" // moved over
+#include "shifter_hall_effect.h" // moved over
+#include "control_loops/drivetrain/drivetrain_dog_motor_plant.h" // moved over
+#include "control_loops/drivetrain/polydrivetrain_dog_motor_plant.h" // moved over
 
 // A consistent way to mark code that goes away without shifters.
 #define HAVE_SHIFTERS 0
@@ -214,14 +214,14 @@ class DrivetrainMotorsSS {
 
   bool OutputWasCapped() const { return loop_->output_was_capped(); }
 
-  void SendMotors(DrivetrainQueue::Output *output) const {
-    if (output) {
-      output->left_voltage = loop_->U(0, 0);
-      output->right_voltage = loop_->U(1, 0);
-      output->left_high = false;
-      output->right_high = false;
-    }
-  }
+//  void SendMotors(DrivetrainQueue::Output *output) const {
+//    if (output) {
+//      output->left_voltage = loop_->U(0, 0);
+//      output->right_voltage = loop_->U(1, 0);
+//      output->left_high = false;
+//      output->right_high = false;
+//    }
+//  }
 
   const LimitedDrivetrainLoop &loop() const { return *loop_; }
 
@@ -284,8 +284,8 @@ class PolyDrivetrain {
         left_gear_(LOW),
         right_gear_(LOW),
         counter_(0) {
-    last_position_.Zero();
-    position_.Zero();
+	  	last_position_.Zero();
+	  	position_.Zero();
   }
   static bool IsInGear(Gear gear) { return gear == LOW || gear == HIGH; }
 
@@ -347,12 +347,14 @@ class PolyDrivetrain {
     // TODO(austin): Fix the upshift logic to include states.
     Gear requested_gear;
     if (false) {
-      const double current_left_velocity =
-          (position_.left_encoder - last_position_.left_encoder) /
-          position_time_delta_;
-      const double current_right_velocity =
-          (position_.right_encoder - last_position_.right_encoder) /
-          position_time_delta_;
+
+// TODO Queue stu
+//      const double current_left_velocity =
+//          (position_.left_encoder - last_position_.left_encoder) /
+//          position_time_delta_;
+//      const double current_right_velocity =
+//          (position_.right_encoder - last_position_.right_encoder) /
+//          position_time_delta_;
 
       Gear left_requested = ComputeGear(kDrivetrainLeftShifter,
                                         current_left_velocity, left_gear_);
@@ -673,8 +675,8 @@ class PolyDrivetrain {
   double position_time_delta_;
   Gear left_gear_;
   Gear right_gear_;
-  DrivetrainQueue::Position last_position_;
-  DrivetrainQueue::Position position_;
+//  DrivetrainQueue::Position last_position_;
+//  DrivetrainQueue::Position position_;
   int counter_;
 };
 constexpr double PolyDrivetrain::kStallTorque;

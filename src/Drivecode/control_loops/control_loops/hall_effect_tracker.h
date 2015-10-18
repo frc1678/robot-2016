@@ -1,9 +1,9 @@
 #ifndef FRC971_CONTROL_LOOPS_HALL_EFFECT_H_
 #define FRC971_CONTROL_LOOPS_HALL_EFFECT_H_
 
+#include <Drivecode/control_loops/control_loops/control_loops.q.h>
 #include <stdint.h>
 
-#include "control_loops/control_loops.q"
 
 namespace frc971 {
 

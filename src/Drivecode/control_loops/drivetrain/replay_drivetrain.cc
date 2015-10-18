@@ -1,7 +1,7 @@
-#include "aos/common/controls/replay_control_loop.h"
-#include "aos/linux_code/init.h"
+#include "controls/replay_control_loop.h"
+#include "linux_code/init.h"
 
-#include "bot3/control_loops/drivetrain/drivetrain.q.h"
+#include "control_loops/drivetrain/drivetrain.q"
 
 // Reads one or more log files and sends out all the queue messages (in the
 // correct order and at the correct time) to feed a "live" drivetrain process.

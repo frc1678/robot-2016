@@ -3,8 +3,8 @@
 
 #include "Eigen/Dense"
 
-#include "aos/common/controls/polytope.h"
-#include "aos/common/controls/control_loop.h" // Made this stripped_control_loop.h
+#include "controls/polytope.h"
+#include "controls/control_loop.h" // Made this stripped_control_loop.h
 //#include "aos/common/util/log_interval.h"
 
 #include "shifter_hall_effect.h"
@@ -41,11 +41,11 @@ class DrivetrainLoop
  protected:
   // Executes one cycle of the control loop.
   virtual void RunIteration(
-      const control_loops::DrivetrainQueue::Goal *goal,
-      const control_loops::DrivetrainQueue::Position *position,
-      control_loops::DrivetrainQueue::Output *output,
-      control_loops::DrivetrainQueue::Status *status);
-
+//      const control_loops::DrivetrainQueue::Goal *goal,
+//      const control_loops::DrivetrainQueue::Position *position,
+//      control_loops::DrivetrainQueue::Output *output,
+//      control_loops::DrivetrainQueue::Status *status);
+);
 // From 971's logging.
 //  typedef ::aos::util::SimpleLogInterval SimpleLogInterval;
 //  SimpleLogInterval no_position_ = SimpleLogInterval(

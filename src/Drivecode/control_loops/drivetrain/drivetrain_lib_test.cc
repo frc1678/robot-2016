@@ -5,15 +5,15 @@
 #include "gtest/gtest.h"
 #include "aos/common/network/team_number.h"
 #include "aos/common/queue_testutils.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/controls/control_loop_test.h"
+#include "polytope.h"
+#include "control_loop_test.h"
 
-#include "bot3/control_loops/drivetrain/drivetrain.q.h"
-#include "bot3/control_loops/drivetrain/drivetrain.h"
-#include "frc971/control_loops/state_feedback_loop.h"
-#include "frc971/control_loops/coerce_goal.h"
-#include "bot3/control_loops/drivetrain/drivetrain_dog_motor_plant.h"
-#include "frc971/queues/gyro.q.h"
+#include "drivetrain.q"
+#include "control_loops/drivetrain/drivetrain.h"
+#include "control_loops/state_feedback_loop.h"
+#include "control_loops/coerce_goal.h"
+#include "control_loops/drivetrain/drivetrain_dog_motor_plant.h"
+//#include "queues/gyro.q.h" TODO queues and gyro????
 
 namespace bot3 {
 namespace control_loops {
@@ -36,6 +36,7 @@ class TeamNumberEnvironment : public ::testing::Environment {
   virtual void SetUp() { aos::network::OverrideTeamNumber(971); }
 };
 
+// TODO Jasmine idk what this is
 ::testing::Environment* const team_number_env =
     ::testing::AddGlobalTestEnvironment(new TeamNumberEnvironment);
 

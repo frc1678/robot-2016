@@ -1,4 +1,4 @@
-#include "bot3/control_loops/drivetrain/drivetrain.h"
+#include "control_loops/drivetrain/drivetrain.h"
 
 #include "aos/linux_code/init.h"
 

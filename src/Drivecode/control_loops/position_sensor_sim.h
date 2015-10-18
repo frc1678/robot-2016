@@ -1,7 +1,8 @@
 #ifndef BOT3_CONTROL_LOOPS_POSITION_SENSOR_SIM_H_
 #define BOT3_CONTROL_LOOPS_POSITION_SENSOR_SIM_H_
 
-#include "bot3/control_loops/elevator/elevator.q.h"
+// TODO Kelly did this
+//#include "bot3/control_loops/elevator/elevator.q.h"
 
 namespace bot3 {
 namespace control_loops {
@@ -29,7 +30,8 @@ class PositionSensorSimulator {
   // values: The target structure will be populated with simulated sensor
   //         readings. The readings will be in SI units. For example the units
   //         can be given in radians, meters, etc.
-  void GetSensorValues(control_loops::ElevatorQueue::Position* position);
+  // TODO Kelly did this
+  //void GetSensorValues(control_loops::ElevatorQueue::Position* position);
 
  private:
   // the position of the bottom hall effect sensor.

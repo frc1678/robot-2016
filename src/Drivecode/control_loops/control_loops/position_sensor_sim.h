@@ -1,7 +1,7 @@
 #ifndef FRC971_CONTROL_LOOPS_POSITION_SENSOR_SIM_H_
 #define FRC971_CONTROL_LOOPS_POSITION_SENSOR_SIM_H_
 
-#include "control_loops.q"
+#include <Drivecode/control_loops/control_loops/control_loops.q.h>
 #include "gaussian_noise.h"
 
 namespace frc971 {

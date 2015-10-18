@@ -1,7 +1,7 @@
 #ifndef BOT3_CONTROL_LOOPS_DRIVETRAIN_DRIVETRAIN_DOG_MOTOR_PLANT_H_
 #define BOT3_CONTROL_LOOPS_DRIVETRAIN_DRIVETRAIN_DOG_MOTOR_PLANT_H_
 
-#include "frc971/control_loops/state_feedback_loop.h"
+#include "control_loops/state_feedback_loop.h"
 
 namespace bot3 {
 namespace control_loops {

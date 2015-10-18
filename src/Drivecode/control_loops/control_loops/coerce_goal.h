@@ -3,7 +3,7 @@
 
 #include "Eigen/Dense"
 
-#include "polytope.h"
+#include "Drivecode/polytope.h"
 
 namespace frc971 {
 namespace control_loops {

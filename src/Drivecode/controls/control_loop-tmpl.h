@@ -1,9 +1,9 @@
 #include <stddef.h>
 #include <inttypes.h>
 
-#include "aos/common/logging/logging.h"
+//#include "aos/common/logging/logging.h"
 #include "aos/common/messages/robot_state.q.h"
-#include "aos/common/logging/queue_logging.h"
+//#include "aos/common/logging/queue_logging.h"
 #include "aos/common/util/phased_loop.h"
 
 namespace aos {
