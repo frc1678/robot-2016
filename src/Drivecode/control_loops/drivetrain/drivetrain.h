@@ -66,74 +66,63 @@ struct DrivetrainStatus {
 };
 
 class DrivetrainLoop {
-public:
-	// Constructs a control loop which can take a Drivetrain or defaults to the
-	// drivetrain at bot3::control_loops::drivetrain
-	explicit DrivetrainLoop() {
-		::aos::controls::HPolytope<0>::Init();
-	}
-
-	virtual ~DrivetrainLoop();
-	// Returns true if all the counters etc in the sensor data have been reset.
-	// This will return true only a single time per reset.
-	bool WasReset() {
-		if (reset_) {
-			reset_ = false;
-			return true;
-		} else {
-			return false;
+	public:
+		// Constructs a control loop which can take a Drivetrain or defaults to the
+		// drivetrain at bot3::control_loops::drivetrain
+		explicit DrivetrainLoop() {
+			::aos::controls::HPolytope<0>::Init();
 		}
-	}
 
-	// Constructs and sends a message on the output queue which sets everything to
-	// a safe state (generally motors off). For some subclasses, this will be a
-	// bit different (ie pistons).
-	// The implementation here creates a new Output message, calls Zero() on it,
-	// and then sends it.
-
-// What we'll do is just "send everything to a safe state."
-// TODO (Jasmine): actually implement this for 1678.
-	virtual void ZeroOutputs();
-	// Sets the output to zero.
-	// Over-ride if a value of zero is not "off" for this subsystem.
-//  virtual void Zero(OutputType *output) { output->Zero(); }
-
-	// Runs the loop forever.
-	void Run() {
-		while (true) {
-			Iterate();
+		virtual ~DrivetrainLoop();
+		// Returns true if all the counters etc in the sensor data have been reset.
+		// This will return true only a single time per reset.
+		bool WasReset() {
+			if (reset_) {
+				reset_ = false;
+				return true;
+			} else {
+				return false;
+			}
 		}
-	}
 
-	// Runs one cycle of the loop.
-	void Iterate();
-protected:
-	// Executes one cycle of the control loop.
-	virtual void RunIteration(const DrivetrainGoal *goal,
+		// Constructs and sends a message on the output queue which sets everything to
+		// a safe state (generally motors off). For some subclasses, this will be a
+		// bit different (ie pistons).
+		// The implementation here creates a new Output message, calls Zero() on it,
+		// and then sends it.
+
+	// What we'll do is just "send everything to a safe state."
+	// TODO (Jasmine): actually implement this for 1678.
+		virtual void ZeroOutputs();
+		// Sets the output to zero.
+		// Over-ride if a value of zero is not "off" for this subsystem.
+	//  virtual void Zero(OutputType *output) { output->Zero(); }
+
+		// Runs the loop forever.
+		void Run() {
+			while (true) {
+				Iterate();
+			}
+		}
+
+		// Runs one cycle of the loop.
+		void Iterate();
+	protected:
+		// Executes one cycle of the control loop.
+		virtual void RunIteration(const DrivetrainGoal *goal,
 			const DrivetrainPosition *position, DrivetrainOutput *output,
-			DrivetrainStatus *status);
+				DrivetrainStatus *status);
 
-private:
+		private:
 
-	bool reset_ = false;
+			bool reset_ = false;
 
-// From 971's logging.
-//  typedef ::aos::util::SimpleLogInterval SimpleLogInterval;
-//  SimpleLogInterval no_position_ = SimpleLogInterval(
-//      ::aos::time::Time::InSeconds(0.25), WARNING, "no position");
+	// From 971's logging.
+	//  typedef ::aos::util::SimpleLogInterval SimpleLogInterval;
+	//  SimpleLogInterval no_position_ = SimpleLogInterval(
+	//      ::aos::time::Time::InSeconds(0.25), WARNING, "no position");
 };
 
-//TODO (Jasmine): Rewrite Iterate to take care of everything.
-// Basically the order goes:
-// get a new goal (From joysticks) if there is one, otherwise use the old one.
-// get all the sensor inputs
-// Check to make sure that the robot is enabled
-//     Run an iteration of the control loop.
-//     If the robot is enabled, do stuff to the motors.
-//     Otherwise, send 0 for the outputs (but you still want to have iterated the control loop.
-void DrivetrainLoop::Iterate() {
-
-}
 
 }  // namespace control_loops
 

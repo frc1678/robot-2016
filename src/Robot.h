@@ -28,7 +28,7 @@ using namespace std;
 
 #include <positioning/PositioningSystem.h>
 
-using namespace std;
+#include "Drivecode/control_loops/drivetrain/drivetrain.h"
 
 
 class Robot: public IterativeRobot
@@ -38,6 +38,7 @@ public:
 
 	int x;
 
+	//control_loops::DrivetrainLoop driveLoop;
 	PositioningSystem* pos;
 
 	AutonomousRoutine* autoCode;

@@ -2,7 +2,9 @@
 
 #include "Eigen/Dense"
 
-#include "Drivecode/polytope.h"
+#include <stdio.h>
+#include <stdlib.h>
+//using namespace std;
 
 namespace frc971 {
 namespace control_loops {
@@ -46,15 +48,17 @@ Eigen::Matrix<double, 2, 1> DoCoerceGoal(const aos::controls::HPolytope<2> &regi
     double min_distance = INFINITY;
     int closest_i = 0;
     for (int i = 0; i < region_vertices.outerSize(); i++) {
-      const double length = ::std::abs((perpendicular_vector.transpose() * (region_vertices.col(i)))(0, 0));
-      if (i == 0 || length < min_distance) {
-        closest_i = i;
-        min_distance = length;
-      }
+   //::std::abs won't build, invalid arguments. TODO FIX
+     //const double length = ::std::abs((perpendicular_vector.transpose() * (region_vertices.col(i)))(0, 0));
+//      if (i == 0 || length < min_distance) {
+//        closest_i = i;
+//        min_distance = length;
+//      }
     }
     if (is_inside) *is_inside = false;
-    return (Eigen::Matrix<double, 2, 1>() << region_vertices(0, closest_i),
-            region_vertices(1, closest_i)).finished();
+//    return (Eigen::Matrix<double, 2, 1>() << region_vertices(0, closest_i), region_vertices(1, closest_i))
+//    		.finished();
+    return (Eigen::Matrix<double, 2, 1>() << 1, 0).finished();
   }
 }
 

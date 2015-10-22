@@ -689,6 +689,23 @@ constexpr double PolyDrivetrain::kR;
 constexpr double PolyDrivetrain::Kv;
 constexpr double PolyDrivetrain::Kt;
 
+
+
+//TODO (Jasmine): Rewrite Iterate to take care of everything.
+// Basically the order goes:
+// get a new goal (From joysticks) if there is one, otherwise use the old one.
+// get all the sensor inputs
+// Check to make sure that the robot is enabled
+//     Run an iteration of the control loop.
+//     If the robot is enabled, do stuff to the motors.
+//     Otherwise, send 0 for the outputs (but you still want to have iterated the control loop.
+
+
+void DrivetrainLoop::Iterate() {
+
+}
+
+
 void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
                                   const DrivetrainPosition *position,
                                   DrivetrainOutput *output,
@@ -776,5 +793,7 @@ void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
     status->uncapped_right_voltage = dt_closedloop.loop().U_uncapped(1, 0);
   }
 }
+
+
 
 }  // namespace control_loops
