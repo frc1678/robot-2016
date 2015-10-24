@@ -38,7 +38,7 @@ public:
 
 	int x;
 
-	//control_loops::DrivetrainLoop driveLoop;
+	::control_loops::DrivetrainLoop* driveLoop;
 	PositioningSystem* pos;
 
 	AutonomousRoutine* autoCode;

@@ -639,14 +639,15 @@ class PolyDrivetrain {
       const double wiggle =
           (static_cast<double>((counter_ % 20) / 10) - 0.5) * 5.0;
 
-      //TODO(jasmine) figure out Eigen to drop static_casts
+      //TODO(Jasmine) figure out Eigen to drop static_casts
       loop_->mutable_U(0, 0) =
           ::aos::Clip(static_cast<double>((R_left / Kv)(0, 0) + (IsInGear(left_gear_) ? 0 : wiggle)),
                       -12.0, 12.0);
       loop_->mutable_U(1, 0) = ::aos::Clip(
           static_cast<double>((R_right / Kv)(0, 0) + (IsInGear(right_gear_) ? 0 : wiggle)), -12.0,
           12.0);
-      loop_->mutable_U() *= 12.0 / 12.0;//::aos::robot_state->voltage_battery;
+      loop_->mutable_U() *= 12.0 / 12.0;
+      //::aos::robot_state->voltage_battery;
 #endif
     }
   }

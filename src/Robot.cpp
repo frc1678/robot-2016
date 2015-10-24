@@ -4,10 +4,8 @@
 #define ABS(a) a > 0 ? a : -a
 
 void Robot::RobotInit() {
-	//	lw = LiveWindow::GetInstance();
-	//SmartDashboard::init();
 
-	//kLoad = new ConstantsLoader("auto.txt");
+	driveLoop = new ::control_loops::DrivetrainLoop();
 
 	drivetrain = new RobotDrive(2, 7, 1, 8);
 	driverL = new Joystick(0);
@@ -92,6 +90,8 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
+
+	driveLoop->Run();
 	// TODO: Constants should get reloaded from the file on TeleopInit, so that we can use new constants without restarting robot code.
 	// However, this seems to break elevator system... fix this!
 //	elevator->ReloadConstants();
@@ -100,6 +100,10 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
+
+	driveLoop->Iterate();
+
+
 	//pos->update();
 	// The dingus has left the building!
 //	runDrivetrain(driverL->GetY(), driverR->GetY(), drivetrain, straightButton->ButtonPressed());
@@ -142,26 +146,7 @@ void Robot::TeleopPeriodic() {
 	SmartDashboard::PutNumber("RightEncoder", rightEncoder->Get());
 	SmartDashboard::PutNumber("ElvEncoder", elevator->elvEncoder->Get());
 
-//	SmartDashboard::PutNumber("SensorValue", pinchers->bottomSensor->GetValue());
-//
-//
-//	if (runPinchers->ButtonPressed()){
-//		if(pinchers->BottomProximityTriggered()){
-//			SmartDashboard::PutBoolean("PinchersThingy", true);
-//		}
-//		else
-//		{
-//			SmartDashboard::PutBoolean("PinchersThingy", false);
-//		}
-//	}
-//
-//
-//	SmartDashboard::PutBoolean("Trigger", runPinchers->ButtonPressed());
-//
 
-//	elevator->MoveElevator(driverR->GetY());
-//	elevator->MoveTo_Five_PrepHPOne();
-//
 	if (elevator->elvEncoder != NULL && elevator->pidLoop != NULL) {
 		ElevLog->StartNewCycle();
 		ElevLog->LogValue(std::to_string(elevator->elvEncoder->Get()));

@@ -4,7 +4,6 @@
 #include "Eigen/Dense"
 
 #include "Drivecode/polytope.h"
-//#include "aos/common/util/log_interval.h"
 
 #include "Drivecode/shifter_hall_effect.h"
 
