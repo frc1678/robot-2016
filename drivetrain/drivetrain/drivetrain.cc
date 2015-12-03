@@ -4,22 +4,24 @@
 #include <sched.h>
 #include <cmath>
 #include <memory>
-#include "../../Eigen/Dense"
+#include "../../Eigen/Dense" // TODO (Finn): Make sure it actually deals with Eigen.
 
-#include "aos/common/logging/logging.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/commonmath.h"
-#include "aos/common/logging/queue_logging.h"
-#include "aos/common/logging/matrix_logging.h"
+// #include "aos/common/logging/logging.h" // TODO (Finn): What are we doing with logging?
+// For now, remove all references to it, but I'd like to be able to actually log it.
+#include "drivetrain/polytope.h"
+#include "drivetrain/commonmath.h"
+//#include "aos/common/logging/queue_logging.h" // This comes in with the logging.
+//#include "aos/common/logging/matrix_logging.h"
 
+// TODO (Finn): Get the associated files with these, put them in, fix where they point to.
 #include "frc971/control_loops/state_feedback_loop.h"
 #include "frc971/control_loops/coerce_goal.h"
 #include "y2015_bot3/control_loops/drivetrain/polydrivetrain_cim_plant.h"
-#include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h"
+//#include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h" // TODO(Finn): They pass a queue around. It should be like a struct. Ask Kelly or Jasmine how this works.
 #include "frc971/queues/gyro.q.h"
-#include "frc971/shifter_hall_effect.h"
-#include "y2015_bot3/control_loops/drivetrain/drivetrain_dog_motor_plant.h"
-#include "y2015_bot3/control_loops/drivetrain/polydrivetrain_dog_motor_plant.h"
+#include "frc971/shifter_hall_effect.h" // TODO (Finn): They use sensors on their shifters. We don't. Fix the logic to assume that we shift immediately. Or something.
+#include "drivetrain/drivetrain/drivetrain_dog_motor_plant.h"
+#include "drivetrain/drivetrain/polydrivetrain_dog_motor_plant.h"
 
 // A consistent way to mark code that goes away without shifters.
 #define HAVE_SHIFTERS 0
