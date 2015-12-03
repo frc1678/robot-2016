@@ -1,0 +1,3 @@
+# TODO(Kyle) Change this directory to the actual binary path for the RoboRIO
+scp bazel-bin/frc1678/frc1678 admin@roborio-1678.local:/home/lvuser/FRCUserProgram
+scp robotCommand admin@roborio-1678.local:/home/lvuser/robotCommand
