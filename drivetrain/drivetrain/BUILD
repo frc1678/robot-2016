@@ -27,15 +27,15 @@ cc_library(
     'polydrivetrain_cim_plant.h',
     'drivetrain_dog_motor_plant.h',
     'polydrivetrain_dog_motor_plant.h',
+    'commonmath.h', #TODO (Finn): Is this bad practice? It's the only place we need it...
   ],
   deps = [
     ':drivetrain_queue', #Will be removed. Replace with structs.
-    '//aos/common/controls:polytope', #removed or added directly as source?
+    '//aos/common/controls:polytope', # Moved because it's used in coerce_goal.
     '//drivetrain:state_feedback_loop',
-    '//frc971/control_loops:coerce_goal', #removed or added directly?
+    '//frc971/control_loops:coerce_goal', #Moved because it's used in testing and we'll want to actually build those tests before we run. TODO (Finn)
     '//frc971/queues:gyro', #Will be removed. Replace with structs.
     '//frc971:shifter_hall_effect', #Will be removed.
-    '//aos/common:math', removed or added directly?
   ],
 )
 
