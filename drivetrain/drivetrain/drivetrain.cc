@@ -13,12 +13,11 @@
 //#include "aos/common/logging/queue_logging.h" // This comes in with the logging.
 //#include "aos/common/logging/matrix_logging.h"
 
-// TODO (Finn): Get the associated files with these, put them in, fix where they point to.
-#include "frc971/control_loops/state_feedback_loop.h"
-#include "frc971/control_loops/coerce_goal.h"
-#include "y2015_bot3/control_loops/drivetrain/polydrivetrain_cim_plant.h"
+#include "drivetrain/state_feedback_loop.h"
+#include "drivetrain/coerce_goal.h"
+#include "drivetrain/drivetrain/polydrivetrain_cim_plant.h"
 //#include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h" // TODO(Finn): They pass a queue around. It should be like a struct. Ask Kelly or Jasmine how this works.
-#include "frc971/queues/gyro.q.h"
+//#include "frc971/queues/gyro.q.h"
 #include "frc971/shifter_hall_effect.h" // TODO (Finn): They use sensors on their shifters. We don't. Fix the logic to assume that we shift immediately. Or something.
 #include "drivetrain/drivetrain/drivetrain_dog_motor_plant.h"
 #include "drivetrain/drivetrain/polydrivetrain_dog_motor_plant.h"
@@ -28,11 +27,12 @@
 
 using ::frc971::sensors::gyro_reading;
 
-namespace y2015_bot3 {
+namespace drivetrain {
 namespace control_loops {
 
 class DrivetrainMotorsSS {
  public:
+// TODO (jasmine): Where is StateFeedbackLoop from?
   class LimitedDrivetrainLoop : public StateFeedbackLoop<4, 2, 2> {
    public:
     LimitedDrivetrainLoop(StateFeedbackLoop<4, 2, 2> &&loop)
@@ -145,7 +145,7 @@ class DrivetrainMotorsSS {
 
   DrivetrainMotorsSS()
       : loop_(new LimitedDrivetrainLoop(
-            ::y2015_bot3::control_loops::MakeDrivetrainLoop())),
+            ::drivetrain::control_loops::MakeDrivetrainLoop())),
         filtered_offset_(0.0),
         gyro_(0.0),
         left_goal_(0.0),
@@ -266,7 +266,7 @@ class PolyDrivetrain {
                  /*[*/ 12 /*]*/,
                  /*[*/ 12 /*]]*/).finished()),
         loop_(new StateFeedbackLoop<2, 2, 2>(
-            ::y2015_bot3::control_loops::MakeVelocityDrivetrainLoop())),
+            ::drivetrain::control_loops::MakeVelocityDrivetrainLoop())),
         ttrust_(1.1),
         wheel_(0.0),
         throttle_(0.0),
@@ -763,4 +763,4 @@ void DrivetrainLoop::RunIteration(const DrivetrainQueue::Goal *goal,
 }
 
 }  // namespace control_loops
-}  // namespace y2015_bot3
+}  // namespace drivetrain
