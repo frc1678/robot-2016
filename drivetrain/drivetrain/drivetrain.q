@@ -39,12 +39,14 @@ queue_group DrivetrainQueue {
     double right_encoder;
     //double left_shifter_position;
     //double right_shifter_position;
+    bool left_shifter_high;
+    bool right_shifter_high; // TODO (jasmine): do we need both of these?
   };
 
   message Output {
     double left_voltage;
     double right_voltage;
-    bool left_high;
+    bool left_high; // These two are for shifting.
     bool right_high;
   };
 

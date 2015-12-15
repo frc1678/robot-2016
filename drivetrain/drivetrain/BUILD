@@ -35,7 +35,6 @@ cc_library(
     '//drivetrain:state_feedback_loop',
     '//frc971/control_loops:coerce_goal', #Moved because it's used in testing and we'll want to actually build those tests before we run. TODO (Finn)
     '//frc971/queues:gyro', #Will be removed. Replace with structs.
-    '//frc971:shifter_hall_effect', #Will be removed.
   ],
 )
 

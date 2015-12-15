@@ -18,7 +18,6 @@
 #include "drivetrain/drivetrain/polydrivetrain_cim_plant.h"
 //#include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h" // TODO(Finn): They pass a queue around. It should be like a struct. Ask Kelly or Jasmine how this works.
 //#include "frc971/queues/gyro.q.h"
-#include "frc971/shifter_hall_effect.h" // TODO (Finn): They use sensors on their shifters. We don't. Fix the logic to assume that we shift immediately. Or something.
 #include "drivetrain/drivetrain/drivetrain_dog_motor_plant.h"
 #include "drivetrain/drivetrain/polydrivetrain_dog_motor_plant.h"
 
@@ -282,24 +281,21 @@ class PolyDrivetrain {
   static bool IsInGear(Gear gear) { return gear == LOW || gear == HIGH; }
 
   static double MotorSpeed(
-      const frc971::constants::ShifterHallEffect &hall_effect,
-      double shifter_position, double velocity) {
+      bool is_high_gear, double velocity) {
     // TODO(austin): G_high, G_low and kWheelRadius
-    const double avg_hall_effect =
-        (hall_effect.clear_high + hall_effect.clear_low) / 2.0;
 
-    if (shifter_position > avg_hall_effect) {
+    if (is_high_gear) {
       return velocity / kDrivetrainHighGearRatio / kWheelRadius;
     } else {
       return velocity / kDrivetrainLowGearRatio / kWheelRadius;
     }
   }
 
-  Gear ComputeGear(const frc971::constants::ShifterHallEffect &hall_effect,
-                   double velocity, Gear current) {
-    const double low_omega = MotorSpeed(hall_effect, 0.0, ::std::abs(velocity));
+  Gear ComputeGear(double velocity, Gear current) {
+    const bool is_high_gear = true; // what we need to pass to MotorSpeed
+    const double low_omega = MotorSpeed(!is_high_gear, ::std::abs(velocity));
     const double high_omega =
-        MotorSpeed(hall_effect, 1.0, ::std::abs(velocity));
+        MotorSpeed(!is_high_gear, ::std::abs(velocity));
 
     double high_torque = ((12.0 - high_omega / Kv) * Kt / kR);
     double low_torque = ((12.0 - low_omega / Kv) * Kt / kR);
@@ -346,16 +342,19 @@ class PolyDrivetrain {
           (position_.right_encoder - last_position_.right_encoder) /
           position_time_delta_;
 
-      Gear left_requested = ComputeGear(kDrivetrainLeftShifter,
+      Gear left_requested = ComputeGear(
                                         current_left_velocity, left_gear_);
-      Gear right_requested = ComputeGear(kDrivetrainRightShifter,
+      Gear right_requested = ComputeGear(
                                          current_right_velocity, right_gear_);
+// TODO (Finn): Figure out how to actually shift gears.
+// That's an 'interface on the other end' thing then.
       requested_gear =
           (left_requested == HIGH || right_requested == HIGH) ? HIGH : LOW;
     } else {
       requested_gear = highgear ? HIGH : LOW;
     }
 
+// It isn't a clutch transmission, I don't think. If it is a clutch transmission, then we don't have it.
     const Gear shift_up = kDrivetrainClutchTransmission ? HIGH : SHIFTING_UP;
     const Gear shift_down = kDrivetrainClutchTransmission ? LOW : SHIFTING_DOWN;
 
@@ -390,6 +389,7 @@ class PolyDrivetrain {
       }
     }
   }
+
   void SetPosition(const DrivetrainQueue::Position *position) {
     if (position == NULL) {
       ++stale_count_;
@@ -403,65 +403,26 @@ class PolyDrivetrain {
 #if HAVE_SHIFTERS
     if (position) {
       GearLogging gear_logging;
+// Here's one place where we need to just assume that we're shifting.
       // Switch to the correct controller.
-      const double left_middle_shifter_position =
-          (kDrivetrainLeftShifter.clear_high +
-           kDrivetrainLeftShifter.clear_low) /
-          2.0;
-      const double right_middle_shifter_position =
-          (kDrivetrainRightShifter.clear_high +
-           kDrivetrainRightShifter.clear_low) /
-          2.0;
-
-      if (position->left_shifter_position < left_middle_shifter_position ||
-          left_gear_ == LOW) {
-        if (position->right_shifter_position < right_middle_shifter_position ||
-            right_gear_ == LOW) {
-          gear_logging.left_loop_high = false;
-          gear_logging.right_loop_high = false;
-          loop_->set_controller_index(gear_logging.controller_index = 0);
-        } else {
-          gear_logging.left_loop_high = false;
-          gear_logging.right_loop_high = true;
-          loop_->set_controller_index(gear_logging.controller_index = 1);
-        }
-      } else {
-        if (position->right_shifter_position < right_middle_shifter_position ||
-            right_gear_ == LOW) {
-          gear_logging.left_loop_high = true;
-          gear_logging.right_loop_high = false;
-          loop_->set_controller_index(gear_logging.controller_index = 2);
-        } else {
-          gear_logging.left_loop_high = true;
-          gear_logging.right_loop_high = true;
-          loop_->set_controller_index(gear_logging.controller_index = 3);
-        }
-      }
-
-      // TODO(austin): Constants.
-      if (position->left_shifter_position > kDrivetrainLeftShifter.clear_high &&
-          left_gear_ == SHIFTING_UP) {
-        left_gear_ = HIGH;
-      }
-      if (position->left_shifter_position < kDrivetrainLeftShifter.clear_low &&
-          left_gear_ == SHIFTING_DOWN) {
-        left_gear_ = LOW;
-      }
-      if (position->right_shifter_position >
-              kDrivetrainRightShifter.clear_high &&
-          right_gear_ == SHIFTING_UP) {
-        right_gear_ = HIGH;
-      }
-      if (position->right_shifter_position <
-              kDrivetrainRightShifter.clear_low &&
-          right_gear_ == SHIFTING_DOWN) {
-        right_gear_ = LOW;
-      }
-
-      gear_logging.left_state = left_gear_;
-      gear_logging.right_state = right_gear_;
-      LOG_STRUCT(DEBUG, "state", gear_logging);
-    }
+      if(!(position->left_shifter_high)) {
+         if(!(position->right_shifter_high)) {
+           // Both are low.
+           loop_->set_controller_index(0);
+         } else {
+           // Left low, right high.
+           loop_->set_controller_index(1);
+         }
+       } else { // Left high.
+         if(!(position->right_shifter_high)) {
+           // Both are low.
+           loop_->set_controller_index(2);
+         } else {
+           // Left low, right high.
+           loop_->set_controller_index(3);
+         }
+       }
+     }
 #endif
   }
 
@@ -524,10 +485,10 @@ class PolyDrivetrain {
         (position_.right_encoder - last_position_.right_encoder) /
         position_time_delta_;
     const double left_motor_speed =
-        MotorSpeed(kDrivetrainLeftShifter, position_.left_shifter_position,
+        MotorSpeed(position_.left_shifter_high,
                    current_left_velocity);
     const double right_motor_speed =
-        MotorSpeed(kDrivetrainRightShifter, position_.right_shifter_position,
+        MotorSpeed(position_.right_shifter_high,
                    current_right_velocity);
 
     {

@@ -6,7 +6,6 @@
 
 #include "aos/common/controls/polytope.h"
 
-#include "frc971/shifter_hall_effect.h"
 #include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h"
 
 namespace drivetrain {
@@ -21,10 +20,6 @@ constexpr double kDrivetrainHighGearRatio =
     kDrivetrainEncoderRatio * 18.0 / 60.0;
 constexpr double kDrivetrainLowGearRatio = kDrivetrainHighGearRatio;
 const bool kDrivetrainClutchTransmission = false;
-const ::frc971::constants::ShifterHallEffect kDrivetrainRightShifter{
-    555, 657, 660, 560, 0.2, 0.7};
-const ::frc971::constants::ShifterHallEffect kDrivetrainLeftShifter{
-    555, 660, 644, 552, 0.2, 0.7};
 // End constants
 
 class DrivetrainLoop {
