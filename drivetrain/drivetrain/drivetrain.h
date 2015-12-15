@@ -5,9 +5,6 @@
 #include "Eigen/Dense"
 
 #include "aos/common/controls/polytope.h"
-#include "aos/common/controls/control_loop.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/util/log_interval.h"
 
 #include "frc971/shifter_hall_effect.h"
 #include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h"

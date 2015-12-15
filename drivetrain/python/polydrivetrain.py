@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+# TODO (Finn): Do we need polytope, and if so, where do we get it?
 import numpy
 import sys
 import polytope
@@ -406,7 +407,7 @@ def main(argv):
                        vdrivetrain.drivetrain_low_high,
                        vdrivetrain.drivetrain_high_low,
                        vdrivetrain.drivetrain_high_high],
-        namespaces=['y2015_bot3', 'control_loops'])
+        namespaces=['drivetrain', 'control_loops'])
 
     if argv[1][-3:] == '.cc':
       dog_loop_writer.Write(argv[2], argv[1])
@@ -415,7 +416,7 @@ def main(argv):
 
     cim_writer = control_loop.ControlLoopWriter(
         "CIM", [drivetrain.CIM()],
-        namespaces=['y2015_bot3', 'control_loops'])
+        namespaces=['drivetrain', 'control_loops'])
 
     if argv[5][-3:] == '.cc':
       cim_writer.Write(argv[6], argv[5])

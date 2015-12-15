@@ -53,6 +53,7 @@ class CIM(control_loop.ControlLoop):
 class Drivetrain(control_loop.ControlLoop):
   def __init__(self, name="Drivetrain", left_low=True, right_low=True):
     super(Drivetrain, self).__init__(name)
+    # TODO (jasmine): Get all of these constants for whatever robot we're using.
     # Stall Torque in N m
     self.stall_torque = 2.42
     # Stall Current in Amps
@@ -233,7 +234,7 @@ def main(argv):
     dog_loop_writer = control_loop.ControlLoopWriter(
         "Drivetrain", [drivetrain_low_low, drivetrain_low_high,
                        drivetrain_high_low, drivetrain_high_high],
-        namespaces=['y2015_bot3', 'control_loops'])
+        namespaces=['drivetrain', 'control_loops'])
     if argv[1][-3:] == '.cc':
       dog_loop_writer.Write(argv[2], argv[1])
     else:
