@@ -30,7 +30,6 @@ cc_library(
     'commonmath.h', #TODO (Finn): Is this bad practice? It's the only place we need it...
   ],
   deps = [
-    ':drivetrain_queue', #Will be removed. Replace with structs.
     '//drivetrain:polytope',
     '//drivetrain:state_feedback_loop',
     '//drivetrain:coerce_goal',
@@ -48,6 +47,5 @@ cc_binary(
   deps = [
     '//aos/linux_code:init',
     ':drivetrain_lib',
-    ':drivetrain_queue',
   ],
 )

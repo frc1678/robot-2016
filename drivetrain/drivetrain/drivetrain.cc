@@ -204,7 +204,7 @@ class DrivetrainMotorsSS {
 
   bool OutputWasCapped() const { return loop_->output_was_capped(); }
 
-  void SendMotors(DrivetrainQueue::Output *output) const {
+  void SendMotors(DrivetrainOutput *output) const {
     if (output) {
       output->left_voltage = loop_->U(0, 0);
       output->right_voltage = loop_->U(1, 0);
@@ -389,7 +389,7 @@ class PolyDrivetrain {
     }
   }
 
-  void SetPosition(const DrivetrainQueue::Position *position) {
+  void SetPosition(const DrivetrainPosition *position) {
     if (position == NULL) {
       ++stale_count_;
     } else {
@@ -597,7 +597,7 @@ class PolyDrivetrain {
     }
   }
 
-  void SendMotors(DrivetrainQueue::Output *output) {
+  void SendMotors(DrivetrainOutput *output) {
     if (output != NULL) {
       output->left_voltage = loop_->U(0, 0);
       output->right_voltage = loop_->U(1, 0);
@@ -619,8 +619,8 @@ class PolyDrivetrain {
   double position_time_delta_;
   Gear left_gear_;
   Gear right_gear_;
-  DrivetrainQueue::Position last_position_;
-  DrivetrainQueue::Position position_;
+  DrivetrainPosition last_position_;
+  DrivetrainPosition position_;
   int counter_;
 };
 constexpr double PolyDrivetrain::kStallTorque;
@@ -635,10 +635,10 @@ constexpr double PolyDrivetrain::kR;
 constexpr double PolyDrivetrain::Kv;
 constexpr double PolyDrivetrain::Kt;
 
-void DrivetrainLoop::RunIteration(const DrivetrainQueue::Goal *goal,
-                                  const DrivetrainQueue::Position *position,
-                                  DrivetrainQueue::Output *output,
-                                  DrivetrainQueue::Status *status) {
+void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
+                                  const DrivetrainPosition *position,
+                                  DrivetrainOutput *output,
+                                  DrivetrainStatus *status) {
   // TODO(aschuh): These should be members of the class.
   static DrivetrainMotorsSS dt_closedloop;
   static PolyDrivetrain dt_openloop;

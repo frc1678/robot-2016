@@ -22,6 +22,48 @@ constexpr double kDrivetrainLowGearRatio = kDrivetrainHighGearRatio;
 const bool kDrivetrainClutchTransmission = false;
 // End constants
 
+// Structs to carry information about the drivetrain.
+struct DrivetrainGoal {
+    double steering;
+    double throttle;
+    bool highgear;
+    bool quickturn;
+    bool control_loop_driving;
+    double left_goal;
+    double left_velocity_goal;
+    double right_goal;
+    double right_velocity_goal;
+  };
+
+struct DrivetrainPosition {
+    double left_encoder;
+    double right_encoder;
+    bool left_shifter_high;
+    bool right_shifter_high; // TODO (jasmine): do we need both of these?
+  };
+
+struct DrivetrainOutput {
+    double left_voltage;
+    double right_voltage;
+    bool left_high; // These two are for shifting.
+    bool right_high;
+  };
+
+struct DrivetrainStatus {
+    double robot_speed;
+    double filtered_left_position;
+    double filtered_right_position;
+    double filtered_left_velocity;
+    double filtered_right_velocity;
+
+    double uncapped_left_voltage;
+    double uncapped_right_voltage;
+    bool output_was_capped;
+
+    bool is_done;
+  };
+
+
 class DrivetrainLoop {
  public:
   // Constructs a control loop which can take a Drivetrain or defaults to the
@@ -60,10 +102,10 @@ class DrivetrainLoop {
 
   // Executes one cycle of the control loop.
   void RunIteration(
-      const control_loops::DrivetrainQueue::Goal *goal,
-      const control_loops::DrivetrainQueue::Position *position,
-      control_loops::DrivetrainQueue::Output *output,
-      control_loops::DrivetrainQueue::Status *status);
+      const DrivetrainGoal *goal,
+      const DrivetrainPosition *position,
+      DrivetrainOutput *output,
+      DrivetrainStatus *status);
 
   typedef ::aos::util::SimpleLogInterval SimpleLogInterval;
   SimpleLogInterval no_position_ = SimpleLogInterval(
