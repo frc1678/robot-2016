@@ -31,7 +31,6 @@ namespace control_loops {
 
 class DrivetrainMotorsSS {
  public:
-// TODO (jasmine): Where is StateFeedbackLoop from?
   class LimitedDrivetrainLoop : public StateFeedbackLoop<4, 2, 2> {
    public:
     LimitedDrivetrainLoop(StateFeedbackLoop<4, 2, 2> &&loop)

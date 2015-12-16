@@ -12,7 +12,7 @@ cc_library(
 cc_library(
   name = 'coerce_goal',
   srcs = [
-    'coerce_goal.cc', #Do you have me?
+    'coerce_goal.cc',
   ],
   hdrs = [
     'coerce_goal.h',
