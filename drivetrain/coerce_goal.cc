@@ -2,7 +2,7 @@
 
 #include "Eigen/Dense"
 
-#include "aos/common/controls/polytope.h"
+#include "drivetrain/polytope.h"
 
 namespace frc971 {
 namespace control_loops {

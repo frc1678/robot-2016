@@ -15,8 +15,7 @@
 
 #include "drivetrain/state_feedback_loop.h"
 #include "drivetrain/coerce_goal.h"
-#include "drivetrain/drivetrain/polydrivetrain_cim_plant.h"
-//#include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h" // TODO(Finn): They pass a queue around. It should be like a struct. Ask Kelly or Jasmine how this works.
+#include "drivetrain/drivetrain/polydrivetrain_cim_plant.h" //TODO (Finn): Fix the generated code to point the include to the correct .h (for all of these)
 #include "drivetrain/drivetrain/drivetrain_dog_motor_plant.h"
 #include "drivetrain/drivetrain/polydrivetrain_dog_motor_plant.h"
 

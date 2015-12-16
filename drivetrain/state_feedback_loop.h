@@ -9,7 +9,7 @@
 
 #include "Eigen/Dense"
 
-#include "aos/common/logging/logging.h"
+#include "aos/common/logging/logging.h" //TODO (Finn): Take care of (remove or replace) logging.
 #include "aos/common/macros.h"
 
 // For everything in this file, "inputs" and "outputs" are defined from the

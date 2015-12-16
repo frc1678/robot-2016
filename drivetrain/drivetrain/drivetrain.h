@@ -6,8 +6,6 @@
 
 #include "aos/common/controls/polytope.h"
 
-#include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h"
-
 namespace drivetrain {
 namespace control_loops {
 
