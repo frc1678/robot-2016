@@ -33,7 +33,6 @@ cc_library(
     '//drivetrain:polytope',
     '//drivetrain:state_feedback_loop',
     '//drivetrain:coerce_goal',
-    '//frc971/queues:gyro', #Will be removed. Replace with structs.
   ],
 )
 

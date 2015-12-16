@@ -17,14 +17,11 @@
 #include "drivetrain/coerce_goal.h"
 #include "drivetrain/drivetrain/polydrivetrain_cim_plant.h"
 //#include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h" // TODO(Finn): They pass a queue around. It should be like a struct. Ask Kelly or Jasmine how this works.
-//#include "frc971/queues/gyro.q.h"
 #include "drivetrain/drivetrain/drivetrain_dog_motor_plant.h"
 #include "drivetrain/drivetrain/polydrivetrain_dog_motor_plant.h"
 
 // A consistent way to mark code that goes away without shifters.
 #define HAVE_SHIFTERS 0
-
-using ::frc971::sensors::gyro_reading;
 
 namespace drivetrain {
 namespace control_loops {
@@ -675,13 +672,16 @@ void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
   if (!bad_pos) {
     const double left_encoder = position->left_encoder;
     const double right_encoder = position->right_encoder;
-    if (gyro_reading.FetchLatest()) {
+    // If we have a gyro, set the position using the gyro angle (radians, right hand coordinate system around the Z-axis going up)
+// otherwise just use it during encoders
+// TODO (Finn): Are we using a gyro or not?
+/*    if (gyro_reading.FetchLatest()) {
       LOG_STRUCT(DEBUG, "using", *gyro_reading.get());
       dt_closedloop.SetPosition(left_encoder, right_encoder,
                                 gyro_reading->angle);
-    } else {
+    } else {*/
       dt_closedloop.SetRawPosition(left_encoder, right_encoder);
-    }
+//    }
   }
   dt_openloop.SetPosition(position);
   dt_openloop.Update();
