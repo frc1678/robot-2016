@@ -13,7 +13,7 @@ cc_library(
   ],
 )
 
-# We'll use the build file to mark when we've taken out dependencies that we need, I suppose.
+# We'll use the build file to mark when we've taken care of dependencies that we need, I suppose.
 cc_library(
   name = 'drivetrain_lib',
   srcs = [
@@ -31,9 +31,9 @@ cc_library(
   ],
   deps = [
     ':drivetrain_queue', #Will be removed. Replace with structs.
-    '//aos/common/controls:polytope', # Moved because it's used in coerce_goal.
+    '//drivetrain:polytope',
     '//drivetrain:state_feedback_loop',
-    '//frc971/control_loops:coerce_goal', #Moved because it's used in testing and we'll want to actually build those tests before we run. TODO (Finn)
+    '//drivetrain:coerce_goal',
     '//frc971/queues:gyro', #Will be removed. Replace with structs.
   ],
 )
