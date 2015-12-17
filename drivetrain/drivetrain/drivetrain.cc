@@ -397,7 +397,6 @@ class PolyDrivetrain {
 
 #if HAVE_SHIFTERS
     if (position) {
-      GearLogging gear_logging;
 // Here's one place where we need to just assume that we're shifting.
       // Switch to the correct controller.
       if(!(position->left_shifter_high)) {
@@ -486,28 +485,6 @@ class PolyDrivetrain {
         MotorSpeed(position_.right_shifter_high,
                    current_right_velocity);
 
-    {
-      CIMLogging logging;
-
-      // Reset the CIM model to the current conditions to be ready for when we
-      // shift.
-      if (IsInGear(left_gear_)) {
-        logging.left_in_gear = true;
-      } else {
-        logging.left_in_gear = false;
-      }
-      logging.left_motor_speed = left_motor_speed;
-      logging.left_velocity = current_left_velocity;
-      if (IsInGear(right_gear_)) {
-        logging.right_in_gear = true;
-      } else {
-        logging.right_in_gear = false;
-      }
-      logging.right_motor_speed = right_motor_speed;
-      logging.right_velocity = current_right_velocity;
-
-      LOG_STRUCT(DEBUG, "currently", logging);
-    }
 #endif
 
 #if HAVE_SHIFTERS
