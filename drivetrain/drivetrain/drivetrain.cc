@@ -608,6 +608,30 @@ constexpr double PolyDrivetrain::kR;
 constexpr double PolyDrivetrain::Kv;
 constexpr double PolyDrivetrain::Kt;
 
+// TODO (Finn): Rewrite to do what we want it to do; eg send to a safe state. This depends on how we're implementing the DrivetrainLop.
+void DrivetrainLoop::ZeroOutputs() {
+}
+
+// TODO (jasmine): Rewrite iterate to do what we want it to do.
+// 1. Get what the current position of the robot is (and log it)
+// 2. Get the latest goal (and log it) from joysticks?
+// 3. Get the current sensor data.
+// 4. If we're enabled:
+//        run an iteration of the loop and then send the new info to the robot.
+//    If we're not:
+//        run an iteration of the loop and then tell the robot to enter a safe state.
+void DrivetrainLoop::Iterate() {
+}
+
+// TODO (Finn): How are we implementing this? Does this need to be called at all?
+void DrivetrainLoop::Run() {
+  while (true) {
+    Iterate();
+  }
+}
+
+
+
 void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
                                   const DrivetrainPosition *position,
                                   DrivetrainOutput *output,
