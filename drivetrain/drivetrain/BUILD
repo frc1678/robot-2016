@@ -13,7 +13,7 @@ cc_library(
   ],
 )
 
-# We'll use the build file to mark when we've taken care of dependencies that we need, I suppose.
+#TODO (Finn): Maybe move things into the outer drivetrain folder? Will require redoing all the includes.
 cc_library(
   name = 'drivetrain_lib',
   srcs = [
