@@ -64,14 +64,7 @@ struct DrivetrainStatus {
 
 class DrivetrainLoop {
  public:
-  // Constructs a control loop which can take a Drivetrain or defaults to the
-  // drivetrain at drivetrain::control_loops::drivetrain
-/*  explicit DrivetrainLoop(control_loops::DrivetrainQueue *my_drivetrain =
-                              &control_loops::drivetrain_queue)
-      : aos::controls::ControlLoop<control_loops::DrivetrainQueue>(
-            my_drivetrain) {
-    ::aos::controls::HPolytope<0>::Init();
-  }*/
+  // TODO (Finn): Write a constructor to zero-initialize everything?
 
   // Returns true if all the counters etc in the sensor data have been reset.
   // This will return true only a single time per reset.

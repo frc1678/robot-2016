@@ -620,6 +620,9 @@ void DrivetrainLoop::ZeroOutputs() {
 //        run an iteration of the loop and then send the new info to the robot.
 //    If we're not:
 //        run an iteration of the loop and then tell the robot to enter a safe state.
+// This will be important once we get it running in its own thread
+// but for now, let's just throw it directly into the main loop
+// to see what happens.
 void DrivetrainLoop::Iterate() {
 }
 
