@@ -4,5 +4,5 @@ cc_binary(
     "@wpilib//:main",
     "//drivetrain/drivetrain:drivetrain_lib"
   ],
-  srcs=glob(["*.cpp"])
+  srcs=glob(["*.cpp", "CitrusButton.h"]) #TODO (jasmine): Add button interface as separate target?
 )
