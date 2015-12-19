@@ -123,8 +123,9 @@ class ControlLoopWriter(object):
   def WriteCC(self, header_file_name, cc_file):
     """Writes the cc file to the file named cc_file."""
     with open(cc_file, 'w') as fd:
-      fd.write('#include \"%s/%s\"\n' %
-               (os.path.join(*self._namespaces), header_file_name))
+#      fd.write('#include \"%s/%s\"\n' %
+#              (os.path.join(*self._namespaces), header_file_name)
+      fd.write('#include \"%s\"\n' % (header_file_name))
       fd.write('\n')
       fd.write('#include <vector>\n')
       fd.write('\n')
