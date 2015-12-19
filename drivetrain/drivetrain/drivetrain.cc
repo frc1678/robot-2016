@@ -9,7 +9,7 @@
 // #include "aos/common/logging/logging.h" // TODO (Finn): What are we doing with logging?
 // For now, remove all references to it, but I'd like to be able to actually log it.
 #include "drivetrain/polytope.h"
-#include "drivetrain/commonmath.h"
+#include "commonmath.h"
 //#include "aos/common/logging/queue_logging.h" // This comes in with the logging.
 //#include "aos/common/logging/matrix_logging.h"
 
@@ -35,7 +35,7 @@ class DrivetrainMotorsSS {
                       .finished(),
                   (Eigen::Matrix<double, 4, 1>() << 12.0, 12.0, 12.0, 12.0)
                       .finished()) {
-      ::muan::controls::HPolytope<0>::Init();
+      ::aos::controls::HPolytope<0>::Init();
       T << 1, -1, 1, 1;
       T_inverse = T.inverse();
     }

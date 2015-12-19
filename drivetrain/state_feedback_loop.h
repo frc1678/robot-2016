@@ -7,7 +7,7 @@
 #include <memory>
 #include <iostream>
 
-#include "tools/Eigen/Dense"
+#include "tools/eigen/Eigen/Dense"
 
 #include "macros.h" //TODO (Finn) What does this do? It doesn't ever get used?
 

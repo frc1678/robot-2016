@@ -7,9 +7,8 @@
 namespace frc1678 {
 namespace control_loops {
 
-Eigen::Matrix<double, 2, 1> DoCoerceGoal(//const aos::controls::HPolytope<2> &region,
+Eigen::Matrix<double, 2, 1> DoCoerceGoal(const aos::controls::HPolytope<2> &region,
 
-// TODO also, can I change aos to muan, and it might work? I found an polytope file that I renamed from aos to muan, and if this is referencing that polytope file, then it should work? TODO
                                          const Eigen::Matrix<double, 1, 2> &K,
                                          double w,
                                          const Eigen::Matrix<double, 2, 1> &R,
@@ -23,7 +22,7 @@ Eigen::Matrix<double, 2, 1> DoCoerceGoal(//const aos::controls::HPolytope<2> &re
   perpendicular_vector = K.transpose().normalized();
   parallel_vector << perpendicular_vector(1, 0), -perpendicular_vector(0, 0);
 
-//  aos::controls::HPolytope<1> t_poly( //TODO DITTO
+  aos::controls::HPolytope<1> t_poly( 
       region.H() * parallel_vector,
       region.k() - region.H() * perpendicular_vector * w);
 

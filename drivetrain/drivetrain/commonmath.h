@@ -1,7 +1,7 @@
 #ifndef MUAN_COMMON_MATH_H_
 #define MUAN_COMMON_MATH_H_
 
-namespace muan {
+namespace aos {
 
 // Clips a value so that it is in [min, max]
 static inline double Clip(double value, double min, double max) {

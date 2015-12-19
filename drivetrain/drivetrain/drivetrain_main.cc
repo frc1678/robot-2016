@@ -3,9 +3,9 @@
 #include "aos/linux_code/init.h"
 
 int main() {
-  ::muan::Init();
+  ::aos::Init();
   ::y2015_bot3::control_loops::DrivetrainLoop drivetrain;//TODO 
   drivetrain.Run();
-  ::muan::Cleanup();
+  ::aos::Cleanup();
   return 0;
 }

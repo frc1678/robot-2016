@@ -8,7 +8,7 @@
 namespace frc1678 {
 namespace control_loops {
 
-Eigen::Matrix<double, 2, 1> DoCoerceGoal(//const aos::controls::HPolytope<2> &region,
+Eigen::Matrix<double, 2, 1> DoCoerceGoal(const aos::controls::HPolytope<2> &region,
                                          const Eigen::Matrix<double, 1, 2> &K,
                                          double w,
                                          const Eigen::Matrix<double, 2, 1> &R,
@@ -19,7 +19,7 @@ Eigen::Matrix<double, 2, 1> DoCoerceGoal(//const aos::controls::HPolytope<2> &re
 // defined by K X = w.  If it is not possible to find a point on the line,
 // finds a point that is inside the region and closest to the line.
 static inline Eigen::Matrix<double, 2, 1>
-    CoerceGoal(//const aos::controls::HPolytope<2> &region,
+    CoerceGoal(const aos::controls::HPolytope<2> &region,
                const Eigen::Matrix<double, 1, 2> &K,
                double w,
                const Eigen::Matrix<double, 2, 1> &R) {
