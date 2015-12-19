@@ -32,7 +32,7 @@ class ControlLoopWriter(object):
       self._namespaces = namespaces
     else:
       # TODO (jasmine): which namespace does this need to be replaced with?
-      self._namespaces = ['frc1678', 'control_loops']
+      self._namespaces = ['frc971', 'control_loops']
 
     self._namespace_start = '\n'.join(
         ['namespace %s {' % name for name in self._namespaces])

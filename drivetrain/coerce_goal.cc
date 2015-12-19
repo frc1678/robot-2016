@@ -4,7 +4,7 @@
 
 #include "polytope.h"
 
-namespace frc1678 {
+namespace frc971 {
 namespace control_loops {
 
 Eigen::Matrix<double, 2, 1> DoCoerceGoal(const aos::controls::HPolytope<2> &region,

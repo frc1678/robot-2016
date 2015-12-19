@@ -86,10 +86,10 @@ class DrivetrainLoop {
   void ZeroOutputs();
 
   // Runs the loop forever.
-  void Run() override;
+  void Run();
 
   // Runs one cycle of the loop.
-  void Iterate() override;
+  void Iterate();
 
   // Executes one cycle of the control loop.
   void RunIteration(

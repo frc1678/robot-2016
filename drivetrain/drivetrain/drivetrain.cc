@@ -105,7 +105,7 @@ class DrivetrainMotorsSS {
           const auto adjusted_pos_error_h = frc971::control_loops::DoCoerceGoal(
               pos_poly, LH, wh, drive_error, &is_inside_h);
           const auto adjusted_pos_error_45 =
-              frc1678::control_loops::DoCoerceGoal(pos_poly, L45, w45,
+              frc971::control_loops::DoCoerceGoal(pos_poly, L45, w45,
                                                   intersection, nullptr);
           if (pos_poly.IsInside(intersection)) {
             adjusted_pos_error = adjusted_pos_error_h;
@@ -270,8 +270,6 @@ class PolyDrivetrain {
         left_gear_(LOW),
         right_gear_(LOW),
         counter_(0) {
-    last_position_.Zero();
-    position_.Zero();
   }
   static bool IsInGear(Gear gear) { return gear == LOW || gear == HIGH; }
 

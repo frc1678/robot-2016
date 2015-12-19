@@ -1,11 +1,11 @@
-#ifndef FRC1678_CONTROL_LOOPS_COERCE_GOAL_H_
-#define FRC1678_CONTROL_LOOPS_COERCE_GOAL_H_
+#ifndef FRC971_CONTROL_LOOPS_COERCE_GOAL_H_
+#define FRC971_CONTROL_LOOPS_COERCE_GOAL_H_
 
 #include "tools/eigen/Eigen/Dense"
 
 #include "polytope.h"
 
-namespace frc1678 {
+namespace frc971 {
 namespace control_loops {
 
 Eigen::Matrix<double, 2, 1> DoCoerceGoal(const aos::controls::HPolytope<2> &region,
@@ -27,6 +27,6 @@ static inline Eigen::Matrix<double, 2, 1>
 }
 
 }  // namespace control_loops
-}  // namespace frc1678
+}  // namespace frc971
 
-#endif  // FRC1678_CONTROL_LOOPS_COERCE_GOAL_H_
+#endif  // FRC971_CONTROL_LOOPS_COERCE_GOAL_H_
