@@ -50,6 +50,3 @@ cc_test(
   ],
   visibility = ["//visibility:public"],
 )
-
-# TODO (Finn): This is a 971-ism with the messages sent around.
-# We'll want to run the controller in a separate thread and get the messages sent to the main FRC one, eventually, but for now we'll just throw it all in there.
