@@ -646,7 +646,6 @@ void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
     //LOG_INTERVAL(no_position_);
     bad_pos = true;
   }
-  no_position_.Print();
 
   bool control_loop_driving = false;
   if (goal) {
