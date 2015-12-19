@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../state_feedback_loop.h"
+#include "drivetrain/state_feedback_loop.h"
 
 namespace drivetrain {
 namespace control_loops {

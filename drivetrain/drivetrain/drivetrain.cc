@@ -4,7 +4,7 @@
 #include <sched.h>
 #include <cmath>
 #include <memory>
-#include "../../Eigen/Dense" // TODO (Finn): Make sure it actually deals with Eigen.
+#include "tools/Eigen/Dense" // TODO (Finn): Make sure it actually deals with Eigen.
 
 // #include "aos/common/logging/logging.h" // TODO (Finn): What are we doing with logging?
 // For now, remove all references to it, but I'd like to be able to actually log it.
@@ -13,8 +13,8 @@
 //#include "aos/common/logging/queue_logging.h" // This comes in with the logging.
 //#include "aos/common/logging/matrix_logging.h"
 
-#include "../state_feedback_loop.h"
-#include "../coerce_goal.h"
+#include "drivetrain/state_feedback_loop.h"
+#include "drivetrain/coerce_goal.h"
 #include "polydrivetrain_cim_plant.h" 
 #include "drivetrain_dog_motor_plant.h"
 #include "polydrivetrain_dog_motor_plant.h"

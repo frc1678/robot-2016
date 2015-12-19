@@ -3,15 +3,15 @@
 #include <memory>
 
 #include "gtest/gtest.h"
-#include "aos/common/network/team_number.h"
-#include "aos/common/queue_testutils.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/controls/control_loop_test.h"
+//#include "aos/common/network/team_number.h"
+//#include "aos/common/queue_testutils.h"
+//#include "aos/common/controls/polytope.h"
+//#include "aos/common/controls/control_loop_test.h"
 
 #include "y2015_bot3/control_loops/drivetrain/drivetrain.q.h"
 #include "y2015_bot3/control_loops/drivetrain/drivetrain.h"
-#include "frc971/control_loops/state_feedback_loop.h"
-#include "frc971/control_loops/coerce_goal.h"
+#include "frc1678/control_loops/state_feedback_loop.h"
+#include "frc1678/control_loops/coerce_goal.h"
 #include "y2015_bot3/control_loops/drivetrain/drivetrain_dog_motor_plant.h"
 #include "frc971/queues/gyro.q.h"
 
@@ -24,7 +24,7 @@ class Environment : public ::testing::Environment {
   virtual ~Environment() {}
   // how to set up the environment.
   virtual void SetUp() {
-    aos::controls::HPolytope<0>::Init();
+    muan::controls::HPolytope<0>::Init();
   }
 };
 ::testing::Environment* const holder_env =
@@ -33,7 +33,7 @@ class Environment : public ::testing::Environment {
 class TeamNumberEnvironment : public ::testing::Environment {
  public:
   // Override this to define how to set up the environment.
-  virtual void SetUp() { aos::network::OverrideTeamNumber(971); }
+  virtual void SetUp() { muan::network::OverrideTeamNumber(971); }
 };
 
 ::testing::Environment* const team_number_env =
@@ -75,7 +75,7 @@ class DrivetrainSimulation {
     const double left_encoder = GetLeftPosition();
     const double right_encoder = GetRightPosition();
 
-    ::aos::ScopedMessagePtr<control_loops::DrivetrainQueue::Position> position =
+    ::muan::ScopedMessagePtr<control_loops::DrivetrainQueue::Position> position =
         my_drivetrain_queue_.position.MakeMessage();
     position->left_encoder = left_encoder;
     position->right_encoder = right_encoder;
@@ -99,7 +99,7 @@ class DrivetrainSimulation {
   double last_right_position_;
 };
 
-class DrivetrainTest : public ::aos::testing::ControlLoopTest {
+class DrivetrainTest : public ::muan::testing::ControlLoopTest {
  protected:
   // Create a new instance of the test queue so that it invalidates the queue
   // that it points to.  Otherwise, we will have a pointer to shared memory that
@@ -189,7 +189,7 @@ TEST_F(DrivetrainTest, NoGoalWithRobotState) {
   }
 }
 
-::aos::controls::HPolytope<2> MakeBox(double x1_min, double x1_max,
+::muan::controls::HPolytope<2> MakeBox(double x1_min, double x1_max,
                                       double x2_min, double x2_max) {
   Eigen::Matrix<double, 4, 2> box_H;
   box_H << /*[[*/ 1.0, 0.0 /*]*/,
@@ -201,7 +201,7 @@ TEST_F(DrivetrainTest, NoGoalWithRobotState) {
             /*[*/-x1_min /*]*/,
             /*[*/ x2_max /*]*/,
             /*[*/-x2_min /*]]*/;
-  ::aos::controls::HPolytope<2> t_poly(box_H, box_k);
+  ::muan::controls::HPolytope<2> t_poly(box_H, box_k);
   return t_poly;
 }
 
@@ -212,7 +212,7 @@ class CoerceGoalTest : public ::testing::Test {
 
 // WHOOOHH!
 TEST_F(CoerceGoalTest, Inside) {
-  ::aos::controls::HPolytope<2> box = MakeBox(1, 2, 1, 2);
+  ::muan::controls::HPolytope<2> box = MakeBox(1, 2, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << /*[[*/ 1, -1 /*]]*/;
@@ -228,7 +228,7 @@ TEST_F(CoerceGoalTest, Inside) {
 }
 
 TEST_F(CoerceGoalTest, Outside_Inside_Intersect) {
-  ::aos::controls::HPolytope<2> box = MakeBox(1, 2, 1, 2);
+  ::muan::controls::HPolytope<2> box = MakeBox(1, 2, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << 1, -1;
@@ -244,7 +244,7 @@ TEST_F(CoerceGoalTest, Outside_Inside_Intersect) {
 }
 
 TEST_F(CoerceGoalTest, Outside_Inside_no_Intersect) {
-  ::aos::controls::HPolytope<2> box = MakeBox(3, 4, 1, 2);
+  ::muan::controls::HPolytope<2> box = MakeBox(3, 4, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << 1, -1;
@@ -260,7 +260,7 @@ TEST_F(CoerceGoalTest, Outside_Inside_no_Intersect) {
 }
 
 TEST_F(CoerceGoalTest, Middle_Of_Edge) {
-  ::aos::controls::HPolytope<2> box = MakeBox(0, 4, 1, 2);
+  ::muan::controls::HPolytope<2> box = MakeBox(0, 4, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << -1, 1;
@@ -276,7 +276,7 @@ TEST_F(CoerceGoalTest, Middle_Of_Edge) {
 }
 
 TEST_F(CoerceGoalTest, PerpendicularLine) {
-  ::aos::controls::HPolytope<2> box = MakeBox(1, 2, 1, 2);
+  ::muan::controls::HPolytope<2> box = MakeBox(1, 2, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << 1, 1;

@@ -1,8 +1,8 @@
-#include "frc971/control_loops/coerce_goal.h"//TODO (Finn/Jasmine) Should we copy this file over? I think it's important
+#include "frc1678/control_loops/coerce_goal.h"//TODO (Finn/Jasmine) Should we copy this file over? I think it's important
 
-#include "Eigen/Dense"
+#include "tools/Eigen/Dense"
 
-#include "drivetrain/polytope.h"
+#include polytope.h"
 
 namespace frc1678 {
 namespace control_loops {

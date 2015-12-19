@@ -1,9 +1,9 @@
 #ifndef FRC1678_CONTROL_LOOPS_COERCE_GOAL_H_
 #define FRC1678_CONTROL_LOOPS_COERCE_GOAL_H_
 
-#include "Eigen/Dense"
+#include "tools/Eigen/Dense"
 
-#include "drivetrain/polytope.h"
+#include "polytope.h"
 
 namespace frc1678 {
 namespace control_loops {

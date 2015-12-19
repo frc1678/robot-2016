@@ -1,9 +1,9 @@
 ifndef AOS_COMMON_CONTROLS_POLYTOPE_H_
 #define AOS_COMMON_CONTROLS_POLYTOPE_H_
 
-#include "Eigen/Dense"
-#include "third_party/cddlib/lib-src/setoper.h"
-#include "third_party/cddlib/lib-src/cdd.h"
+#include "tools/Eigen/Dense"
+#include "tools/cddlib/lib-src/setoper.h"
+#include "tools/cddlib/lib-src/cdd.h"
 
 namespace muan {
 namespace controls {
