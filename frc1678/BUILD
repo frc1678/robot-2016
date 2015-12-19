@@ -2,7 +2,7 @@ cc_binary(
   name="frc1678",
   deps=[
     "@wpilib//:main",
-    "drivetrain/drivetrain:drivetrain_lib"
+    "//drivetrain/drivetrain:drivetrain_lib"
   ],
   srcs=glob(["*.cpp"])
 )
