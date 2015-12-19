@@ -38,13 +38,3 @@ cc_library(
 
 # TODO (Finn): This is a 971-ism with the messages sent around.
 # We'll want to run the controller in a separate thread and get the messages sent to the main FRC one, eventually, but for now we'll just throw it all in there.
-cc_binary(
-  name = 'drivetrain',
-  srcs = [
-    'drivetrain_main.cc',
-  ],
-  deps = [
-    '//aos/linux_code:init',
-    ':drivetrain_lib',
-  ],
-)

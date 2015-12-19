@@ -15,6 +15,7 @@ cc_library(
     '//tools/eigen',
     '//drivetrain:macros',
   ],
+  visibility = ["//visibility:public"],
 )
 
 cc_library(
@@ -30,6 +31,7 @@ cc_library(
     '//drivetrain:polytope',
 #    '//debian:libm', # TODO (Finn): Look at 971-Robot-Code/debian/BUILD and figure this out.
   ],
+  visibility = ["//visibility:public"],
 )
 
 cc_library(
@@ -41,5 +43,6 @@ cc_library(
     '//tools/eigen',
     '//tools/cddlib', #TODO (jasmine): Add cddlib to our third party stuff.
   ],
+  visibility = ["//visibility:public"],
 )
 
