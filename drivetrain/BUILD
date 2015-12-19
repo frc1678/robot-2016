@@ -1,11 +1,19 @@
 cc_library(
+  name = 'macros',
+  hdrs = [
+    'macros.h',
+  ],
+)
+
+cc_library(
   name = 'state_feedback_loop',
   hdrs = [
     'state_feedback_loop.h',
+    
   ],
   deps = [
     '//tools/eigen',
-    '//aos/common:macros', #remove or add directly?
+    '//drivetrain:macros',
   ],
 )
 
