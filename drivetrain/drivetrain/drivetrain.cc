@@ -4,7 +4,7 @@
 #include <sched.h>
 #include <cmath>
 #include <memory>
-#include "tools/Eigen/Dense" // TODO (Finn): Make sure it actually deals with Eigen.
+#include "tools/eigen/Eigen/Dense" // TODO (Finn): Make sure it actually deals with Eigen.
 
 // #include "aos/common/logging/logging.h" // TODO (Finn): What are we doing with logging?
 // For now, remove all references to it, but I'd like to be able to actually log it.

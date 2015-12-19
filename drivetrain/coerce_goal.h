@@ -1,7 +1,7 @@
 #ifndef FRC1678_CONTROL_LOOPS_COERCE_GOAL_H_
 #define FRC1678_CONTROL_LOOPS_COERCE_GOAL_H_
 
-#include "tools/Eigen/Dense"
+#include "tools/eigen/Eigen/Dense"
 
 #include "polytope.h"
 

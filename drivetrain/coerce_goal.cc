@@ -1,6 +1,6 @@
-#include "frc1678/control_loops/coerce_goal.h"//TODO (Finn/Jasmine) Should we copy this file over? I think it's important
+#include "coerce_goal.h"
 
-#include "tools/Eigen/Dense"
+#include "tools/eigen/Eigen/Dense"
 
 #include "polytope.h"
 
