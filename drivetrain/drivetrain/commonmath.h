@@ -1,7 +1,7 @@
-#ifndef AOS_COMMON_MATH_H_
-#define AOS_COMMON_MATH_H_
+#ifndef MUAN_COMMON_MATH_H_
+#define MUAN_COMMON_MATH_H_
 
-namespace aos {
+namespace muan {
 
 // Clips a value so that it is in [min, max]
 static inline double Clip(double value, double min, double max) {
@@ -22,6 +22,6 @@ static inline int sign(T val) {
   }
 }
 
-}  // namespace aos
+}  // namespace MUAN
 
-#endif  // AOS_COMMON_MATH_H_
+#endif  // MUAN_COMMON_MATH_H_

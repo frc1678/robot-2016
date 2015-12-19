@@ -1,7 +1,7 @@
 #ifndef DRIVETRAIN_CONTROL_LOOPS_DRIVETRAIN_DOG_MOTOR_PLANT_H_
 #define DRIVETRAIN_CONTROL_LOOPS_DRIVETRAIN_DOG_MOTOR_PLANT_H_
 
-#include "drivetrain/state_feedback_loop.h"
+#include "../state_feedback_loop.h"
 
 namespace drivetrain {
 namespace control_loops {

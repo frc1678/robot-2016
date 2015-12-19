@@ -1,11 +1,11 @@
-#ifndef AOS_COMMON_CONTROLS_POLYTOPE_H_
+ifndef AOS_COMMON_CONTROLS_POLYTOPE_H_
 #define AOS_COMMON_CONTROLS_POLYTOPE_H_
 
 #include "Eigen/Dense"
 #include "third_party/cddlib/lib-src/setoper.h"
 #include "third_party/cddlib/lib-src/cdd.h"
 
-namespace aos {
+namespace muan {
 namespace controls {
 
 // A n dimension polytope.

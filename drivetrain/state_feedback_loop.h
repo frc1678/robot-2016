@@ -1,5 +1,5 @@
-#ifndef FRC971_CONTROL_LOOPS_STATE_FEEDBACK_LOOP_H_
-#define FRC971_CONTROL_LOOPS_STATE_FEEDBACK_LOOP_H_
+#ifndef FRC1678_CONTROL_LOOPS_STATE_FEEDBACK_LOOP_H_
+#define FRC1678_CONTROL_LOOPS_STATE_FEEDBACK_LOOP_H_
 
 #include <assert.h>
 
@@ -9,8 +9,7 @@
 
 #include "Eigen/Dense"
 
-#include "aos/common/logging/logging.h" //TODO (Finn): Take care of (remove or replace) logging.
-#include "aos/common/macros.h"
+#include "macros.h" //TODO (Finn) What does this do? It doesn't ever get used?
 
 // For everything in this file, "inputs" and "outputs" are defined from the
 // perspective of the plant. This means U is an input and Y is an output
@@ -425,4 +424,4 @@ class StateFeedbackLoop {
   DISALLOW_COPY_AND_ASSIGN(StateFeedbackLoop);
 };
 
-#endif  // FRC971_CONTROL_LOOPS_STATE_FEEDBACK_LOOP_H_
+#endif  // FRC1678_CONTROL_LOOPS_STATE_FEEDBACK_LOOP_H_

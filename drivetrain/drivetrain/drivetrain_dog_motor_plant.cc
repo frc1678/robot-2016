@@ -1,8 +1,8 @@
-#include "drivetrain/control_loops/drivetrain_dog_motor_plant.h"
+#include "drivetrain_dog_motor_plant.h"
 
 #include <vector>
 
-#include "drivetrain/state_feedback_loop.h"
+#include "../state_feedback_loop.h"
 
 namespace drivetrain {
 namespace control_loops {

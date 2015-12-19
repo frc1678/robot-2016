@@ -4,7 +4,7 @@
 #include <string.h>
 #include "Eigen/Dense"
 
-#include "aos/common/controls/polytope.h"
+#include "../polytope.h"
 
 namespace drivetrain {
 namespace control_loops {

@@ -13,11 +13,11 @@
 //#include "aos/common/logging/queue_logging.h" // This comes in with the logging.
 //#include "aos/common/logging/matrix_logging.h"
 
-#include "drivetrain/state_feedback_loop.h"
-#include "drivetrain/coerce_goal.h"
-#include "drivetrain/drivetrain/polydrivetrain_cim_plant.h" //TODO (Finn): Fix the generated code to point the include to the correct .h (for all of these)
-#include "drivetrain/drivetrain/drivetrain_dog_motor_plant.h"
-#include "drivetrain/drivetrain/polydrivetrain_dog_motor_plant.h"
+#include "../state_feedback_loop.h"
+#include "../coerce_goal.h"
+#include "polydrivetrain_cim_plant.h" 
+#include "drivetrain_dog_motor_plant.h"
+#include "polydrivetrain_dog_motor_plant.h"
 
 // A consistent way to mark code that goes away without shifters.
 #define HAVE_SHIFTERS 0
@@ -35,7 +35,7 @@ class DrivetrainMotorsSS {
                       .finished(),
                   (Eigen::Matrix<double, 4, 1>() << 12.0, 12.0, 12.0, 12.0)
                       .finished()) {
-      ::aos::controls::HPolytope<0>::Init();
+      ::muan::controls::HPolytope<0>::Init();
       T << 1, -1, 1, 1;
       T_inverse = T.inverse();
     }
@@ -49,15 +49,15 @@ class DrivetrainMotorsSS {
       if (::std::abs(U(0, 0)) > 12.0 || ::std::abs(U(1, 0)) > 12.0) {
         mutable_U() =
             U() * 12.0 / ::std::max(::std::abs(U(0, 0)), ::std::abs(U(1, 0)));
-        LOG_MATRIX(DEBUG, "U is now", U());
+        //LOG_MATRIX(DEBUG, "U is now", U());
         // TODO(Austin): Figure out why the polytope stuff wasn't working and
         // remove this hack.
         output_was_capped_ = true;
         return;
 
-        LOG_MATRIX(DEBUG, "U at start", U());
-        LOG_MATRIX(DEBUG, "R at start", R());
-        LOG_MATRIX(DEBUG, "Xhat at start", X_hat());
+        //LOG_MATRIX(DEBUG, "U at start", U());
+        //LOG_MATRIX(DEBUG, "R at start", R());
+        //LOG_MATRIX(DEBUG, "Xhat at start", X_hat());
 
         Eigen::Matrix<double, 2, 2> position_K;
         position_K << K(0, 0), K(0, 2), K(1, 0), K(1, 2);
@@ -69,7 +69,7 @@ class DrivetrainMotorsSS {
         const auto drive_error = T_inverse * position_error;
         Eigen::Matrix<double, 2, 1> velocity_error;
         velocity_error << error(1, 0), error(3, 0);
-        LOG_MATRIX(DEBUG, "error", error);
+        //LOG_MATRIX(DEBUG, "error", error);
 
         const auto &poly = U_Poly_;
         const Eigen::Matrix<double, 4, 2> pos_poly_H =
@@ -105,7 +105,7 @@ class DrivetrainMotorsSS {
           const auto adjusted_pos_error_h = frc971::control_loops::DoCoerceGoal(
               pos_poly, LH, wh, drive_error, &is_inside_h);
           const auto adjusted_pos_error_45 =
-              frc971::control_loops::DoCoerceGoal(pos_poly, L45, w45,
+              frc1678::control_loops::DoCoerceGoal(pos_poly, L45, w45,
                                                   intersection, nullptr);
           if (pos_poly.IsInside(intersection)) {
             adjusted_pos_error = adjusted_pos_error_h;
@@ -122,10 +122,10 @@ class DrivetrainMotorsSS {
           }
         }
 
-        LOG_MATRIX(DEBUG, "adjusted_pos_error", adjusted_pos_error);
+        //LOG_MATRIX(DEBUG, "adjusted_pos_error", adjusted_pos_error);
         mutable_U() =
             velocity_K * velocity_error + position_K * T * adjusted_pos_error;
-        LOG_MATRIX(DEBUG, "U is now", U());
+        //LOG_MATRIX(DEBUG, "U is now", U());
       } else {
         output_was_capped_ = false;
       }
@@ -186,7 +186,7 @@ class DrivetrainMotorsSS {
       loop_->UpdateObserver(loop_->U());
     }
     ::Eigen::Matrix<double, 4, 1> E = loop_->R() - loop_->X_hat();
-    LOG_MATRIX(DEBUG, "E", E);
+    //LOG_MATRIX(DEBUG, "E", E);
   }
 
   double GetEstimatedRobotSpeed() const {
@@ -514,7 +514,7 @@ class PolyDrivetrain {
       }
       const double left_velocity = fvel - steering_velocity;
       const double right_velocity = fvel + steering_velocity;
-      LOG(DEBUG, "l=%f r=%f\n", left_velocity, right_velocity);
+      //LOG(DEBUG, "l=%f r=%f\n", left_velocity, right_velocity);
 
       // Integrate velocity to get the position.
       // This position is used to get integral control.
@@ -645,7 +645,7 @@ void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
 
   bool bad_pos = false;
   if (position == nullptr) {
-    LOG_INTERVAL(no_position_);
+    //LOG_INTERVAL(no_position_);
     bad_pos = true;
   }
   no_position_.Print();
