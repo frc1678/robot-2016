@@ -1,10 +1,10 @@
-#include "y2015_bot3/control_loops/drivetrain/polydrivetrain_cim_plant.h"
+#include "polydrivetrain_cim_plant.h"
 
 #include <vector>
 
-#include "frc971/control_loops/state_feedback_loop.h"
+#include "drivetrain/state_feedback_loop.h"
 
-namespace y2015_bot3 {
+namespace drivetrain {
 namespace control_loops {
 
 StateFeedbackPlantCoefficients<1, 1, 1> MakeCIMPlantCoefficients() {
@@ -46,4 +46,4 @@ StateFeedbackLoop<1, 1, 1> MakeCIMLoop() {
 }
 
 }  // namespace control_loops
-}  // namespace y2015_bot3
+}  // namespace drivetrain

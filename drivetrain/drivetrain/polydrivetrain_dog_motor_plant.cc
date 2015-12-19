@@ -1,10 +1,10 @@
-#include "y2015_bot3/control_loops/drivetrain/polydrivetrain_dog_motor_plant.h"
+#include "polydrivetrain_dog_motor_plant.h"
 
 #include <vector>
 
-#include "frc971/control_loops/state_feedback_loop.h"
+#include "drivetrain/state_feedback_loop.h"
 
-namespace y2015_bot3 {
+namespace drivetrain {
 namespace control_loops {
 
 StateFeedbackPlantCoefficients<2, 2, 2> MakeVelocityDrivetrainLowLowPlantCoefficients() {
@@ -130,4 +130,4 @@ StateFeedbackLoop<2, 2, 2> MakeVelocityDrivetrainLoop() {
 }
 
 }  // namespace control_loops
-}  // namespace y2015_bot3
+}  // namespace drivetrain

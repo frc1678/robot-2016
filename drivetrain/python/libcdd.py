@@ -20,15 +20,7 @@ ctypes.pythonapi.PyFile_AsFile.restype = ctypes.POINTER(FILE)
 # manipulate half space and vertex representations of polytopes.
 # Unfortunately, the library was compiled with C++ even though it has a lot of C
 # code in it, so all the symbol names are mangled.  Ug.
-libcdd = None
-for path in os.environ.get('PYTHONPATH').split(':'):
-  try:
-    libcdd = ctypes.cdll.LoadLibrary(os.path.join(path, 'third_party/cddlib/_cddlib.so'))
-  except OSError, e:
-    pass
-
-assert libcdd is not None, 'Failed to find _cddlib.so'
-
+libcdd = ctypes.cdll.LoadLibrary('libcdd.so')
 libcdd.dd_set_global_constants()
 
 # The variable type mytype that libcdd defines (double[1])
