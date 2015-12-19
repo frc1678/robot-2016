@@ -34,6 +34,7 @@ cc_library(
     '//drivetrain:state_feedback_loop',
     '//drivetrain:coerce_goal',
   ],
+  visibility = ["//visibility:public"],
 )
 
 # TODO (Finn): This is a 971-ism with the messages sent around.
