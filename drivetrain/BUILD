@@ -4,7 +4,7 @@ cc_library(
     'state_feedback_loop.h',
   ],
   deps = [
-    '//third_party/eigen', #TODO (Finn): How do we include eigen?
+    '//tools/eigen',
     '//aos/common:macros', #remove or add directly?
   ],
 )
@@ -18,9 +18,9 @@ cc_library(
     'coerce_goal.h',
   ],
   deps = [
-    '//third_party/eigen', #TODO (Finn)
+    '//tools/eigen',
     '//drivetrain:polytope',
-    '//debian:libm', # TODO (Finn): Look at 971-Robot-Code/debian/BUILD and figure this out.
+#    '//debian:libm', # TODO (Finn): Look at 971-Robot-Code/debian/BUILD and figure this out.
   ],
 )
 
@@ -30,8 +30,8 @@ cc_library(
     'polytope.h',
   ],
   deps = [
-    '//third_party/eigen',
-    '//third_party/cddlib', #TODO (jasmine): Add cddlib to our third party stuff.
+    '//tools/eigen',
+    '//tools/cddlib', #TODO (jasmine): Add cddlib to our third party stuff.
   ],
 )
 
