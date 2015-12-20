@@ -22,17 +22,26 @@ class CitrusRobot : public IterativeRobot {
 
 public:
   CitrusRobot() {
+    
+    //Robot Parts
     drive = new RobotDrive(1, 2);
-    drive_loop = new DrivetrainLoop();
-    j_wheel = new Joystick(0); // TODO (Finn): Get the axis from the steering wheel and get it into the appropriate units.
+    drive_loop = new DrivetrainLoop();    
+    shifting = new DoubleSolenoid(1,2);
+
+    //Joysticks
+    j_wheel = new Joystick(0); 
     j_stick = new Joystick(1);
+    manipulator = new Joystick(2);
+
+    //Buttonz!
     shiftDown = new CitrusButton(j_stick, 475328);
     shiftUp = new CitrusButton(j_stick, 353);
     quickTurn = new CitrusButton(j_wheel, 321);
+    
   }
 
   void RobotInit() {
-
+    drive->SetSafetyEnabled(false);
   }
 
   void TeleopInit() {
@@ -54,15 +63,14 @@ public:
     SetDrivePosition(&drivetrain_position);
 
     drive_loop->RunIteration(&drivetrain_goal, &drivetrain_position, &drivetrain_output, &drivetrain_status);
-
-
-    if(shiftUp->ButtonClicked()){
-    //do the stuff to shift up
-    }
-    if(shiftDown->ButtonClicked()){
-    //do stuff with solenoids to shift down
-    }
-
+       
+    if (shiftUp->ButtonClicked()) {
+	shifting->Set(DoubleSolenoid::Value::kReverse);
+    } else if (shiftDown->ButtonClicked()) {	
+	shifting->Set(DoubleSolenoid::Value::kForward);
+    } else {
+	shifting->Set(DoubleSolenoid::Value::kOff);
+    } 
     if(quickturn->ButtonPressed()){
     //dunno how to do this...
     }
