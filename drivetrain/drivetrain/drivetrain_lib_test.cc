@@ -13,6 +13,13 @@
 #include "drivetrain/coerce_goal.h"
 #include "drivetrain_dog_motor_plant.h"
 
+using drivetrain::control_loops::DrivetrainGoal;
+using drivetrain::control_loops::DrivetrainPosition;
+using drivetrain::control_loops::DrivetrainOutput;
+using drivetrain::control_loops::DrivetrainStatus;
+using drivetrain::control_loops::DrivetrainLoop;
+using drivetrain::control_loops::MakeDrivetrainPlant;
+
 namespace y2015_bot3 {
 namespace control_loops {
 namespace testing {
@@ -25,32 +32,16 @@ class Environment : public ::testing::Environment {
     aos::controls::HPolytope<0>::Init();
   }
 };
-::testing::Environment* const holder_env =
-  ::testing::AddGlobalTestEnvironment(new Environment);
 
-class TeamNumberEnvironment : public ::testing::Environment {
- public:
-  // Override this to define how to set up the environment.
-  virtual void SetUp() { aos::network::OverrideTeamNumber(971); }
-};
-
-::testing::Environment* const team_number_env =
-    ::testing::AddGlobalTestEnvironment(new TeamNumberEnvironment);
-
-// Class which simulates the drivetrain and sends out queue messages containing
-// the position.
+// Class which simulates the drivetrain
 class DrivetrainSimulation {
  public:
-  // Constructs a motor simulation.
+   // Constructs a motor simulation.
   // TODO(aschuh) Do we want to test the clutch one too?
   DrivetrainSimulation()
       : drivetrain_plant_(
-            new StateFeedbackPlant<4, 2, 2>(MakeDrivetrainPlant())),
-        my_drivetrain_queue_(".y2015_bot3.control_loops.drivetrain", 0x8a8dde77,
-                             ".y2015_bot3.control_loops.drivetrain.goal",
-                             ".y2015_bot3.control_loops.drivetrain.position",
-                             ".y2015_bot3.control_loops.drivetrain.output",
-                             ".y2015_bot3.control_loops.drivetrain.status") {
+            new StateFeedbackPlant<4, 2, 2>(MakeDrivetrainPlant()))
+         { // TODO (Finn): zero-initialize the structs
     Reinitialize();
   }
 
@@ -69,99 +60,90 @@ class DrivetrainSimulation {
   double GetRightPosition() const { return drivetrain_plant_->Y(1, 0); }
 
   // Sends out the position queue messages.
-  void SendPositionMessage() {
+  void SendPositionMessage(DrivetrainPosition *drivetrain_position) {
     const double left_encoder = GetLeftPosition();
     const double right_encoder = GetRightPosition();
 
-    ::aos::ScopedMessagePtr<control_loops::DrivetrainQueue::Position> position =
-        my_drivetrain_queue_.position.MakeMessage();
-    position->left_encoder = left_encoder;
-    position->right_encoder = right_encoder;
-    position.Send();
+    drivetrain_position->left_encoder = left_encoder;
+    drivetrain_position->right_encoder = right_encoder;
   }
 
   // Simulates the drivetrain moving for one timestep.
-  void Simulate() {
+  // TODO (jasmine): Stop trusting that the output actually changes.
+  void Simulate(const DrivetrainOutput* drivetrain_output) {
     last_left_position_ = drivetrain_plant_->Y(0, 0);
     last_right_position_ = drivetrain_plant_->Y(1, 0);
-    EXPECT_TRUE(my_drivetrain_queue_.output.FetchLatest());
-    drivetrain_plant_->mutable_U() << my_drivetrain_queue_.output->left_voltage,
-        my_drivetrain_queue_.output->right_voltage;
+    drivetrain_plant_->mutable_U() << drivetrain_output->left_voltage,
+        drivetrain_output->right_voltage;
     drivetrain_plant_->Update();
   }
 
   ::std::unique_ptr<StateFeedbackPlant<4, 2, 2>> drivetrain_plant_;
  private:
-  DrivetrainQueue my_drivetrain_queue_;
   double last_left_position_;
   double last_right_position_;
 };
 
-class DrivetrainTest : public ::aos::testing::ControlLoopTest {
+class DrivetrainTest : public ::testing::Test {
  protected:
-  // Create a new instance of the test queue so that it invalidates the queue
-  // that it points to.  Otherwise, we will have a pointer to shared memory that
-  // is no longer valid.
-  DrivetrainQueue my_drivetrain_queue_;
+  DrivetrainGoal drivetrain_goal_;
+  DrivetrainPosition drivetrain_position_;
+  DrivetrainOutput drivetrain_output_;
+  DrivetrainStatus drivetrain_status_;
 
   // Create a loop and simulation plant.
   DrivetrainLoop drivetrain_motor_;
   DrivetrainSimulation drivetrain_motor_plant_;
 
   DrivetrainTest()
-      : my_drivetrain_queue_(".y2015_bot3.control_loops.drivetrain", 0x8a8dde77,
-                             ".y2015_bot3.control_loops.drivetrain.goal",
-                             ".y2015_bot3.control_loops.drivetrain.position",
-                             ".y2015_bot3.control_loops.drivetrain.output",
-                             ".y2015_bot3.control_loops.drivetrain.status"),
-        drivetrain_motor_(&my_drivetrain_queue_),
+      :  //TODO (Finn): initialize your structs
+        drivetrain_motor_(),
         drivetrain_motor_plant_() {
-    ::frc971::sensors::gyro_reading.Clear();
   }
 
   void VerifyNearGoal() {
-    my_drivetrain_queue_.goal.FetchLatest();
-    my_drivetrain_queue_.position.FetchLatest();
-    EXPECT_NEAR(my_drivetrain_queue_.goal->left_goal,
+    EXPECT_NEAR(drivetrain_goal_.left_goal,
                 drivetrain_motor_plant_.GetLeftPosition(),
                 1e-2);
-    EXPECT_NEAR(my_drivetrain_queue_.goal->right_goal,
+    EXPECT_NEAR(drivetrain_goal_.right_goal,
                 drivetrain_motor_plant_.GetRightPosition(),
                 1e-2);
   }
 
   virtual ~DrivetrainTest() {
-    ::frc971::sensors::gyro_reading.Clear();
   }
 };
 
 // Tests that the drivetrain converges on a goal.
 TEST_F(DrivetrainTest, ConvergesCorrectly) {
-  my_drivetrain_queue_.goal.MakeWithBuilder().control_loop_driving(true)
-      .left_goal(-1.0)
-      .right_goal(1.0).Send();
+  // Zero before setting it up.
+  drivetrain_goal_.control_loop_driving = true;
+   drivetrain_goal_.left_goal = (-1.0);
+  drivetrain_goal_.right_goal = (1.0);
   for (int i = 0; i < 200; ++i) {
-    drivetrain_motor_plant_.SendPositionMessage();
-    drivetrain_motor_.Iterate();
-    drivetrain_motor_plant_.Simulate();
-    SimulateTimestep(true);
+    drivetrain_motor_plant_.SendPositionMessage(&drivetrain_position_);
+    drivetrain_motor_.RunIteration(&drivetrain_goal_,
+        &drivetrain_position_, &drivetrain_output_, &drivetrain_status_);
+    drivetrain_motor_plant_.Simulate(&drivetrain_output_);
+//    SimulateTimestep(true);
   }
   VerifyNearGoal();
 }
 
 // Tests that it survives disabling.
 TEST_F(DrivetrainTest, SurvivesDisabling) {
-  my_drivetrain_queue_.goal.MakeWithBuilder().control_loop_driving(true)
-      .left_goal(-1.0)
-      .right_goal(1.0).Send();
+      drivetrain_goal_.control_loop_driving = true;
+      drivetrain_goal_.left_goal= (-1.0);
+      drivetrain_goal_.right_goal= (1.0);
   for (int i = 0; i < 500; ++i) {
-    drivetrain_motor_plant_.SendPositionMessage();
-    drivetrain_motor_.Iterate();
-    drivetrain_motor_plant_.Simulate();
+    drivetrain_motor_plant_.SendPositionMessage(&drivetrain_position_);
+    drivetrain_motor_.RunIteration(&drivetrain_goal_,
+        &drivetrain_position_, &drivetrain_output_, &drivetrain_status_);
+    drivetrain_motor_plant_.Simulate(&drivetrain_output_);
     if (i > 20 && i < 200) {
-      SimulateTimestep(false);
+//      SimulateTimestep(false);
     } else {
-      SimulateTimestep(true);
+//     SimulateTimestep(true);
     }
   }
   VerifyNearGoal();
@@ -170,9 +152,10 @@ TEST_F(DrivetrainTest, SurvivesDisabling) {
 // Tests that never having a goal doesn't break.
 TEST_F(DrivetrainTest, NoGoalStart) {
   for (int i = 0; i < 20; ++i) {
-    drivetrain_motor_plant_.SendPositionMessage();
-    drivetrain_motor_.Iterate();
-    drivetrain_motor_plant_.Simulate();
+    drivetrain_motor_plant_.SendPositionMessage(&drivetrain_position_);
+    drivetrain_motor_.RunIteration(&drivetrain_goal_,
+        &drivetrain_position_, &drivetrain_output_, &drivetrain_status_);
+    drivetrain_motor_plant_.Simulate(&drivetrain_output_);
   }
 }
 
@@ -180,10 +163,11 @@ TEST_F(DrivetrainTest, NoGoalStart) {
 // break.
 TEST_F(DrivetrainTest, NoGoalWithRobotState) {
   for (int i = 0; i < 20; ++i) {
-    drivetrain_motor_plant_.SendPositionMessage();
-    drivetrain_motor_.Iterate();
-    drivetrain_motor_plant_.Simulate();
-    SimulateTimestep(true);
+    drivetrain_motor_plant_.SendPositionMessage(&drivetrain_position_);
+    drivetrain_motor_.RunIteration(&drivetrain_goal_,
+        &drivetrain_position_, &drivetrain_output_, &drivetrain_status_);
+    drivetrain_motor_plant_.Simulate(&drivetrain_output_);
+//    SimulateTimestep(true);
   }
 }
 
