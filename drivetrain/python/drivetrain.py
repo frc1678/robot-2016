@@ -27,7 +27,7 @@ class CIM(control_loop.ControlLoop):
               (12.0 - self.R * self.free_current))
     # Torque constant
     self.Kt = self.stall_torque / self.stall_current
-    # Control loop time step
+    # Control loop time step TODO (Finn): Update once we get it onto another thread.
     #self.dt = 0.005
     self.dt = 0.020
 
