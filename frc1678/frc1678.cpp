@@ -7,6 +7,7 @@ using drivetrain::control_loops::DrivetrainGoal;
 using drivetrain::control_loops::DrivetrainPosition;
 using drivetrain::control_loops::DrivetrainOutput;
 using drivetrain::control_loops::DrivetrainStatus;
+using drivetrain::control_loops::DrivetrainLoop;
 
 class CitrusRobot : public IterativeRobot {
   RobotDrive* drive;
@@ -26,12 +27,12 @@ public:
     //Robot Parts
     drive = new RobotDrive(1, 2);
     drive_loop = new DrivetrainLoop();    
-    shifting = new DoubleSolenoid(1,2);
+    //shifting = new DoubleSolenoid(1,2);
 
     //Joysticks
     j_wheel = new Joystick(0); 
     j_stick = new Joystick(1);
-    manipulator = new Joystick(2);
+    //manipulator = new Joystick(2);
 
     //Buttonz!
     shiftDown = new CitrusButton(j_stick, 475328);
@@ -49,6 +50,15 @@ public:
   }
 
   void DisabledPeriodic(){
+    // TODO (Ash): Stick this in a function so that we don't do all of this multiple times.
+    DrivetrainGoal drivetrain_goal;
+    DrivetrainPosition drivetrain_position;
+    DrivetrainOutput drivetrain_output;
+    DrivetrainStatus drivetrain_status;
+
+    SetDriveGoal(&drivetrain_goal);
+    SetDrivePosition(&drivetrain_position);
+
     drive_loop->RunIteration(&drivetrain_goal, &drivetrain_position, &drivetrain_output, &drivetrain_status);
   }
 
@@ -63,22 +73,21 @@ public:
     SetDrivePosition(&drivetrain_position);
 
     drive_loop->RunIteration(&drivetrain_goal, &drivetrain_position, &drivetrain_output, &drivetrain_status);
-       
-    if (shiftUp->ButtonClicked()) {
+    
+    // TODO (Finn): Add these to the DrivetrainGoal (in SetDriveGoal). Set the relevant bools to true on each iteration. Then set the solenoids based on the value of drivetrain_output.
+/*    if (shiftUp->ButtonClicked()) {
 	shifting->Set(DoubleSolenoid::Value::kReverse);
     } else if (shiftDown->ButtonClicked()) {	
 	shifting->Set(DoubleSolenoid::Value::kForward);
     } else {
 	shifting->Set(DoubleSolenoid::Value::kOff);
     } 
-    if(quickturn->ButtonPressed()){
+    if(quickTurn->ButtonPressed()){
     //dunno how to do this...
-    }
-
-
+    }*/
 
     // TODO (Finn): Also deal with shifting output and with logging from the status.
-    drive->TankDrive(drivetrain_output->left_voltage, drivetrain_output->right_voltage);
+    drive->TankDrive(drivetrain_output.left_voltage, drivetrain_output.right_voltage);
     UpdateButtons();
   }
 
