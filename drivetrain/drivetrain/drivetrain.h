@@ -13,7 +13,7 @@ namespace control_loops {
 // TODO(jasmine): Figure out what these refer to and get actual constants.
 constexpr double kDrivetrainTurnWidth = 0.63;
 constexpr double kDrivetrainDoneDistance = 0.02;
-constexpr double kDrivetrainEncoderRatio = 1.0/20.0; //TODO (jasmine): Encoders are 1:1 to the wheel; allow high gear to be used.
+constexpr double kDrivetrainEncoderRatio = 1.0;///20.0; //TODO (jasmine): Encoders are 1:1 to the wheel; allow high gear to be used.
 constexpr double kDrivetrainHighGearRatio = 1.0/9.0;
 constexpr double kDrivetrainLowGearRatio = 1.0/20.0;
 const bool kDrivetrainClutchTransmission = false;

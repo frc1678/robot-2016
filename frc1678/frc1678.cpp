@@ -12,6 +12,8 @@ using drivetrain::control_loops::DrivetrainLoop;
 class CitrusRobot : public IterativeRobot {
   RobotDrive* drive;
   DrivetrainLoop* drive_loop;
+  Encoder *left_encoder;
+  Encoder *right_encoder;
   Joystick* j_wheel;
   Joystick* j_stick;
 
@@ -23,11 +25,14 @@ class CitrusRobot : public IterativeRobot {
 
 public:
   CitrusRobot() {
-    
+
     //Robot Parts
-    drive = new RobotDrive(1, 2);
-    drive_loop = new DrivetrainLoop();    
+    drive = new RobotDrive(2, 1);
+    drive_loop = new DrivetrainLoop();
     //shifting = new DoubleSolenoid(1,2);
+    left_encoder = new Encoder(12, 13);
+    right_encoder = new Encoder(10, 11);
+
 
     //Joysticks
     j_wheel = new Joystick(0); 
@@ -38,7 +43,7 @@ public:
     shiftDown = new CitrusButton(j_stick, 475328);
     shiftUp = new CitrusButton(j_stick, 353);
     quickTurn = new CitrusButton(j_wheel, 321);
-    
+
   }
 
   void RobotInit() {
@@ -51,18 +56,26 @@ public:
 
   void DisabledPeriodic(){
     // TODO (Ash): Stick this in a function so that we don't do all of this multiple times.
+    // TODO (Ash): Set the goal to 0 because it's disabled.
     DrivetrainGoal drivetrain_goal;
     DrivetrainPosition drivetrain_position;
     DrivetrainOutput drivetrain_output;
     DrivetrainStatus drivetrain_status;
 
+    SmartDashboard::PutNumber("Wheel", j_wheel->GetX());
+    SmartDashboard::PutNumber("Stick", j_stick->GetY());
     SetDriveGoal(&drivetrain_goal);
     SetDrivePosition(&drivetrain_position);
 
     drive_loop->RunIteration(&drivetrain_goal, &drivetrain_position, &drivetrain_output, &drivetrain_status);
+    SmartDashboard::PutNumber("Left voltage", drivetrain_output.left_voltage);
+    SmartDashboard::PutNumber("Right voltage", drivetrain_output.right_voltage);
   }
 
   void TeleopPeriodic() {
+    SmartDashboard::PutNumber("Wheel", j_wheel->GetX());
+    SmartDashboard::PutNumber("Stick", j_stick->GetY());
+
     //TODO (Finn): Get this out of the main loop and into its own thread.
     DrivetrainGoal drivetrain_goal;
     DrivetrainPosition drivetrain_position;
@@ -73,36 +86,38 @@ public:
     SetDrivePosition(&drivetrain_position);
 
     drive_loop->RunIteration(&drivetrain_goal, &drivetrain_position, &drivetrain_output, &drivetrain_status);
-    
+    SmartDashboard::PutNumber("Left voltage", drivetrain_output.left_voltage);
+    SmartDashboard::PutNumber("Right voltage", drivetrain_output.right_voltage);
+
     // TODO (Finn): Add these to the DrivetrainGoal (in SetDriveGoal). Set the relevant bools to true on each iteration. Then set the solenoids based on the value of drivetrain_output.
 /*    if (shiftUp->ButtonClicked()) {
 	shifting->Set(DoubleSolenoid::Value::kReverse);
-    } else if (shiftDown->ButtonClicked()) {	
+    } else if (shiftDown->ButtonClicked()) {
 	shifting->Set(DoubleSolenoid::Value::kForward);
     } else {
 	shifting->Set(DoubleSolenoid::Value::kOff);
-    } 
+    }
     if(quickTurn->ButtonPressed()){
     //dunno how to do this...
     }*/
 
     // TODO (Finn): Also deal with shifting output and with logging from the status.
-    drive->TankDrive(drivetrain_output.left_voltage, drivetrain_output.right_voltage);
+    drive->TankDrive(drivetrain_output.left_voltage/12.0, drivetrain_output.right_voltage/12.0);
     UpdateButtons();
   }
 
   void SetDriveGoal(DrivetrainGoal* drivetrain_goal) {
-    drivetrain_goal->steering = j_wheel->GetX(); //TODO (Finn): find the right axis and translate into the right units and direction.
-    // The right units should be -1 to 1 from right to left I think? TODO (jasmine): ask Austin about units
-    drivetrain_goal->steering = j_stick->GetY();
+    drivetrain_goal->steering = j_wheel->GetX();
+    drivetrain_goal->throttle = j_stick->GetY();
     drivetrain_goal->highgear = false; // TODO (Finn): Throw this on a button (toggle or two buttons to switch).
     drivetrain_goal->quickturn = false; // TODO (Finn): Throw this on a button (press to true)
     drivetrain_goal->control_loop_driving = false;
   }
 
   void SetDrivePosition(DrivetrainPosition *drivetrain_position) {
-    drivetrain_position->left_encoder = 0; // TODO (Finn): Get this from the encoders in the right units and direction.
-    drivetrain_position->right_encoder = 0;
+    double click = 3.14159 * .1016 / 360.0; // Translating encoders into ground distances.
+    drivetrain_position->left_encoder = left_encoder->Get() * click; // TODO (Ash): Get this from the encoders in the right units and direction.
+    drivetrain_position->right_encoder = -right_encoder->Get() * click;
 
     drivetrain_position->left_shifter_high = false;
     drivetrain_position->right_shifter_high = false;
@@ -115,7 +130,9 @@ public:
   }
 
   ~CitrusRobot() {
-
+    // TODO (Ash): Finish writing the destructor.
+    delete left_encoder;
+    delete right_encoder;
   }
 };
 
