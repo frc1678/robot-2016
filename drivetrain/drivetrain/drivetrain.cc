@@ -20,7 +20,7 @@
 #include "polydrivetrain_dog_motor_plant.h"
 
 // A consistent way to mark code that goes away without shifters.
-#define HAVE_SHIFTERS 0
+#define HAVE_SHIFTERS 1
 
 namespace drivetrain {
 namespace control_loops {
@@ -563,7 +563,8 @@ class PolyDrivetrain {
       loop_->mutable_U(1, 0) = ::aos::Clip(
           (R_right / Kv)(0, 0) + (IsInGear(right_gear_) ? 0 : wiggle), -12.0,
           12.0);
-      loop_->mutable_U() *= 12.0 / ::aos::robot_state->voltage_battery;
+      loop_->mutable_U() *= 12.0 / 12.0;// ::aos::robot_state->voltage_battery;
+      // TODO (jasmine): Don't assume that we're at 12 volts.
 #endif
     }
   }
