@@ -16,6 +16,7 @@ class CitrusRobot : public IterativeRobot {
   Encoder *right_encoder;
   Joystick* j_wheel;
   Joystick* j_stick;
+  DoubleSolenoid *shifting;
 
   //Buttonz!
   CitrusButton* shiftDown;
@@ -35,14 +36,16 @@ public:
 
 
     //Joysticks
-    j_wheel = new Joystick(0); 
+    j_wheel = new Joystick(0);
     j_stick = new Joystick(1);
     //manipulator = new Joystick(2);
 
+    shifting = new DoubleSolenoid(1, 2);
+
     //Buttonz!
-    shiftDown = new CitrusButton(j_stick, 475328);
-    shiftUp = new CitrusButton(j_stick, 353);
-    quickTurn = new CitrusButton(j_wheel, 321);
+    shiftDown = new CitrusButton(j_stick, 2);
+    shiftUp = new CitrusButton(j_stick, 1);
+    quickTurn = new CitrusButton(j_wheel, 2); // TODO (Ash): what button is this?
 
   }
 
@@ -96,9 +99,6 @@ public:
 	shifting->Set(DoubleSolenoid::Value::kForward);
     } else {
 	shifting->Set(DoubleSolenoid::Value::kOff);
-    }
-    if(quickTurn->ButtonPressed()){
-    //dunno how to do this...
     }*/
 
     // TODO (Finn): Also deal with shifting output and with logging from the status.
@@ -110,7 +110,7 @@ public:
     drivetrain_goal->steering = j_wheel->GetX();
     drivetrain_goal->throttle = j_stick->GetY();
     drivetrain_goal->highgear = false; // TODO (Finn): Throw this on a button (toggle or two buttons to switch).
-    drivetrain_goal->quickturn = false; // TODO (Finn): Throw this on a button (press to true)
+    drivetrain_goal->quickturn = quickTurn->ButtonPressed();
     drivetrain_goal->control_loop_driving = false;
   }
 
