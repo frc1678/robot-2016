@@ -23,6 +23,8 @@ class CitrusRobot : public IterativeRobot {
   CitrusButton* shiftUp;
   CitrusButton* quickTurn;
 
+  // Primitive types
+  bool in_highgear;
 
 public:
   CitrusRobot() {
@@ -45,7 +47,9 @@ public:
     //Buttonz!
     shiftDown = new CitrusButton(j_stick, 2);
     shiftUp = new CitrusButton(j_stick, 1);
-    quickTurn = new CitrusButton(j_wheel, 2); // TODO (Ash): what button is this?
+    quickTurn = new CitrusButton(j_wheel, 2);
+
+    in_highgear = false;
 
   }
 
@@ -85,21 +89,25 @@ public:
     DrivetrainOutput drivetrain_output;
     DrivetrainStatus drivetrain_status;
 
+    // TODO (Finn): Act on the output, without bypassing the controller. Or argue that this is fine.
+    if (shiftUp->ButtonClicked()) {
+	shifting->Set(DoubleSolenoid::Value::kReverse);
+        in_highgear = true;
+    } else if (shiftDown->ButtonClicked()) {
+	shifting->Set(DoubleSolenoid::Value::kForward);
+        in_highgear = false;
+    } else {
+	shifting->Set(DoubleSolenoid::Value::kOff);
+    }
+
+
     SetDriveGoal(&drivetrain_goal);
     SetDrivePosition(&drivetrain_position);
 
     drive_loop->RunIteration(&drivetrain_goal, &drivetrain_position, &drivetrain_output, &drivetrain_status);
     SmartDashboard::PutNumber("Left voltage", drivetrain_output.left_voltage);
     SmartDashboard::PutNumber("Right voltage", drivetrain_output.right_voltage);
-
-    // TODO (Finn): Add these to the DrivetrainGoal (in SetDriveGoal). Set the relevant bools to true on each iteration. Then set the solenoids based on the value of drivetrain_output.
-/*    if (shiftUp->ButtonClicked()) {
-	shifting->Set(DoubleSolenoid::Value::kReverse);
-    } else if (shiftDown->ButtonClicked()) {
-	shifting->Set(DoubleSolenoid::Value::kForward);
-    } else {
-	shifting->Set(DoubleSolenoid::Value::kOff);
-    }*/
+    SmartDashboard::PutNumber("Left high", drivetrain_output.left_high);
 
     // TODO (Finn): Also deal with shifting output and with logging from the status.
     drive->TankDrive(drivetrain_output.left_voltage/12.0, drivetrain_output.right_voltage/12.0);
@@ -109,7 +117,7 @@ public:
   void SetDriveGoal(DrivetrainGoal* drivetrain_goal) {
     drivetrain_goal->steering = j_wheel->GetX();
     drivetrain_goal->throttle = j_stick->GetY();
-    drivetrain_goal->highgear = false; // TODO (Finn): Throw this on a button (toggle or two buttons to switch).
+    drivetrain_goal->highgear = in_highgear;
     drivetrain_goal->quickturn = quickTurn->ButtonPressed();
     drivetrain_goal->control_loop_driving = false;
   }
@@ -118,9 +126,8 @@ public:
     double click = 3.14159 * .1016 / 360.0; // Translating encoders into ground distances.
     drivetrain_position->left_encoder = left_encoder->Get() * click; // TODO (Ash): Get this from the encoders in the right units and direction.
     drivetrain_position->right_encoder = -right_encoder->Get() * click;
-
-    drivetrain_position->left_shifter_high = false;
-    drivetrain_position->right_shifter_high = false;
+    drivetrain_position->left_shifter_high = in_highgear;
+    drivetrain_position->right_shifter_high = in_highgear;
   }
 
   void UpdateButtons(){

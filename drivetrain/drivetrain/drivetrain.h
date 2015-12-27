@@ -16,7 +16,7 @@ constexpr double kDrivetrainDoneDistance = 0.02;
 constexpr double kDrivetrainEncoderRatio = 1.0;///20.0; //TODO (jasmine): Encoders are 1:1 to the wheel; allow high gear to be used.
 constexpr double kDrivetrainHighGearRatio = 1.0/9.0;
 constexpr double kDrivetrainLowGearRatio = 1.0/20.0;
-const bool kDrivetrainClutchTransmission = false;
+const bool kDrivetrainClutchTransmission = true;//false; // We want to currently just assume that the shifters shift immediately/
 // End constants
 
 // Structs to carry information about the drivetrain.
@@ -79,8 +79,6 @@ class DrivetrainLoop {
   // Constructs and sends a message on the output queue which sets everything to
   // a safe state (generally motors off). For some subclasses, this will be a
   // bit different (ie pistons).
-  // The implementation here creates a new Output message, calls Zero() on it,
-  // and then sends it.
   // TODO (jasmine): Send everything to a safe state, usually 'motors off', without the 971 idiom.
   void ZeroOutputs();
 

@@ -339,18 +339,16 @@ class PolyDrivetrain {
                                         current_left_velocity, left_gear_);
       Gear right_requested = ComputeGear(
                                          current_right_velocity, right_gear_);
-// TODO (Finn): Figure out how to actually shift gears.
-// That's an 'interface on the other end' thing then.
       requested_gear =
           (left_requested == HIGH || right_requested == HIGH) ? HIGH : LOW;
     } else {
       requested_gear = highgear ? HIGH : LOW;
     }
 
-// It isn't a clutch transmission, I don't think. If it is a clutch transmission, then we don't have it.
     const Gear shift_up = kDrivetrainClutchTransmission ? HIGH : SHIFTING_UP;
     const Gear shift_down = kDrivetrainClutchTransmission ? LOW : SHIFTING_DOWN;
 
+    // TODO (jasmine): Work through the shifting logic.
     if (left_gear_ != requested_gear) {
       if (IsInGear(left_gear_)) {
         if (requested_gear == HIGH) {
