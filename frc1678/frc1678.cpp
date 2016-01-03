@@ -51,10 +51,21 @@ public:
 
     in_highgear = false;
 
+    //TODO (Finn): Get this out of the main loop and into its own thread.
+    DrivetrainGoal drivetrain_goal;
+    DrivetrainPosition drivetrain_position;
+    DrivetrainOutput drivetrain_output;
+    DrivetrainStatus drivetrain_status;
+
   }
 
   void RobotInit() {
     drive->SetSafetyEnabled(false);
+
+    drivetrain_goal = 0;
+    drivetrain_position = 0;
+    drivetrain_output = 0;
+    drivetrain_status = 0;
   }
 
   void TeleopInit() {
@@ -62,13 +73,6 @@ public:
   }
 
   void DisabledPeriodic(){
-    // TODO (Ash): Stick this in a function so that we don't do all of this multiple times.
-    // TODO (Ash): Set the goal to 0 because it's disabled.
-    DrivetrainGoal drivetrain_goal;
-    DrivetrainPosition drivetrain_position;
-    DrivetrainOutput drivetrain_output;
-    DrivetrainStatus drivetrain_status;
-
     SmartDashboard::PutNumber("Wheel", j_wheel->GetX());
     SmartDashboard::PutNumber("Stick", j_stick->GetY());
     SetDriveGoal(&drivetrain_goal);
@@ -82,12 +86,6 @@ public:
   void TeleopPeriodic() {
     SmartDashboard::PutNumber("Wheel", j_wheel->GetX());
     SmartDashboard::PutNumber("Stick", j_stick->GetY());
-
-    //TODO (Finn): Get this out of the main loop and into its own thread.
-    DrivetrainGoal drivetrain_goal;
-    DrivetrainPosition drivetrain_position;
-    DrivetrainOutput drivetrain_output;
-    DrivetrainStatus drivetrain_status;
 
     // TODO (Finn): Act on the output, without bypassing the controller. Or argue that this is fine.
     if (shiftUp->ButtonClicked()) {
