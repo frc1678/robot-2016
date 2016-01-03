@@ -1,5 +1,5 @@
-#ifndef _MUAN_COMMON_MACROS_H_
-#define _MUAN_COMMON_MACROS_H_//TODO (If it broke) All the AOS stuff became MUAN
+#ifndef _AOS_COMMON_MACROS_H_
+#define _AOS_COMMON_MACROS_H_
 
 // This file has some common macros etc.
 

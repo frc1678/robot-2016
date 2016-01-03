@@ -50,22 +50,10 @@ public:
     quickTurn = new CitrusButton(j_wheel, 2);
 
     in_highgear = false;
-
-    //TODO (Finn): Get this out of the main loop and into its own thread.
-    DrivetrainGoal drivetrain_goal;
-    DrivetrainPosition drivetrain_position;
-    DrivetrainOutput drivetrain_output;
-    DrivetrainStatus drivetrain_status;
-
   }
 
   void RobotInit() {
     drive->SetSafetyEnabled(false);
-
-    drivetrain_goal = 0;
-    drivetrain_position = 0;
-    drivetrain_output = 0;
-    drivetrain_status = 0;
   }
 
   void TeleopInit() {
@@ -73,6 +61,12 @@ public:
   }
 
   void DisabledPeriodic(){
+    //TODO (Finn): Get this out of the main loop and into its own thread.
+    DrivetrainGoal drivetrain_goal;
+    DrivetrainPosition drivetrain_position;
+    DrivetrainOutput drivetrain_output;
+    DrivetrainStatus drivetrain_status;
+
     SmartDashboard::PutNumber("Wheel", j_wheel->GetX());
     SmartDashboard::PutNumber("Stick", j_stick->GetY());
     SetDriveGoal(&drivetrain_goal);
@@ -84,6 +78,13 @@ public:
   }
 
   void TeleopPeriodic() {
+
+    //TODO (Finn): Get this out of the main loop and into its own thread.
+    DrivetrainGoal drivetrain_goal;
+    DrivetrainPosition drivetrain_position;
+    DrivetrainOutput drivetrain_output;
+    DrivetrainStatus drivetrain_status;
+
     SmartDashboard::PutNumber("Wheel", j_wheel->GetX());
     SmartDashboard::PutNumber("Stick", j_stick->GetY());
 
@@ -138,10 +139,8 @@ public:
     // TODO (Ash): Finish writing the destructor.
     delete drive;
     delete drive_loop;
-     
     delete left_encoder;
     delete right_encoder;
-    delete   
   }
 
 };
