@@ -136,9 +136,14 @@ public:
 
   ~CitrusRobot() {
     // TODO (Ash): Finish writing the destructor.
+    delete drive;
+    delete drive_loop;
+     
     delete left_encoder;
     delete right_encoder;
+    delete   
   }
+
 };
 
 START_ROBOT_CLASS(CitrusRobot);
