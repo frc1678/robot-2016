@@ -9,7 +9,7 @@
 
 #include "tools/eigen/Eigen/Dense"
 
-#include "macros.h" //TODO (Finn) What does this do? It doesn't ever get used?
+#include "macros.h" //TODO (Jasmine) What does this do? It doesn't ever get used?
 
 // For everything in this file, "inputs" and "outputs" are defined from the
 // perspective of the plant. This means U is an input and Y is an output

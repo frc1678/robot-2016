@@ -27,7 +27,7 @@ cc_library(
     'polydrivetrain_cim_plant.h',
     'drivetrain_dog_motor_plant.h',
     'polydrivetrain_dog_motor_plant.h',
-    'commonmath.h', #TODO (Finn): Is this bad practice? It's the only place we need it...
+    'commonmath.h',
   ],
   deps = [
     '//drivetrain:polytope',

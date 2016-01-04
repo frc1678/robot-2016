@@ -23,7 +23,7 @@ class CitrusRobot : public IterativeRobot {
   CitrusButton* shiftUp;
   CitrusButton* quickTurn;
 
-  // Primitive types
+  // Pirmitive types
   bool in_highgear;
 
 public:
@@ -47,7 +47,7 @@ public:
     //Buttonz!
     shiftDown = new CitrusButton(j_stick, 2);
     shiftUp = new CitrusButton(j_stick, 1);
-    quickTurn = new CitrusButton(j_wheel, 2);
+    quickTurn = new CitrusButton(j_wheel, 5);
 
     in_highgear = false;
   }
