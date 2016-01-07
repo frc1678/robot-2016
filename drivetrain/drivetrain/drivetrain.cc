@@ -313,7 +313,7 @@ class PolyDrivetrain {
     wheel_ = sin(angular_range * wheel) / sin(angular_range);
     wheel_ = sin(angular_range * wheel_) / sin(angular_range);
     if (!quickturn_) {
-      wheel_ *= (1.5*2.5);
+      wheel_ *= (1.5);
     }
 
     static const double kThrottleDeadband = 0.05;
