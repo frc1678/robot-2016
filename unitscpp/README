@@ -1,0 +1,66 @@
+The UnitsC++ Library
+--------------------
+
+Please read the unitscpp.pdf file for an overview of the library and
+why you might find it useful.
+
+The library contains the following files:
+
+    LICENSE             License under which the library is released
+    README              This file
+    area.cpp            Part of demo program
+    demo.cfg            Part of demo program
+    demo.cpp            Part of demo program
+    gen.py              Script to generate library's include file
+    makefile            GNU makefile to make demo and test programs
+    test_constants.cpp  Part of unit test program
+    test_units.cfg      Part of unit test program
+    test_units.cpp      Part of unit test program
+    unitscpp.pdf        Documentation
+
+Once you understand how the library works, the only file you really
+need is the gen.py script.
+
+----------------------------------------------------------------------
+Building the demo program
+-------------------------
+
+A working python installation is needed on your system.  You must have
+a python version of 2.0 or later.
+
+If you have a GNU-compatible make and g++, you can just use the
+makefile to build the demo program and the tests by running make.
+
+If you just want to compile from the command line, execute these commands:
+
+    python gen.py demo.cfg
+    cxx demo.cpp area.cpp
+
+where cxx is the command for your C++ compiler.
+
+----------------------------------------------------------------------
+To run the unit test
+--------------------
+
+The unit test is not intended to test every possible case; in particular,
+the cases where the code SHOULDN'T compile are not tested thoroughly (in
+fact, there's only one test case).
+
+Here's how to build and run the tests
+
+1.  Test for successful operations
+    
+    python gen.py test_units.cfg
+    cxx -o test_units test_units.cpp
+    test_units
+
+    The test passes if there are no assert messages.
+    Similarly, build and run test_constants.cpp.
+
+2.  Test that the compiler detects a unit mismatch
+
+    python gen.py test_units.cfg
+    cxx -DWILLNOTCOMPILE -o test_units test_units.cpp
+
+    You should get a compilation error.
+
