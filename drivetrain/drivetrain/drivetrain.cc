@@ -504,7 +504,7 @@ class PolyDrivetrain {
       const double sign_svel = wheel_ * ((fvel > 0.0) ? 1.0 : -1.0);
       double steering_velocity;
       if (quickturn_) {
-        steering_velocity = wheel_ * MaxVelocity() * 5;//Five is constant to scale up sensitivity of quickturn wheel turning.
+        steering_velocity = wheel_ * MaxVelocity();//Five is constant to scale up sensitivity of quickturn wheel turning.
       } else {
         steering_velocity = ::std::abs(fvel) * wheel_;
       }
@@ -673,13 +673,13 @@ void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
     const double right_encoder = position->right_encoder;
     // If we have a gyro, set the position using the gyro angle (radians, right hand coordinate system around the Z-axis going up)
 // otherwise just use it during encoders
-    if (gyro_reading.FetchLatest()) {
-      LOG_STRUCT(DEBUG, "using", *gyro_reading.get());
+/*    if (gyro_reading.FetchLatest()) {
+     // LOG_STRUCT(DEBUG, "using", *gyro_reading.get());
       dt_closedloop.SetPosition(left_encoder, right_encoder,
                                 gyro_reading->angle);
-    } else {
+    } else {*/
       dt_closedloop.SetRawPosition(left_encoder, right_encoder);
-    }
+//    }
   }
   dt_openloop.SetPosition(position);
   dt_openloop.Update();
