@@ -1,3 +1,6 @@
+/* 
+Many thanks to 971 Spartan Robotics for their help with this project
+*/
 #ifndef MUAN_COMMON_MATH_H_
 #define MUAN_COMMON_MATH_H_
 

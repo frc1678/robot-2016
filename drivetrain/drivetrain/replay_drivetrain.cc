@@ -1,3 +1,6 @@
+/* 
+Many thanks to 971 Spartan Robotics for their help with this project
+*/
 #include "aos/common/controls/replay_control_loop.h"
 #include "aos/linux_code/init.h"
 

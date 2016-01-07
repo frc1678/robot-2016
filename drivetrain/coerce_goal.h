@@ -1,3 +1,6 @@
+/* 
+Many thanks to 971 Spartan Robotics for their help with this project
+*/
 #ifndef FRC971_CONTROL_LOOPS_COERCE_GOAL_H_
 #define FRC971_CONTROL_LOOPS_COERCE_GOAL_H_
 

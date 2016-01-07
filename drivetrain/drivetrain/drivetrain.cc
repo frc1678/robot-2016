@@ -1,3 +1,6 @@
+/* 
+Many thanks to 971 Spartan Robotics for their help with this project
+*/
 #include "drivetrain.h"
 
 #include <stdio.h>
