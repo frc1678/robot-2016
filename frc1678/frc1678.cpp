@@ -2,6 +2,7 @@
 
 #include "drivetrain/drivetrain/drivetrain.h"
 #include "CitrusButton.h"
+#include "gyro_reader.h"
 
 using drivetrain::control_loops::DrivetrainGoal;
 using drivetrain::control_loops::DrivetrainPosition;
@@ -17,6 +18,7 @@ class CitrusRobot : public IterativeRobot {
   Joystick* j_wheel;
   Joystick* j_stick;
   DoubleSolenoid *shifting;
+  GyroReader* gyro_reader;
 
   //Buttonz!
   CitrusButton* shiftDown;
@@ -36,6 +38,7 @@ public:
     left_encoder = new Encoder(12, 13);
     right_encoder = new Encoder(10, 11);
 
+    gyro_reader = new GyroReader();
 
     //Joysticks
     j_wheel = new Joystick(0);
@@ -54,6 +57,7 @@ public:
 
   void RobotInit() {
     drive->SetSafetyEnabled(false);
+    gyro_reader->Start();
   }
 
   void TeleopInit() {
@@ -125,6 +129,7 @@ public:
     double click = 3.14159 * .1016 / 360.0; // Translating encoders into ground distances.
     drivetrain_position->left_encoder = left_encoder->Get() * click; // TODO (Ash): Get this from the encoders in the right units and direction.
     drivetrain_position->right_encoder = -right_encoder->Get() * click;
+    drivetrain_position->gyro_angle = gyro_reader->GetAngle().to(rad);
     drivetrain_position->left_shifter_high = in_highgear;
     drivetrain_position->right_shifter_high = in_highgear;
   }

@@ -38,6 +38,7 @@ struct DrivetrainGoal {
 struct DrivetrainPosition {
     double left_encoder;
     double right_encoder;
+    double gyro_angle;
     bool left_shifter_high;
     bool right_shifter_high; // TODO (jasmine): do we need both of these?
   };
