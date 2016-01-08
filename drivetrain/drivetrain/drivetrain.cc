@@ -1,3 +1,6 @@
+/* 
+Many thanks to 971 Spartan Robotics for their help with this project
+*/
 #include "drivetrain.h"
 
 #include <stdio.h>
@@ -313,7 +316,7 @@ class PolyDrivetrain {
     wheel_ = sin(angular_range * wheel) / sin(angular_range);
     wheel_ = sin(angular_range * wheel_) / sin(angular_range);
     if (!quickturn_) {
-      wheel_ *= (1.5*2.5);
+      wheel_ *= (1.5);
     }
 
     static const double kThrottleDeadband = 0.05;

@@ -1,3 +1,6 @@
+/* 
+Many thanks to 971 Spartan Robotics for their help with this project
+*/
 #ifndef Y2015_BOT3_CONTROL_LOOPS_DRIVETRAIN_H_
 #define Y2015_BOT3_CONTROL_LOOPS_DRIVETRAIN_H_
 

@@ -1,6 +1,9 @@
 #ifndef AOS_COMMON_CONTROLS_POLYTOPE_H_
 #define AOS_COMMON_CONTROLS_POLYTOPE_H_
 
+/* 
+Many thanks to 971 Spartan Robotics for their help with this project
+*/
 #include "tools/eigen/Eigen/Dense"
 #include "tools/cddlib/lib-src/setoper.h"
 #include "tools/cddlib/lib-src/cdd.h"

@@ -1,3 +1,6 @@
+/* 
+Many thanks to 971 Spartan Robotics for their help with this project
+*/
 #ifndef _AOS_COMMON_MACROS_H_
 #define _AOS_COMMON_MACROS_H_
 

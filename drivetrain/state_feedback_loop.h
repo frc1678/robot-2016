@@ -1,3 +1,7 @@
+/* 
+Many thanks to 971 Spartan Robotics for their help with this project
+*/
+
 #ifndef FRC971_CONTROL_LOOPS_STATE_FEEDBACK_LOOP_H_
 #define FRC971_CONTROL_LOOPS_STATE_FEEDBACK_LOOP_H_
 
