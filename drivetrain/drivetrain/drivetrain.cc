@@ -678,8 +678,9 @@ void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
       dt_closedloop.SetPosition(left_encoder, right_encoder,
                                 gyro_reading->angle);
     } else {*/
-      dt_closedloop.SetRawPosition(left_encoder, right_encoder);
+      //dt_closedloop.SetRawPosition(left_encoder, right_encoder);
 //    }
+      dt_closedloop.SetPosition(left_encoder, right_encoder, position->gyro_angle);
   }
   dt_openloop.SetPosition(position);
   dt_openloop.Update();
