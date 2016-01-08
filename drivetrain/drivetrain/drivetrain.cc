@@ -316,7 +316,7 @@ class PolyDrivetrain {
     wheel_ = sin(angular_range * wheel) / sin(angular_range);
     wheel_ = sin(angular_range * wheel_) / sin(angular_range);
     if (!quickturn_) {
-      wheel_ *= (1.5);
+      wheel_ *= (.5);
     }
 
     static const double kThrottleDeadband = 0.05;
@@ -507,7 +507,7 @@ class PolyDrivetrain {
       const double sign_svel = wheel_ * ((fvel > 0.0) ? 1.0 : -1.0);
       double steering_velocity;
       if (quickturn_) {
-        steering_velocity = wheel_ * MaxVelocity() * 2.5;//Five is constant to scale up sensitivity of quickturn wheel turning.
+        steering_velocity = wheel_ * MaxVelocity() * 2;//Five is constant to scale up sensitivity of quickturn wheel turning.
       } else {
         steering_velocity = ::std::abs(fvel) * wheel_;
       }
