@@ -1,4 +1,5 @@
 #include <WPILib.h>
+#include <memory>
 
 #include "drivetrain/drivetrain/drivetrain.h"
 #include "CitrusButton.h"
@@ -11,143 +12,147 @@ using drivetrain::control_loops::DrivetrainStatus;
 using drivetrain::control_loops::DrivetrainLoop;
 
 class CitrusRobot : public IterativeRobot {
-  RobotDrive* drive;
-  DrivetrainLoop* drive_loop;
-  Encoder *left_encoder;
-  Encoder *right_encoder;
-  Joystick* j_wheel;
-  Joystick* j_stick;
-  DoubleSolenoid *shifting;
-  GyroReader* gyro_reader;
+        std::unique_ptr<RobotDrive> drive_;
+        std::unique_ptr<DrivetrainLoop> drive_loop_;
+        std::unique_ptr<Encoder> left_encoder_, right_encoder_;
+        std::unique_ptr<Joystick> j_wheel_, j_stick_;
+        std::unique_ptr<DoubleSolenoid> shifting_;
+        std::unique_ptr<GyroReader> gyro_reader_;
 
-  //Buttonz!
-  CitrusButton* shiftDown;
-  CitrusButton* shiftUp;
-  CitrusButton* quickTurn;
+        // Buttonz!
+        std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_;
 
-  // Pirmitive types
-  bool in_highgear;
+        // Pirmitive types
+        bool in_highgear_;
 
-public:
-  CitrusRobot() {
+       public:
+        CitrusRobot() {
+                // Robot Parts
+                drive_ = std::make_unique<RobotDrive>(2, 1);
+                drive_loop_ = std::make_unique<DrivetrainLoop>();
+                left_encoder_ = std::make_unique<Encoder>(12, 13);
+                right_encoder_ = std::make_unique<Encoder>(10, 11);
 
-    //Robot Parts
-    drive = new RobotDrive(2, 1);
-    drive_loop = new DrivetrainLoop();
-    //shifting = new DoubleSolenoid(1,2);
-    left_encoder = new Encoder(12, 13);
-    right_encoder = new Encoder(10, 11);
+                gyro_reader_ = std::make_unique<GyroReader>();
 
-    gyro_reader = new GyroReader();
+                // Joysticks
+                j_wheel_ = std::make_unique<Joystick>(0);
+                j_stick_ = std::make_unique<Joystick>(1);
+                // manipulator = new Joystick(2);
 
-    //Joysticks
-    j_wheel = new Joystick(0);
-    j_stick = new Joystick(1);
-    //manipulator = new Joystick(2);
+                shifting_ = std::make_unique<DoubleSolenoid>(1, 2);
 
-    shifting = new DoubleSolenoid(1, 2);
+                // Buttonz!
+                shift_down_ = std::make_unique<CitrusButton>(j_stick_.get(), 2);
+                shift_up_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
+                quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
 
-    //Buttonz!
-    shiftDown = new CitrusButton(j_stick, 2);
-    shiftUp = new CitrusButton(j_stick, 1);
-    quickTurn = new CitrusButton(j_wheel, 5);
+                in_highgear_ = false;
+        }
 
-    in_highgear = false;
-  }
+        void RobotInit() {
+                drive_->SetSafetyEnabled(false);
+                gyro_reader_->Start();
+        }
 
-  void RobotInit() {
-    drive->SetSafetyEnabled(false);
-    gyro_reader->Start();
-  }
+        void TeleopInit() {}
 
-  void TeleopInit() {
+        void DisabledPeriodic() {
+                // TODO (Finn): Get this out of the main loop and into its own
+                // thread.
+                DrivetrainGoal drivetrain_goal;
+                DrivetrainPosition drivetrain_position;
+                DrivetrainOutput drivetrain_output;
+                DrivetrainStatus drivetrain_status;
 
-  }
+                SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
+                SmartDashboard::PutNumber("Stick", j_stick_->GetY());
+                SetDriveGoal(&drivetrain_goal);
+                SetDrivePosition(&drivetrain_position);
 
-  void DisabledPeriodic(){
-    //TODO (Finn): Get this out of the main loop and into its own thread.
-    DrivetrainGoal drivetrain_goal;
-    DrivetrainPosition drivetrain_position;
-    DrivetrainOutput drivetrain_output;
-    DrivetrainStatus drivetrain_status;
+                drive_loop_->RunIteration(
+                    &drivetrain_goal, &drivetrain_position, &drivetrain_output,
+                    &drivetrain_status);
+                SmartDashboard::PutNumber("Left voltage",
+                                          drivetrain_output.left_voltage);
+                SmartDashboard::PutNumber("Right voltage",
+                                          drivetrain_output.right_voltage);
+        }
 
-    SmartDashboard::PutNumber("Wheel", j_wheel->GetX());
-    SmartDashboard::PutNumber("Stick", j_stick->GetY());
-    SetDriveGoal(&drivetrain_goal);
-    SetDrivePosition(&drivetrain_position);
+        void TeleopPeriodic() {
+                // TODO (Finn): Get this out of the main loop and into its own
+                // thread.
+                DrivetrainGoal drivetrain_goal;
+                DrivetrainPosition drivetrain_position;
+                DrivetrainOutput drivetrain_output;
+                DrivetrainStatus drivetrain_status;
 
-    drive_loop->RunIteration(&drivetrain_goal, &drivetrain_position, &drivetrain_output, &drivetrain_status);
-    SmartDashboard::PutNumber("Left voltage", drivetrain_output.left_voltage);
-    SmartDashboard::PutNumber("Right voltage", drivetrain_output.right_voltage);
-  }
+                SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
+                SmartDashboard::PutNumber("Stick", j_stick_->GetY());
 
-  void TeleopPeriodic() {
+                // TODO (Finn): Act on the output, without bypassing the
+                // controller. Or argue that this is fine.
+                if (shift_up_->ButtonClicked()) {
+                        shifting_->Set(DoubleSolenoid::Value::kReverse);
+                        in_highgear_ = true;
+                } else if (shift_down_->ButtonClicked()) {
+                        shifting_->Set(DoubleSolenoid::Value::kForward);
+                        in_highgear_ = false;
+                } else {
+                        shifting_->Set(DoubleSolenoid::Value::kOff);
+                }
 
-    //TODO (Finn): Get this out of the main loop and into its own thread.
-    DrivetrainGoal drivetrain_goal;
-    DrivetrainPosition drivetrain_position;
-    DrivetrainOutput drivetrain_output;
-    DrivetrainStatus drivetrain_status;
+                SetDriveGoal(&drivetrain_goal);
+                SetDrivePosition(&drivetrain_position);
 
-    SmartDashboard::PutNumber("Wheel", j_wheel->GetX());
-    SmartDashboard::PutNumber("Stick", j_stick->GetY());
+                drive_loop_->RunIteration(
+                    &drivetrain_goal, &drivetrain_position, &drivetrain_output,
+                    &drivetrain_status);
+                SmartDashboard::PutNumber("Left voltage",
+                                          drivetrain_output.left_voltage);
+                SmartDashboard::PutNumber("Right voltage",
+                                          drivetrain_output.right_voltage);
+                SmartDashboard::PutNumber("Left high",
+                                          drivetrain_output.left_high);
 
-    // TODO (Finn): Act on the output, without bypassing the controller. Or argue that this is fine.
-    if (shiftUp->ButtonClicked()) {
-	shifting->Set(DoubleSolenoid::Value::kReverse);
-        in_highgear = true;
-    } else if (shiftDown->ButtonClicked()) {
-	shifting->Set(DoubleSolenoid::Value::kForward);
-        in_highgear = false;
-    } else {
-	shifting->Set(DoubleSolenoid::Value::kOff);
-    }
+                // TODO (Finn): Also deal with shifting output and with logging
+                // from the status.
+                drive_->TankDrive(drivetrain_output.left_voltage / 12.0,
+                                  drivetrain_output.right_voltage / 12.0);
+                UpdateButtons();
+        }
 
+        void SetDriveGoal(DrivetrainGoal* drivetrain_goal) {
+                drivetrain_goal->steering = j_wheel_->GetX();
+                drivetrain_goal->throttle = j_stick_->GetY();
+                drivetrain_goal->highgear = in_highgear_;
+                drivetrain_goal->quickturn = quick_turn_->ButtonPressed();
+                drivetrain_goal->control_loop_driving = false;
+        }
 
-    SetDriveGoal(&drivetrain_goal);
-    SetDrivePosition(&drivetrain_position);
+        void SetDrivePosition(DrivetrainPosition* drivetrain_position) {
+                double click =
+                    3.14159 * .1016 /
+                    360.0;  // Translating encoders into ground distances.
+                drivetrain_position->left_encoder =
+                    left_encoder_->Get() * click;  // TODO (Ash): Get this from
+                                                   // the encoders in the right
+                                                   // units and direction.
+                drivetrain_position->right_encoder =
+                    -right_encoder_->Get() * click;
+                drivetrain_position->gyro_angle =
+                    gyro_reader_->GetAngle().to(rad);
+                drivetrain_position->left_shifter_high = in_highgear_;
+                drivetrain_position->right_shifter_high = in_highgear_;
+        }
 
-    drive_loop->RunIteration(&drivetrain_goal, &drivetrain_position, &drivetrain_output, &drivetrain_status);
-    SmartDashboard::PutNumber("Left voltage", drivetrain_output.left_voltage);
-    SmartDashboard::PutNumber("Right voltage", drivetrain_output.right_voltage);
-    SmartDashboard::PutNumber("Left high", drivetrain_output.left_high);
+        void UpdateButtons() {
+                shift_down_->Update();
+                shift_up_->Update();
+                quick_turn_->Update();
+        }
 
-    // TODO (Finn): Also deal with shifting output and with logging from the status.
-    drive->TankDrive(drivetrain_output.left_voltage/12.0, drivetrain_output.right_voltage/12.0);
-    UpdateButtons();
-  }
-
-  void SetDriveGoal(DrivetrainGoal* drivetrain_goal) {
-    drivetrain_goal->steering = j_wheel->GetX();
-    drivetrain_goal->throttle = j_stick->GetY();
-    drivetrain_goal->highgear = in_highgear;
-    drivetrain_goal->quickturn = quickTurn->ButtonPressed();
-    drivetrain_goal->control_loop_driving = false;
-  }
-
-  void SetDrivePosition(DrivetrainPosition *drivetrain_position) {
-    double click = 3.14159 * .1016 / 360.0; // Translating encoders into ground distances.
-    drivetrain_position->left_encoder = left_encoder->Get() * click; // TODO (Ash): Get this from the encoders in the right units and direction.
-    drivetrain_position->right_encoder = -right_encoder->Get() * click;
-    drivetrain_position->gyro_angle = gyro_reader->GetAngle().to(rad);
-    drivetrain_position->left_shifter_high = in_highgear;
-    drivetrain_position->right_shifter_high = in_highgear;
-  }
-
-  void UpdateButtons(){
-  shiftDown->Update();
-  shiftUp->Update();
-  quickTurn->Update();
-  }
-
-  ~CitrusRobot() {
-    // TODO (Ash): Finish writing the destructor.
-    delete drive;
-    delete drive_loop;
-    delete left_encoder;
-    delete right_encoder;
-  }
-
+        ~CitrusRobot() {}
 };
 
 START_ROBOT_CLASS(CitrusRobot);

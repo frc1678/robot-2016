@@ -6,5 +6,5 @@ cc_binary(
     "//unitscpp",
     "//muan:multithreading"
   ],
-  srcs=glob(["*.cpp", "CitrusButton.h"]) #TODO (jasmine): Add button interface as separate target?
+  srcs=glob(["*.cpp", "*.h"]) #TODO (jasmine): Add button interface as separate target?
 )
