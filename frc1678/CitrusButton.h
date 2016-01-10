@@ -1,58 +1,55 @@
 #include "WPILib.h"
 
-//include guards
+// include guards
 #ifndef CITRUSBUTTON_H
 #define CITRUSBUTTON_H
 
-//Designed to get input from joysticks & manipulators.
-class CitrusButton
-{
-	bool output;
-	bool oldInput;
+// Designed to get input from joysticks & manipulators.
+class CitrusButton {
+  bool output;
+  bool oldInput;
 
-	//Optional.
-	Joystick *stick;
-	int button;
-public:
-	
-	CitrusButton(Joystick *tstick, int tbutton);
-	
-	~CitrusButton();
+  // Optional.
+  Joystick* stick;
+  int button;
 
+ public:
+  CitrusButton(Joystick* tstick, int tbutton);
 
-	//All of these have clones with generic input. If we ever end up needing a button that's not from a joystick.
+  ~CitrusButton();
 
-	//Call at the end of every loop (once per loop)!
-	void Update(bool input);
+  // All of these have clones with generic input. If we ever end up
+  // needing a button that's not from a joystick.
 
-	void Update();
+  // Call at the end of every loop (once per loop)!
+  void Update(bool input);
 
-	bool ButtonClicked(bool input);
+  void Update();
 
-	bool ButtonClicked();
+  bool ButtonClicked(bool input);
 
-	bool ButtonReleased(bool input);
+  bool ButtonClicked();
 
-	bool ButtonReleased();
+  bool ButtonReleased(bool input);
 
-	bool ButtonPressed(bool input);
+  bool ButtonReleased();
 
-	bool ButtonPressed();
+  bool ButtonPressed(bool input);
 
-	bool ButtonState();
+  bool ButtonPressed();
 
-	//Reset to factory settings!
-	void Reset();
+  bool ButtonState();
 
-
+  // Reset to factory settings!
+  void Reset();
 };
 
-//Use the following like: input = TurnOn(myButton); input = Toggle(myButton, input);
-bool TurnOn(CitrusButton *button);
+// Use the following like: input = TurnOn(myButton); input = Toggle(myButton,
+// input);
+bool TurnOn(CitrusButton* button);
 
-bool TurnOff(CitrusButton *button);
+bool TurnOff(CitrusButton* button);
 
-bool Toggle(CitrusButton *button, bool input);
+bool Toggle(CitrusButton* button, bool input);
 
-#endif //CITRUSBUTTON_H
-
+#endif  // CITRUSBUTTON_H
