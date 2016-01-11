@@ -12,8 +12,8 @@ Many thanks to 971 Spartan Robotics for their help with this project
 //#include "aos/common/controls/control_loop_test.h"
 
 #include "drivetrain.h"
-#include "drivetrain/state_feedback_loop.h"
-#include "drivetrain/coerce_goal.h"
+#include "aos_control/state_feedback_loop.h"
+#include "aos_control/coerce_goal.h"
 #include "drivetrain_dog_motor_plant.h"
 
 using drivetrain::control_loops::DrivetrainGoal;

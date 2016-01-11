@@ -1,7 +1,5 @@
-licenses(['notice'])
-
 cc_library(
-  name = 'cddlib',
+  name = 'main',
   visibility = ['//visibility:public'],
   srcs = [
     'lib-src/cddcore.c',
@@ -15,6 +13,9 @@ cc_library(
     'lib-src/cddtypes.h',
     'lib-src/setoper.h',
   ],
+  includes = [
+    'lib-src'
+  ],
   hdrs = [
     'lib-src/cdd.h',
   ],
@@ -26,11 +27,4 @@ cc_library(
     '-Wno-sign-compare',
     '-Wno-unused-result',
   ]
-)
-cc_binary(
-  name = '_cddlib.so',
-  deps = [':cddlib'],
-  linkshared = True,
-  visibility = ['//visibility:public'],
-  linkstatic = False,
 )

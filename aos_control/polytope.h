@@ -5,8 +5,8 @@
 Many thanks to 971 Spartan Robotics for their help with this project
 */
 #include "Eigen/Dense"
-#include "tools/cddlib/lib-src/setoper.h"
-#include "tools/cddlib/lib-src/cdd.h"
+#include "setoper.h"
+#include "cdd.h"
 
 namespace aos {
 namespace controls {

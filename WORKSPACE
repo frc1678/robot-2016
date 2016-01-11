@@ -19,3 +19,10 @@ new_http_archive(
   sha256 = 'e37ad303cddf324a16b49e43edfb00129972442c0d8a2d866605bc29de94571a',
   url = 'https://bitbucket.org/eigen/eigen/get/4111270ba6e1.zip'
 )
+
+new_git_repository(
+  name = 'cddlib',
+  build_file = 'cddlib.BUILD',
+  remote = 'https://github.com/mcmtroffaes/cddlib',
+  commit = '370919d'
+)

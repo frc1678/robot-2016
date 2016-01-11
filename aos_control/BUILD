@@ -41,7 +41,7 @@ cc_library(
   ],
   deps = [
     '@eigen//:main',
-    '//tools/cddlib', #TODO (jasmine): Add cddlib to our third party stuff.
+    '@cddlib//:main', #TODO (jasmine): Add cddlib to our third party stuff.
   ],
   visibility = ["//visibility:public"],
 )
