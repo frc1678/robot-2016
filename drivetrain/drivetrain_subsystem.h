@@ -40,4 +40,5 @@ class DrivetrainSubsystem : public Updateable {
   std::unique_ptr<MotionProfile<Length>> distance_profile_;
   std::unique_ptr<MotionProfile<Angle>> angle_profile_;
   Time t;
+  std::mutex mu_;
 };

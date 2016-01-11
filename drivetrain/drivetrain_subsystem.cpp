@@ -1,5 +1,7 @@
 #include "drivetrain_subsystem.h"
 
+using mutex_lock = std::lock_guard<std::mutex>;
+
 DrivetrainSubsystem::DrivetrainSubsystem() : Updateable(200 * hz) {
   drive_ = std::make_unique<RobotDrive>(RobotPorts::drive_left,
                                         RobotPorts::drive_right);
@@ -34,13 +36,16 @@ void DrivetrainSubsystem::Update(Time dt) {
 
   SetDrivePosition(&pos);
 
-  if (is_operator_controlled_) {
-    drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
-  } else {
-    t += dt;
-    Angle target_angle_ = angle_profile_->calculate_distance(t);
-    Length target_distance_ = distance_profile_->calculate_distance(t);
-    // TODO (Kyle): Track the targets here
+  {
+    mutex_lock lock(mu_);
+    if (is_operator_controlled_) {
+      drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
+    } else {
+      t += dt;
+      Angle target_angle_ = angle_profile_->calculate_distance(t);
+      Length target_distance_ = distance_profile_->calculate_distance(t);
+      // TODO (Kyle): Track the targets here
+    }
   }
 
   // TODO (Finn): Also deal with shifting output and with logging
@@ -51,6 +56,7 @@ void DrivetrainSubsystem::Update(Time dt) {
 }
 
 void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal& goal) {
+  mutex_lock lock(mu_);
   current_goal_ = goal;
 }
 
@@ -78,6 +84,7 @@ bool DrivetrainSubsystem::IsProfileComplete() {
 }
 
 void DrivetrainSubsystem::CancelMotionProfile() {
+  mutex_lock lock(mu_);
   distance_profile_.release();
   angle_profile_.release();
 }
