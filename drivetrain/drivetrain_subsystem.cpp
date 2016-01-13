@@ -2,7 +2,13 @@
 
 using mutex_lock = std::lock_guard<std::mutex>;
 
-DrivetrainSubsystem::DrivetrainSubsystem() : Updateable(200 * hz) {
+DrivetrainSubsystem::DrivetrainSubsystem()
+    : Updateable(200 * hz),
+      event_log_("drivetrain_subsystem"),
+      csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
+                                        "pwm_right", "gyro_angle", "gear"}) {
+  event_log_.Write("Initializing drivetrain subsystem components...", "INIT",
+                   CODE_STAMP);
   drive_ = std::make_unique<RobotDrive>(RobotPorts::drive_left,
                                         RobotPorts::drive_right);
 
@@ -17,16 +23,23 @@ DrivetrainSubsystem::DrivetrainSubsystem() : Updateable(200 * hz) {
                                                RobotPorts::shift_b);
 
   gyro_reader_ = std::make_unique<GyroReader>();
+
+  event_log_.Write("Done initializing drivetrain subsystem components", "INIT",
+                   CODE_STAMP);
 }
 
 DrivetrainSubsystem::~DrivetrainSubsystem() {}
 
 void DrivetrainSubsystem::Start() {
-  Updateable::Start();
+  event_log_.Write("Starting drivetrain subsystem...", "INIT", CODE_STAMP);
   drive_->SetSafetyEnabled(false);
   gyro_reader_->Start();
   is_operator_controlled_ = true;
   t = 0 * s;
+  Updateable::Start();  // This needs to be called last so that Update(Time)
+                        // doesn't get called until after everything is
+                        // initialized
+  event_log_.Write("Drivetrain subsystem started", "INIT", CODE_STAMP);
 }
 
 void DrivetrainSubsystem::Update(Time dt) {
@@ -53,6 +66,14 @@ void DrivetrainSubsystem::Update(Time dt) {
   drive_->TankDrive(out.left_voltage / 12.0, out.right_voltage / 12.0, false);
   shifting_->Set(current_goal_.highgear ? DoubleSolenoid::Value::kForward
                                         : DoubleSolenoid::Value::kReverse);
+
+  csv_log_["enc_left"] = std::to_string(pos.left_encoder);
+  csv_log_["enc_right"] = std::to_string(pos.right_encoder);
+  csv_log_["pwm_left"] = std::to_string(out.left_voltage);
+  csv_log_["pwm_right"] = std::to_string(out.right_voltage);
+  csv_log_["gyro_angle"] = std::to_string(pos.gyro_angle);
+  csv_log_["gear"] = current_goal_.highgear ? "high" : "low";
+  csv_log_.EndLine();  // Flush the current row of the log
 }
 
 void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal& goal) {
@@ -65,9 +86,8 @@ void DrivetrainSubsystem::SetDrivePosition(
   double click =
       3.14159 * .1016 / 360.0;  // Translating encoders into ground distances.
   drivetrain_position->left_encoder =
-      left_encoder_->Get() * click;  // TODO (Ash): Get this from
-                                     // the encoders in the right
-                                     // units and direction.
+      left_encoder_->Get() * click;  // TODO (Ash): Get this from the encoders
+                                     // in the right units and direction.
   drivetrain_position->right_encoder = -right_encoder_->Get() * click;
   drivetrain_position->gyro_angle = gyro_reader_->GetAngle().to(rad);
   drivetrain_position->left_shifter_high = current_goal_.highgear;
@@ -80,7 +100,7 @@ void DrivetrainSubsystem::FollowMotionProfile(
 }
 
 bool DrivetrainSubsystem::IsProfileComplete() {
-  return distance_profile_ || angle_profile_;
+  return !(distance_profile_ && angle_profile_);
 }
 
 void DrivetrainSubsystem::CancelMotionProfile() {

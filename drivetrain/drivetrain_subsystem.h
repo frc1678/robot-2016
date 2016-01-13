@@ -3,6 +3,8 @@
 
 #include "muan/multithreading/updateable.h"
 #include "muan/control/motion_profile.h"
+#include "muan/logging/text_log.h"
+#include "muan/logging/csv_log.h"
 #include "frc1678/robot_ports.h"
 #include "drivetrain/drivetrain.h"
 #include "gyro/gyro_reader.h"
@@ -28,17 +30,23 @@ class DrivetrainSubsystem : public Updateable {
 
  private:
   void SetDrivePosition(DrivetrainPosition* drivetrain_position);
-  DrivetrainGoal current_goal_;
+
   std::unique_ptr<RobotDrive> drive_;
   std::unique_ptr<DrivetrainLoop> drive_loop_;
   std::unique_ptr<Encoder> left_encoder_, right_encoder_;
-  std::unique_ptr<Joystick> j_wheel_, j_stick_;
   std::unique_ptr<DoubleSolenoid> shifting_;
-  bool in_highgear_;
   std::unique_ptr<GyroReader> gyro_reader_;
+
+  bool in_highgear_;
   bool is_operator_controlled_ = true;
+
+  DrivetrainGoal current_goal_;
   std::unique_ptr<MotionProfile<Length>> distance_profile_;
   std::unique_ptr<MotionProfile<Angle>> angle_profile_;
+
   Time t;
   std::mutex mu_;
+
+  TextLog event_log_;
+  CSVLog csv_log_;
 };
