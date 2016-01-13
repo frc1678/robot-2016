@@ -20,11 +20,14 @@ cc_library(
     'lib-src/cdd.h',
   ],
   copts = [
-    '-Wno-sometimes-uninitialized',
     '-Wno-unused-parameter',
     '-Wno-switch-enum',
     '-Wno-empty-body',
     '-Wno-sign-compare',
     '-Wno-unused-result',
+    '-Wno-unused-but-set-variable',
+    '-Wno-format-extra-args',
+    '-Wno-maybe-uninitialized',
+    '-Wno-discarded-qualifiers'
   ]
 )
