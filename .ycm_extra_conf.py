@@ -24,7 +24,7 @@ flags = [
     '-isystem',
     'bazel-out/../external/wpilib/include',
     '-isystem',
-    'bazel-out/../external/eigen/eigen-eigen-4111270ba6e1/Eigen',
+    'bazel-out/../external/eigen/eigen-eigen-4111270ba6e1',
 ]
 
 if compilation_database_folder:
