@@ -123,7 +123,7 @@ toolchain {
   tool_path { name: "cpp" path: "/usr/bin/arm-frc-linux-gnueabi-cpp" }
   tool_path { name: "dwp" path: "/usr/bin/arm-frc-linux-gnueabi-dwp" }
   tool_path { name: "gcc" path: "/usr/bin/arm-frc-linux-gnueabi-gcc" }
-  cxx_flag: "-std=c++0x"
+  cxx_flag: "-std=c++1y"
   linker_flag: "-lstdc++"
   linker_flag: "-lm"
 
@@ -249,7 +249,7 @@ toolchain {
   tool_path { name: "cpp" path: "/usr/bin/cpp" }
   tool_path { name: "dwp" path: "/usr/bin/dwp" }
   tool_path { name: "gcc" path: "/usr/bin/gcc" }
-  cxx_flag: "-std=c++0x"
+  cxx_flag: "-std=c++1y"
   linker_flag: "-lstdc++"
   linker_flag: "-lm"
   linker_flag: "-B/usr/bin/"
@@ -367,7 +367,7 @@ toolchain {
   tool_path { name: "cpp" path: "/usr/bin/cpp" }
   tool_path { name: "dwp" path: "/usr/bin/dwp" }
   tool_path { name: "gcc" path: "osx_gcc_wrapper.sh" }
-  cxx_flag: "-std=c++0x"
+  cxx_flag: "-std=c++1y"
   ar_flag: "-static"
   ar_flag: "-s"
   ar_flag: "-o"
@@ -472,7 +472,7 @@ toolchain {
   tool_path { name: "cpp" path: "/usr/bin/cpp" }
   tool_path { name: "dwp" path: "/usr/bin/dwp" }
   tool_path { name: "gcc" path: "/usr/bin/clang" }
-  cxx_flag: "-std=c++0x"
+  cxx_flag: "-std=c++1y"
   linker_flag: "-lstdc++"
   linker_flag: "-B/usr/bin/"
 
@@ -588,7 +588,7 @@ toolchain {
   tool_path { name: "cpp" path: "C:/mingw/bin/cpp" }
   tool_path { name: "dwp" path: "C:/mingw/bin/dwp" }
   tool_path { name: "gcc" path: "C:/mingw/bin/gcc" }
-  cxx_flag: "-std=c++0x"
+  cxx_flag: "-std=c++1y"
   # TODO(bazel-team): In theory, the path here ought to exactly match the path
   # used by gcc. That works because bazel currently doesn't track files at
   # absolute locations and has no remote execution, yet. However, this will need
@@ -622,7 +622,7 @@ toolchain {
   tool_path { name: "cpp" path: "C:/msys64/mingw64/bin/cpp" }
   tool_path { name: "dwp" path: "C:/msys64/mingw64/bin/dwp" }
   tool_path { name: "gcc" path: "C:/msys64/mingw64/bin/gcc" }
-  cxx_flag: "-std=c++0x"
+  cxx_flag: "-std=c++1y"
   # TODO(bazel-team): In theory, the path here ought to exactly match the path
   # used by gcc. That works because bazel currently doesn't track files at
   # absolute locations and has no remote execution, yet. However, this will need
@@ -655,7 +655,7 @@ toolchain {
   tool_path { name: "cpp" path: "C:/Program Files (x86)/LLVM/bin/cpp" }
   tool_path { name: "dwp" path: "C:/Program Files (x86)/LLVM/bin/dwp" }
   tool_path { name: "gcc" path: "C:/Program Files (x86)/LLVM/bin/clang" }
-  cxx_flag: "-std=c++0x"
+  cxx_flag: "-std=c++1y"
   # TODO(bazel-team): In theory, the path here ought to exactly match the path
   # used by gcc. That works because bazel currently doesn't track files at
   # absolute locations and has no remote execution, yet. However, this will need
