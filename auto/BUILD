@@ -9,6 +9,7 @@ cc_library(
   deps=[
     "@wpilib//:main",
     "//unitscpp",
-    "//muan:utils"
+    "//muan:utils",
+    "//gyro"
   ],
 )
