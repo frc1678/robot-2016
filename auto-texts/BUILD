@@ -1,0 +1,14 @@
+cc_library(
+  name="auto_functions",
+  srcs=[
+    'auto_functions.cpp',
+  ],
+  hdrs=[
+    'auto_functions.h',
+  ],
+  deps=[
+    "@wpilib//:main",
+    "//unitscpp",
+    "//muan:utils"
+  ],
+)
