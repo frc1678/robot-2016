@@ -1,10 +1,18 @@
+cc_library(
+  name = "robot_ports",
+  hdrs = [
+    "robot_ports.h"
+  ],
+  visibility = ["//visibility:public"]
+)
+
 cc_binary(
   name="frc1678",
   deps=[
     "@wpilib//:main",
-    "//drivetrain/drivetrain:drivetrain_lib",
+    "//drivetrain:drivetrain_subsystem",
     "//unitscpp",
     "//muan:multithreading"
   ],
-  srcs=glob(["*.cpp", "CitrusButton.h"]) #TODO (jasmine): Add button interface as separate target?
+  srcs=glob(["*.cpp", "*.h"]) #TODO (jasmine): Add button interface as separate target?
 )
