@@ -5,7 +5,7 @@
 // Gyro datasheet:
 // http://www.analog.com/media/en/technical-documentation/data-sheets/ADXRS453.pdf
 
-GyroReader::GyroReader() : Updateable(100 * hz) {
+GyroReader::GyroReader() : muan::Updateable(100 * hz) {
   gyro = new GyroInterface();
   dio = new DigitalOutput(1);
   dio->Set(1);

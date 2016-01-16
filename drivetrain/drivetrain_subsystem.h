@@ -15,7 +15,7 @@ using drivetrain::control_loops::DrivetrainOutput;
 using drivetrain::control_loops::DrivetrainStatus;
 using drivetrain::control_loops::DrivetrainLoop;
 
-class DrivetrainSubsystem : public Updateable {
+class DrivetrainSubsystem : public muan::Updateable {
  public:
   DrivetrainSubsystem();
   virtual ~DrivetrainSubsystem();
@@ -24,7 +24,7 @@ class DrivetrainSubsystem : public Updateable {
   void Start();
   void SetDriveGoal(const DrivetrainGoal& goal);
 
-  void FollowMotionProfile(std::unique_ptr<MotionProfile<Length>> profile);
+  void FollowMotionProfile(std::unique_ptr<muan::MotionProfile<Length>> distance_profile, std::unique_ptr<muan::MotionProfile<Angle>> angle_profile);
   bool IsProfileComplete();
   void CancelMotionProfile();
 
@@ -41,12 +41,12 @@ class DrivetrainSubsystem : public Updateable {
   bool is_operator_controlled_ = true;
 
   DrivetrainGoal current_goal_;
-  std::unique_ptr<MotionProfile<Length>> distance_profile_;
-  std::unique_ptr<MotionProfile<Angle>> angle_profile_;
+  std::unique_ptr<muan::MotionProfile<Length>> distance_profile_;
+  std::unique_ptr<muan::MotionProfile<Angle>> angle_profile_;
 
   Time t;
   std::mutex mu_;
 
-  TextLog event_log_;
-  CSVLog csv_log_;
+  muan::TextLog event_log_;
+  muan::CSVLog csv_log_;
 };

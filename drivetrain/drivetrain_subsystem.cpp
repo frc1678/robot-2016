@@ -3,7 +3,7 @@
 using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
-    : Updateable(50 * hz),
+    : muan::Updateable(200 * hz),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}) {
@@ -55,8 +55,8 @@ void DrivetrainSubsystem::Update(Time dt) {
       drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
     } else {
       t += dt;
-      Angle target_angle_ = angle_profile_->calculate_distance(t);
-      Length target_distance_ = distance_profile_->calculate_distance(t);
+      Angle target_angle_ = angle_profile_->Calculate(t);
+      Length target_distance_ = distance_profile_->Calculate(t);
       // TODO (Kyle): Track the targets here
     }
   }
@@ -95,8 +95,10 @@ void DrivetrainSubsystem::SetDrivePosition(
 }
 
 void DrivetrainSubsystem::FollowMotionProfile(
-    std::unique_ptr<MotionProfile<Length>> profile) {
-  distance_profile_ = std::move(profile);
+    std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
+    std::unique_ptr<muan::MotionProfile<Angle>> angle_profile) {
+  distance_profile_ = std::move(distance_profile);
+  angle_profile_ = std::move(angle_profile);
 }
 
 bool DrivetrainSubsystem::IsProfileComplete() {
