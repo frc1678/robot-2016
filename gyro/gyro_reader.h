@@ -6,7 +6,7 @@
 #include "unitscpp/unitscpp.h"
 #include "muan/multithreading/updateable.h"
 
-class GyroReader : public Updateable {
+class GyroReader : public muan::Updateable {
  protected:
   GyroInterface *gyro;
 
