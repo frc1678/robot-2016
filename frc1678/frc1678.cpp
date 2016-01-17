@@ -3,8 +3,15 @@
 
 #include "drivetrain/drivetrain_subsystem.h"
 #include "CitrusButton.h"
+#include "auto/auto_routines.h"
 
 class CitrusRobot : public IterativeRobot {
+  
+private:
+
+  LemonScriptRunner* auto_runner;
+
+public:
   std::unique_ptr<Joystick> j_wheel_, j_stick_;
 
   std::unique_ptr<DrivetrainSubsystem> drive_subsystem_;
@@ -14,7 +21,6 @@ class CitrusRobot : public IterativeRobot {
 
   bool in_highgear_;
 
- public:
   CitrusRobot() {
     // Joysticks
     j_wheel_ = std::make_unique<Joystick>(0);
@@ -25,9 +31,18 @@ class CitrusRobot : public IterativeRobot {
     shift_down_ = std::make_unique<CitrusButton>(j_stick_.get(), 2);
     shift_up_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
     quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
+
+    // Auto
+    auto_runner = new LemonScriptRunner("test.auto", this);
+
   }
 
   void RobotInit() { drive_subsystem_->Start(); }
+
+  void AutoPeriodic() {
+    auto_runner->Update();
+
+  }
 
   void TeleopInit() {}
 

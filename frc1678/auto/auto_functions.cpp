@@ -8,13 +8,25 @@ AutoFunction::DeleteAutoFunction() {
  // delete wait_timer;
 }
 
-bool AutoFunction::Drivestraight(CitrusRobot* robot, Length dist, Velocity speed) {
+bool AutoFunction::DriveStraight(CitrusRobot* robot, Length dist, Velocity speed) {
    auto dp = std::make_unique<muan::TrapezoidalMotionProfile<Length>>(dist, speed, 10*ft/s/s);
    auto ap = std::make_unique<muan::TrapezoidalMotionProfile<Angle>>(0*deg, 50*deg/s, 80*deg/s); 
 
    robot->drive_subsystem_->FollowMotionProfile(std::move(dp), std::move(ap));
 
    return true;
+}
+
+// Test for LemonScript
+
+bool AutoFunction::DriveStraight2(CitrusRobot* robot, float dist, float speed) {
+   auto dp = std::make_unique<muan::TrapezoidalMotionProfile<Length>>(dist * ft, speed * ft/s, 10*ft/s/s);
+   auto ap = std::make_unique<muan::TrapezoidalMotionProfile<Angle>>(0*deg, 50*deg/s, 80*deg/s); 
+
+   robot->drive_subsystem_->FollowMotionProfile(std::move(dp), std::move(ap));
+
+   return true;
+
 }
 
 bool AutoFunction::Turn(CitrusRobot* robot, Angle angle, Velocity speed) {
