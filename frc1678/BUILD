@@ -12,7 +12,8 @@ cc_binary(
     "@wpilib//:main",
     "//drivetrain:drivetrain_subsystem",
     "//unitscpp",
-    "//muan:multithreading"
+    "//muan:multithreading",
+    "//vision"
   ],
   srcs=glob(["*.cpp", "*.h"]) #TODO (jasmine): Add button interface as separate target?
 )

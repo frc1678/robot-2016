@@ -1,12 +1,12 @@
 #include "vision.h"
-NetworkTable* table=nullptr;
-DriveTrainGoal runAlignment() {
+std::shared_ptr<NetworkTable> table=nullptr;
+DrivetrainGoal runAlignment() {
         if(table==nullptr) {
                 table=NetworkTable::GetTable("vision");
         }
         bool found=table->GetBoolean("targetFound");
         double error=table->GetNumber("angleToTarget");
-        DriveTrainGoal goal;
+        DrivetrainGoal goal;
         goal.steering=-error/30;
         goal.throttle=1;
         goal.highgear=false;

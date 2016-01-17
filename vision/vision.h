@@ -4,6 +4,6 @@
 #include "drivetrain/drivetrain_subsystem.h"
 #include "networktables/NetworkTable.h"
 
-DriveTrainGoal runAlignment();
+DrivetrainGoal runAlignment();
 
 #endif

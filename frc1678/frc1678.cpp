@@ -3,7 +3,7 @@
 
 #include "drivetrain/drivetrain_subsystem.h"
 #include "CitrusButton.h"
-
+#include "vision/vision.h"
 class CitrusRobot : public IterativeRobot {
   std::unique_ptr<Joystick> j_wheel_, j_stick_;
 
@@ -31,6 +31,10 @@ class CitrusRobot : public IterativeRobot {
 
   void TeleopInit() {}
 
+  void AutonomousInit() {}
+  void AutonomousPeriodic() {
+          drive_subsystem_->SetDriveGoal(runAlignment());
+  }
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own
     // thread.

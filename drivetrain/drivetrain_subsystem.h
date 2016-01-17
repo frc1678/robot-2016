@@ -1,3 +1,6 @@
+#ifndef _DRIVETRAIN_SUBSYSTEM_H_
+#define _DRIVETRAIN_SUBSYSTEM_H_
+
 #include <memory>
 #include <WPILib.h>
 
@@ -50,3 +53,5 @@ class DrivetrainSubsystem : public muan::Updateable {
   muan::TextLog event_log_;
   muan::CSVLog csv_log_;
 };
+
+#endif
