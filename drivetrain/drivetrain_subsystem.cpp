@@ -4,6 +4,8 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
+      angle_controller_(60*V/rad, 0*V/rad/s, 6*V/rad*s),
+      distance_controller_(60*V/m, 0*V/m/s, 2.4*V/m*s), // UNTESTED PID CONSTANTS THESE WILL FUCK UP
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}) {
@@ -34,7 +36,7 @@ void DrivetrainSubsystem::Start() {
   event_log_.Write("Starting drivetrain subsystem...", "INIT", CODE_STAMP);
   drive_->SetSafetyEnabled(false);
   gyro_reader_->Start();
-  is_operator_controlled_ = true;
+  is_operator_controlled_ = false;//true;
   t = 0 * s;
   Updateable::Start();  // This needs to be called last so that Update(Time)
                         // doesn't get called until after everything is
@@ -54,10 +56,19 @@ void DrivetrainSubsystem::Update(Time dt) {
     if (is_operator_controlled_) {
       drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
     } else {
+      //TODO(Wesley) Reset the PID controller if we went from tele to auto
       t += dt;
       Angle target_angle_ = angle_profile_->Calculate(t);
       Length target_distance_ = distance_profile_->Calculate(t);
-      // TODO (Kyle): Track the targets here
+      
+      Voltage out_distance = angle_controller_.Calculate(dt, gyro_reader_->GetAngle() - target_angle_);
+      Voltage out_angle = distance_controller_.Calculate(dt, ((left_encoder_->Get() + right_encoder_->Get())/2)*click - target_distance_);
+    
+      Voltage out_left = out_distance + out_angle;
+      Voltage out_right = out_distance - out_angle;
+
+      out.left_voltage = out_left.to(V);
+      out.right_voltage = out_right.to(V);
     }
   }
 

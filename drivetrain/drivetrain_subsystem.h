@@ -3,11 +3,13 @@
 
 #include "muan/multithreading/updateable.h"
 #include "muan/control/motion_profile.h"
+#include "muan/control/pid_controller.h"
 #include "muan/logging/text_log.h"
 #include "muan/logging/csv_log.h"
 #include "frc1678/robot_ports.h"
 #include "drivetrain/drivetrain.h"
 #include "gyro/gyro_reader.h"
+
 
 using drivetrain::control_loops::DrivetrainGoal;
 using drivetrain::control_loops::DrivetrainPosition;
@@ -43,6 +45,9 @@ class DrivetrainSubsystem : public muan::Updateable {
   DrivetrainGoal current_goal_;
   std::unique_ptr<muan::MotionProfile<Length>> distance_profile_;
   std::unique_ptr<muan::MotionProfile<Angle>> angle_profile_;
+
+  muan::PidController<Angle, Voltage> angle_controller_;
+  muan::PidController<Length, Voltage> distance_controller_;
 
   Time t;
   std::mutex mu_;
