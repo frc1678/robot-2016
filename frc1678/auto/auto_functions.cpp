@@ -1,24 +1,28 @@
 #include "auto_functions.h"
 
-AutoFunction::AutoFunction()  {
+AutoFunction::SetUpAutoFunction()  {
  // Timer wait_timer = new Timer(); 
 }
 
-AutoFunction::~AutoFunction() {
+AutoFunction::DeleteAutoFunction() {
  // delete wait_timer;
 }
 
-bool AutoFunction::Drivestraight(Length dist, Velocity speed) {
-     
+bool AutoFunction::Drivestraight(CitrusRobot* robot, Length dist, Velocity speed) {
+   auto dp = std::make_unique<muan::TrapezoidalMotionProfile<Length>>(dist, speed, 10*ft/s/s);
+   auto ap = std::make_unique<muan::TrapezoidalMotionProfile<Angle>>(0*deg, 50*deg/s, 80*deg/s); 
+
+   robot->drive_subsystem_->FollowMotionProfile(std::move(dp), std::move(ap));
+
    return true;
 }
 
-bool AutoFunction::Turn(Angle angle, Velocity speed) {
+bool AutoFunction::Turn(CitrusRobot* robot, Angle angle, Velocity speed) {
   // this will be implemented when Wesley has his Auto drive stuff done
   return true;
 }
 
-bool AutoFunction::Wait(Time time) {
+bool AutoFunction::Wait(CitrusRobot* robot, Time time) {
   if (true) {//wait_timer->Get() >= time){
     return true;
   } else {
@@ -26,7 +30,7 @@ bool AutoFunction::Wait(Time time) {
   }
 }
 
-bool AutoFunction::Shoot(Position infield) {
+bool AutoFunction::Shoot(CitrusRobot* robot, Position infield) {
 
   if(infield  == LOW_BAR){
     //call shoot from low bar
@@ -39,23 +43,23 @@ bool AutoFunction::Shoot(Position infield) {
   }
   
   return true;// shooter->finished();
-}}
+}
 
-bool AutoFunction::RunIntake() {
+bool AutoFunction::RunIntake(CitrusRobot* robot) {
  // intake->IntakePickup();
   return true;
 }
 
-bool AutoFunction::DropPinch() {
+bool AutoFunction::DropPinch(CitrusRobot* robot) {
   return true;
 }
 
-bool AutoFunction::Align(Angle offset) {
+bool AutoFunction::Align(CitrusRobot* robot, Angle offset) {
   //to be implemented when vision works
   return true;
 }
 
-bool AutoFunction::StopDriving() {
+bool AutoFunction::StopDriving(CitrusRobot* robot) {
  //driveSystem->DriveStraight(0,0);
  return true;
 }

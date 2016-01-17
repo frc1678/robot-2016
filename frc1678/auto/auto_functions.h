@@ -4,6 +4,7 @@
 #include "gyro/gyro_reader.h"
 #include "unitscpp/unitscpp.h"
 #include "muan/utils/timing_utils.h"
+#include "muan/control/trapezoidal_motion_profile.h"
 #include "auto_functions.h"
 
 enum Position{
@@ -13,18 +14,18 @@ enum Position{
     WORKS_4,
 };
 
-class AutoFunction {
-  public:
-    AutoFunction();
-    ~AutoFunction();
-    bool Drivestraight(Length dist, Velocity speed);
-    bool Turn(Angle angle, Velocity speed);
-    bool Wait(Time time);
-    bool Shoot(Position infield);
-    bool RunIntake();
-    bool DropPinch();
-    bool Align(Angle offset);
-    bool StopDriving();
-};
+namespace AutoFunction {
+    SetUpAutoFunction();
+    DeleteAutoFunction();
+    bool Drivestraight(CitrusRobot* robot, Length dist, Velocity speed);
+    bool Turn(CitrusRobot* robot, Angle angle, Velocity speed);
+    bool Wait(CitrusRobot* robot, Time time);
+    bool Shoot(CitrusRobot* robot, Position infield);
+    bool RunIntake(CitrusRobot* robot);
+    bool DropPinch(CitrusRobot* robot);
+    bool Align(CitrusRobot* robot, Angle offset);
+    bool StopDriving(CitrusRobot* robot);
+}
 
 #endif
+
