@@ -4,10 +4,10 @@ DrivetrainGoal runAlignment() {
         if(table==nullptr) {
                 table=NetworkTable::GetTable("vision");
         }
-        bool found=table->GetBoolean("targetFound");
-        double error=table->GetNumber("angleToTarget");
+        bool found=table->GetBoolean("targetFound", false);
+        double error=table->GetNumber("angleToTarget", 0);
         DrivetrainGoal goal;
-        goal.steering=-error/30;
+        goal.steering=found ? -error/30 : 0;
         goal.throttle=1;
         goal.highgear=false;
         goal.quickturn=true;
