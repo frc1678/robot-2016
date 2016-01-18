@@ -28,8 +28,7 @@ class CIM(control_loop.ControlLoop):
     # Torque constant
     self.Kt = self.stall_torque / self.stall_current
     # Control loop time step TODO (Finn): Update once we get it onto another thread.
-    #self.dt = 0.005
-    self.dt = 0.020
+    self.dt = 0.005
 
     # State feedback matrices
     self.A_continuous = numpy.matrix(
@@ -70,7 +69,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Radius of the robot, in meters.
     self.rb = .3429
     # Radius of the wheels, in meters.
-    self.r = 0.0508
+    self.r = 0.0762
     # Resistance of the motor, divided by the number of motors.
     self.R = 12.0 / self.stall_current / 2
     # Motor velocity constant
