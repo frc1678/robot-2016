@@ -32,7 +32,12 @@ class CitrusRobot : public IterativeRobot {
 
   void RobotInit() { drive_subsystem_->Start(); }
 
-  void TeleopInit() {}
+  void TeleopInit() {
+    using muan::TrapezoidalMotionProfile;
+    auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(0*m, 5*ft/s, 10*ft/s/s);
+    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(90*deg, 0.27*1.5*rev/s, 270*deg/s/s);
+    drive_subsystem_->FollowMotionProfile(std::move(dp), std::move(ap));
+  }
 
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own
@@ -65,11 +70,7 @@ class CitrusRobot : public IterativeRobot {
 
     //drive_subsystem_->SetDriveGoal(drivetrain_goal);
 
-    using muan::TrapezoidalMotionProfile;
     //drive_subsystem_->SetDriveGoal(drivetrain_goal);
-    auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(2*m, 5*ft/s, 10*ft/s/s);
-    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(0*deg, 50*deg/s, 80*deg/s/s);
-    drive_subsystem_->FollowMotionProfile(std::move(dp), std::move(ap));
 
     UpdateButtons();
   }

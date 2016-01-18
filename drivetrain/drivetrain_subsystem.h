@@ -49,6 +49,9 @@ class DrivetrainSubsystem : public muan::Updateable {
   muan::PidController<Angle, Voltage> angle_controller_;
   muan::PidController<Length, Voltage> distance_controller_;
 
+  float encoder_offset_ = 0;
+  Angle gyro_offset_ = 0*rad;
+
   Time t;
   std::mutex mu_;
 

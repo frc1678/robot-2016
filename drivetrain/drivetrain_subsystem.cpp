@@ -4,8 +4,8 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(60*V/rad, 0*V/rad/s, 6*V/rad*s),
-      distance_controller_(60*V/m, 0*V/m/s, 2.4*V/m*s), // UNTESTED PID CONSTANTS THESE WILL FUCK UP
+      angle_controller_(30*V/rad, 12*V/rad/s, 4*V/rad*s),
+      distance_controller_(3*V/m, 0*V/m/s, 0*V/m*s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}) {
@@ -36,7 +36,7 @@ void DrivetrainSubsystem::Start() {
   event_log_.Write("Starting drivetrain subsystem...", "INIT", CODE_STAMP);
   drive_->SetSafetyEnabled(false);
   gyro_reader_->Start();
-  is_operator_controlled_ = false;//true;
+  is_operator_controlled_ = true;
   t = 0 * s;
   Updateable::Start();  // This needs to be called last so that Update(Time)
                         // doesn't get called until after everything is
@@ -58,17 +58,32 @@ void DrivetrainSubsystem::Update(Time dt) {
     } else {
       //TODO(Wesley) Reset the PID controller if we went from tele to auto
       t += dt;
+
+      // Feed forward term
+      AngularVelocity robot_angular_velocity = 0.27*1.5*rev/s*(pos.right_shifter_high ? 1 : (1/3));
+      Velocity robot_velocity = 10*ft/s*(pos.right_shifter_high ? 1 : (1/3));
+
+      Voltage feed_forward_angle = angle_profile_->CalculateDerivative(t)*(12*V / robot_angular_velocity);
+      Voltage feed_forward_distance = distance_profile_->CalculateDerivative(t)*(12*V / robot_velocity);
+
+      //PID Term
       Angle target_angle_ = angle_profile_->Calculate(t);
       Length target_distance_ = distance_profile_->Calculate(t);
-      
-      Voltage out_distance = angle_controller_.Calculate(dt, gyro_reader_->GetAngle() - target_angle_);
-      Voltage out_angle = distance_controller_.Calculate(dt, ((left_encoder_->Get() + right_encoder_->Get())/2)*click - target_distance_);
-    
-      Voltage out_left = out_distance + out_angle;
-      Voltage out_right = out_distance - out_angle;
+
+      Voltage out_angle = angle_controller_.Calculate(dt, target_angle_ - gyro_reader_->GetAngle() - gyro_offset_);
+      Voltage out_distance = distance_controller_.Calculate(dt, target_distance_ - ((pos.left_encoder + pos.right_encoder)/2)*m - encoder_offset_*m);
+
+
+      Voltage out_left = feed_forward_angle + out_angle;
+      Voltage out_right = -feed_forward_angle - out_angle;
+
+      printf("left: %f\tright: %f\n", out_left.to(V), out_right.to(V));
+      printf("Gyro: %f\n", gyro_reader_->GetAngle().to(deg));
 
       out.left_voltage = out_left.to(V);
       out.right_voltage = out_right.to(V);
+
+      //TODO(Wesley) Do stuff once we're done with the motion profile
     }
   }
 
@@ -110,6 +125,12 @@ void DrivetrainSubsystem::FollowMotionProfile(
     std::unique_ptr<muan::MotionProfile<Angle>> angle_profile) {
   distance_profile_ = std::move(distance_profile);
   angle_profile_ = std::move(angle_profile);
+  is_operator_controlled_ = false;
+  t = 0*s;
+  DrivetrainPosition pos;
+  SetDrivePosition(&pos); // Is this bad?
+  encoder_offset_ = (pos.left_encoder + pos.right_encoder)/2;
+  gyro_offset_ = gyro_reader_->GetAngle();
 }
 
 bool DrivetrainSubsystem::IsProfileComplete() {
