@@ -25,6 +25,8 @@ class CitrusRobot : public IterativeRobot {
     shift_down_ = std::make_unique<CitrusButton>(j_stick_.get(), 2);
     shift_up_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
     quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
+
+    drive_subsystem_ = std::make_unique<DrivetrainSubsystem>();
   }
 
   void RobotInit() { drive_subsystem_->Start(); }
