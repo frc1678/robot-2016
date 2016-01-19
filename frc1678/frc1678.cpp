@@ -40,10 +40,10 @@ class CitrusRobot : public IterativeRobot {
   }
 
   void AutonomousInit() {
-    reset();
+          CitrusVision::start(drive_subsystem_.get());
   }
   void AutonomousPeriodic() {
-          drive_subsystem_->SetDriveGoal(runAlignment());
+          CitrusVision::updateVision(drive_subsystem_.get());
   }
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own

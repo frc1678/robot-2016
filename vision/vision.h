@@ -4,7 +4,11 @@
 #include "drivetrain/drivetrain_subsystem.h"
 #include "networktables/NetworkTable.h"
 
-void reset();
-DrivetrainGoal runAlignment();
+namespace CitrusVision {
+
+void start(DrivetrainSubsystem* ds);
+void updateVision(DrivetrainSubsystem* ds);
+
+}
 
 #endif

@@ -131,6 +131,8 @@ void DrivetrainSubsystem::FollowMotionProfile(
   SetDrivePosition(&pos); // Is this bad?
   encoder_offset_ = (pos.left_encoder + pos.right_encoder)/2;
   gyro_offset_ = gyro_reader_->GetAngle();
+  angle_controller_.Reset();
+  distance_controller_.Reset();
 }
 
 bool DrivetrainSubsystem::IsProfileComplete() {
