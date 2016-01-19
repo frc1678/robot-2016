@@ -39,7 +39,9 @@ class CitrusRobot : public IterativeRobot {
     drive_subsystem_->FollowMotionProfile(std::move(dp), std::move(ap));
   }
 
-  void AutonomousInit() {}
+  void AutonomousInit() {
+    reset();
+  }
   void AutonomousPeriodic() {
           drive_subsystem_->SetDriveGoal(runAlignment());
   }

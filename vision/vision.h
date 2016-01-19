@@ -4,6 +4,7 @@
 #include "drivetrain/drivetrain_subsystem.h"
 #include "networktables/NetworkTable.h"
 
+void reset();
 DrivetrainGoal runAlignment();
 
 #endif
