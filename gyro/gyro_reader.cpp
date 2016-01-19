@@ -7,7 +7,7 @@
 
 GyroReader::GyroReader() : muan::Updateable(100 * hz) {
   gyro = new GyroInterface();
-  dio = new DigitalOutput(1);
+  dio = new DigitalOutput(4);
   dio->Set(1);
   is_initalized = Init();
 }

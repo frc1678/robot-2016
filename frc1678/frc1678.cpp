@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "drivetrain/drivetrain_subsystem.h"
+#include "muan/control/trapezoidal_motion_profile.h"
 #include "CitrusButton.h"
 #include "vision/vision.h"
 class CitrusRobot : public IterativeRobot {
@@ -31,7 +32,12 @@ class CitrusRobot : public IterativeRobot {
 
   void RobotInit() { drive_subsystem_->Start(); }
 
-  void TeleopInit() {}
+  void TeleopInit() {
+    using muan::TrapezoidalMotionProfile;
+    auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(0*m, 5*ft/s, 10*ft/s/s);
+    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(90*deg, 0.27*1.5*rev/s, 270*deg/s/s);
+    drive_subsystem_->FollowMotionProfile(std::move(dp), std::move(ap));
+  }
 
   void AutonomousInit() {}
   void AutonomousPeriodic() {
@@ -40,13 +46,12 @@ class CitrusRobot : public IterativeRobot {
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own
     // thread.
-    DrivetrainGoal drivetrain_goal;
+    //DrivetrainGoal drivetrain_goal;
 
-    SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
-    SmartDashboard::PutNumber("Stick", j_stick_->GetY());
-    SetDriveGoal(&drivetrain_goal);
+    //SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
+    //SmartDashboard::PutNumber("Stick", j_stick_->GetY());
+    //SetDriveGoal(&drivetrain_goal);
 
-    drive_subsystem_->SetDriveGoal(drivetrain_goal);
   }
 
   void TeleopPeriodic() {
@@ -65,9 +70,11 @@ class CitrusRobot : public IterativeRobot {
       in_highgear_ = false;
     }
 
-    SetDriveGoal(&drivetrain_goal);
+    //SetDriveGoal(&drivetrain_goal);
 
-    drive_subsystem_->SetDriveGoal(drivetrain_goal);
+    //drive_subsystem_->SetDriveGoal(drivetrain_goal);
+
+    //drive_subsystem_->SetDriveGoal(drivetrain_goal);
 
     UpdateButtons();
   }
