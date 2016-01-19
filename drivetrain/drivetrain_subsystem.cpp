@@ -56,8 +56,10 @@ void DrivetrainSubsystem::Update(Time dt) {
     if (is_operator_controlled_) {
       drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
       printf("ol: %f\tor: %f\n", out.left_voltage, out.right_voltage);
+      //TODO(Wesley) Find out why this is giving 12V and 0V as output
     } else {
       //TODO(Wesley) Reset the PID controller if we went from tele to auto
+      //TODO(Wesley) Add operator control to exit auto mode
       t += dt;
 
       // Feed forward term
