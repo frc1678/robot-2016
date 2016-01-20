@@ -4,30 +4,30 @@
 #include <vector>
 #include <iostream>
 
-LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file, CitrusRobot* robot) {
-  state.userData = robot; // Whatever goes in userData comes out later.
+LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
+                                     RobotSubsystems *subsystems) {
+  state.userData = reinterpret_cast<int *>(
+      subsystems);  // Whatever goes in userData comes out later.
 
-  AvailableCppCommandDeclaration *driveStraight2 = new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight2, "DriveStraight", {FLOAT, FLOAT});
+  using lemonscript::AvailableCppCommandDeclaration;
 
-  std::vector<const AvailableCppCommandDeclaration *> commands = {driveStraight2};
+  AvailableCppCommandDeclaration *driveStraight2 =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight2,
+                                         "DriveStraight", {FLOAT, FLOAT});
 
-  std::ifstream ifs(auto_routine_file); // Take in auto_routine_file
+  std::vector<const AvailableCppCommandDeclaration *> commands = {
+      driveStraight2};
+
+  std::ifstream ifs(auto_routine_file);  // Take in auto_routine_file
 
   try {
-    compiler = new LemonScriptCompiler(ifs, commands, &state);
+    compiler = new lemonscript::LemonScriptCompiler(ifs, commands, &state);
 
   } catch (std::string error) {
     std::cerr << error << std::endl;
-
   }
 }
 
-LemonScriptRunner::~LemonScriptRunner() {
-  delete compiler;
+LemonScriptRunner::~LemonScriptRunner() { delete compiler; }
 
-}
-
-void LemonScriptRunner::Update() {
-  compiler->PeriodicUpdate();
-
-}
+void LemonScriptRunner::Update() { compiler->PeriodicUpdate(); }

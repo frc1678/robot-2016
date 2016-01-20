@@ -1,15 +1,18 @@
 cc_library(
-  name="auto_functions",
-  srcs=[
-    'auto_functions.cpp',
-  ],
-  hdrs=[
-    'auto_functions.h',
-  ],
+  name="auto",
+  srcs=glob([
+    '*.cpp',
+  ]),
+  hdrs=glob([
+    '*.h',
+  ]),
   deps=[
     "@wpilib//:main",
     "//unitscpp",
     "//muan:utils",
-    "//gyro"
+    "//gyro",
+    "//frc1678:robot_subsystems",
+    "//lemonscript"
   ],
+  visibility = ["//visibility:public"]
 )

@@ -3,18 +3,17 @@
 
 #include "drivetrain/drivetrain_subsystem.h"
 #include "CitrusButton.h"
-#include "auto/auto_routines.h"
+#include "frc1678/auto/auto_routines.h"
+#include "robot_subsystems.h"
 
 class CitrusRobot : public IterativeRobot {
-  
-private:
-
+ private:
   LemonScriptRunner* auto_runner;
 
-public:
+ public:
   std::unique_ptr<Joystick> j_wheel_, j_stick_;
 
-  std::unique_ptr<DrivetrainSubsystem> drive_subsystem_;
+  RobotSubsystems subsystems_;
 
   // Buttonz!
   std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_;
@@ -33,16 +32,12 @@ public:
     quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
 
     // Auto
-    auto_runner = new LemonScriptRunner("test.auto", this);
-
+    auto_runner = new LemonScriptRunner("test.auto", &subsystems_);
   }
 
-  void RobotInit() { drive_subsystem_->Start(); }
+  void RobotInit() { subsystems_.drive.Start(); }
 
-  void AutoPeriodic() {
-    auto_runner->Update();
-
-  }
+  void AutoPeriodic() { auto_runner->Update(); }
 
   void TeleopInit() {}
 
@@ -55,7 +50,7 @@ public:
     SmartDashboard::PutNumber("Stick", j_stick_->GetY());
     SetDriveGoal(&drivetrain_goal);
 
-    drive_subsystem_->SetDriveGoal(drivetrain_goal);
+    subsystems_.drive.SetDriveGoal(drivetrain_goal);
   }
 
   void TeleopPeriodic() {
@@ -76,7 +71,7 @@ public:
 
     SetDriveGoal(&drivetrain_goal);
 
-    drive_subsystem_->SetDriveGoal(drivetrain_goal);
+    subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
     UpdateButtons();
   }

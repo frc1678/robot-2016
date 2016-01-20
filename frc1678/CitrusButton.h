@@ -10,7 +10,6 @@ class CitrusButton {
   bool output;
   bool oldInput;
 
-
  public:
   CitrusButton(Joystick* tstick, int tbutton);
 
@@ -47,9 +46,9 @@ class CitrusButton {
 };
 
 class CitrusAxis : public CitrusButton {
-  public:
-    void Update();
-    void Update(bool input);
+ public:
+  void Update();
+  void Update(bool input);
 };
 
 // Use the following like: input = TurnOn(myButton); input = Toggle(myButton,

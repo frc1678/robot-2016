@@ -17,14 +17,16 @@ void CitrusButton::Update(bool input) { oldInput = input; }
 
 void CitrusButton::Update() { Update(stick->GetRawButton(button)); }
 
-void CitrusAxis::Update(bool input) {oldInput = input;}
+void CitrusAxis::Update(bool input) { oldInput = input; }
 
 void CitrusAxis::Update() {
   bool bclicked;
   bclicked = false;
-  if(abs(stick->GetRawAxis(button)) >= .7) {
+  if (abs(stick->GetRawAxis(button)) >= .7) {
     bclicked = true;
-  } else {bclicked = false;}
+  } else {
+    bclicked = false;
+  }
   Update(bclicked);
 }
 

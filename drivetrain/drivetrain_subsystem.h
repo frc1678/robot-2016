@@ -1,3 +1,6 @@
+#ifndef DRIVETRAIN_DRIVETRAIN_SUBSYSTEM
+#define DRIVETRAIN_DRIVETRAIN_SUBSYSTEM
+
 #include <memory>
 #include <WPILib.h>
 
@@ -24,7 +27,9 @@ class DrivetrainSubsystem : public muan::Updateable {
   void Start();
   void SetDriveGoal(const DrivetrainGoal& goal);
 
-  void FollowMotionProfile(std::unique_ptr<muan::MotionProfile<Length>> distance_profile, std::unique_ptr<muan::MotionProfile<Angle>> angle_profile);
+  void FollowMotionProfile(
+      std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
+      std::unique_ptr<muan::MotionProfile<Angle>> angle_profile);
   bool IsProfileComplete();
   void CancelMotionProfile();
 
@@ -50,3 +55,5 @@ class DrivetrainSubsystem : public muan::Updateable {
   muan::TextLog event_log_;
   muan::CSVLog csv_log_;
 };
+
+#endif /* DRIVETRAIN_DRIVETRAIN_SUBSYSTEM */
