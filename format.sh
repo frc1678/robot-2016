@@ -1,3 +1,8 @@
+if [ -f /usr/bin/clang-format-3.5 ]
+then
+	export CLANG_PATH="/usr/bin/clang-format-3.5"
+fi
+
 if [ -f /usr/bin/clang-format-3.6 ]
 then
 	export CLANG_PATH="/usr/bin/clang-format-3.6"
