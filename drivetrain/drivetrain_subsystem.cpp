@@ -55,8 +55,11 @@ void DrivetrainSubsystem::Update(Time dt) {
     mutex_lock lock(mu_);
     if (is_operator_controlled_) {
       drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
+      printf("ol: %f\tor: %f\n", out.left_voltage, out.right_voltage);
+      //TODO(Wesley) Find out why this is giving 12V and 0V as output
     } else {
       //TODO(Wesley) Reset the PID controller if we went from tele to auto
+      //TODO(Wesley) Add operator control to exit auto mode
       t += dt;
 
       // Feed forward term
@@ -70,8 +73,11 @@ void DrivetrainSubsystem::Update(Time dt) {
       Angle target_angle_ = angle_profile_->Calculate(t);
       Length target_distance_ = distance_profile_->Calculate(t);
 
-      Voltage out_angle = angle_controller_.Calculate(dt, target_angle_ - gyro_reader_->GetAngle() - gyro_offset_);
-      Voltage out_distance = distance_controller_.Calculate(dt, target_distance_ - ((pos.left_encoder + pos.right_encoder)/2)*m - encoder_offset_*m);
+      Angle calculated_gyro_angle = gyro_reader_->GetAngle() - gyro_offset_;
+      Length calculated_distance = ((pos.left_encoder + pos.right_encoder)/2)*m - encoder_offset_*m;
+
+      Voltage out_angle = angle_controller_.Calculate(dt, target_angle_ - calculated_gyro_angle);
+      Voltage out_distance = distance_controller_.Calculate(dt, target_distance_ - calculated_distance);
 
 
       Voltage out_left = feed_forward_angle + out_angle;
@@ -83,7 +89,21 @@ void DrivetrainSubsystem::Update(Time dt) {
       out.left_voltage = out_left.to(V);
       out.right_voltage = out_right.to(V);
 
-      //TODO(Wesley) Do stuff once we're done with the motion profile
+      bool profiles_finished_time = angle_profile_->finished(t) && distance_profile_->finished(t);
+      bool profile_finished_distance =
+        target_distance_ >= target_distance_ - (calculated_distance - 2*cm) &&
+        target_distance_ <= target_distance_ + (calculated_distance + 2*cm);
+      bool profile_finished_angle =
+        target_angle_ >= target_angle_ - (calculated_gyro_angle - 1*deg) &&
+        target_angle_ <= target_angle_ + (calculated_gyro_angle + 1*deg);
+
+      //if(profiles_finished_time && profile_finished_distance && profile_finished_angle) {
+      if(profiles_finished_time && profile_finished_angle) {
+        angle_profile_.release();
+        distance_profile_.release();
+        is_operator_controlled_ = true;
+        printf("Finished motion profiles :)\n");
+      }
     }
   }
 
