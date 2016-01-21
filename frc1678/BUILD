@@ -6,6 +6,12 @@ cc_library(
   visibility = ["//visibility:public"]
 )
 
+cc_library(
+  name = "robot_subsystems",
+  hdrs = ["robot_subsystems.h"],
+  visibility = ["//visibility:public"]
+)
+
 cc_binary(
   name="frc1678",
   deps=[
@@ -14,5 +20,5 @@ cc_binary(
     "//unitscpp",
     "//muan:multithreading"
   ],
-  srcs=glob(["*.cpp", "*.h"]) #TODO (jasmine): Add button interface as separate target?
+  srcs=glob(["*.cpp"]) #TODO (jasmine): Add button interface as separate target?
 )
