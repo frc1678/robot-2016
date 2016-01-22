@@ -25,7 +25,7 @@ bool CitrusVision::Update() {
     using muan::TrapezoidalMotionProfile;
     auto distance_profile =
         std::make_unique<TrapezoidalMotionProfile<Length>>(0, 0, 0);
-    auto angle_profile = std::make_unique<LinearMotionProfile<Angle>>(angle * .8, 348.5*deg/s);
+    auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, 348.5*deg/s, 260*deg/s/s);
     subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
                                           std::move(angle_profile));
     // std::cout << "REACHED" << std::endl;
