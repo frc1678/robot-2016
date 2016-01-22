@@ -4,7 +4,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(30*V/rad, 0*V/rad/s, 4*V/rad*s),
+      angle_controller_(40*V/rad, 20*V/rad/s, 7*V/rad*s),
       distance_controller_(3*V/m, 0*V/m/s, 0*V/m*s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
@@ -93,15 +93,15 @@ void DrivetrainSubsystem::Update(Time dt) {
       bool profile_finished_distance =
         target_distance_ >= target_distance_ - (calculated_distance - 2*cm) &&
         target_distance_ <= target_distance_ + (calculated_distance + 2*cm);
-      bool profile_finished_angle = std::abs((calculated_gyro_angle - angle_profile_->Calculate(t)).to(deg)) < 2;
+      bool profile_finished_angle = std::abs((calculated_gyro_angle - angle_profile_->Calculate(t)).to(deg)) < .5;
       // std::cout << calculated_gyro_angle << ", " << angle_profile_.Calculate(t) << std::endl;
 
       //if(profiles_finished_time && profile_finished_distance && profile_finished_angle) {
-      if(profiles_finished_time) {
+      if(profiles_finished_time && profile_finished_angle) {
         angle_profile_.release();
         distance_profile_.release();
         is_operator_controlled_ = true;
-        printf("Finished motion profiles :)\n");
+        printf("Finished motion profiles %f sec :)\n", t.to(s));
       }
     }
   }

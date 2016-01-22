@@ -1,5 +1,6 @@
 #include "vision.h"
 #include "muan/control/trapezoidal_motion_profile.h"
+#include "muan/control/linear_motion_profile.h"
 #include <iostream>
 #include <memory>
 
@@ -13,15 +14,18 @@ void CitrusVision::Start() {
 }
 
 bool CitrusVision::Update() {
-  if (subsystems_.drive.IsProfileComplete()) {
-    std::cout << "REACHED" << std::endl;
+  Angle angle = -table_->GetNumber("angleToTarget", 0) * deg;
+  if (std::abs(angle.to(deg)) < .5) {
+    subsystems_.drive.CancelMotionProfile();
+    std::cout << "VISION FINISHED " << angle.to(deg) << std::endl;
+    return true;
+  }
+  else if (subsystems_.drive.IsProfileComplete()) {
+    using muan::LinearMotionProfile;
     using muan::TrapezoidalMotionProfile;
     auto distance_profile =
         std::make_unique<TrapezoidalMotionProfile<Length>>(0, 0, 0);
-    Angle angle = -table_->GetNumber("angleToTarget", 0) * deg;
-    auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-        -table_->GetNumber("angleToTarget", 0) * deg, 0.27 * 1.5 * rev / s,
-        270 * deg / s / s);
+    auto angle_profile = std::make_unique<LinearMotionProfile<Angle>>(angle * .8, 348.5*deg/s);
     subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
                                           std::move(angle_profile));
     // std::cout << "REACHED" << std::endl;
@@ -37,4 +41,5 @@ bool CitrusVision::Update() {
     // goal.control_loop_driving = false;
     // subsystems_.drive.SetDriveGoal(goal);
   }
+  return false;
 }
