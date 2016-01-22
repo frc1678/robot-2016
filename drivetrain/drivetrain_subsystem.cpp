@@ -4,7 +4,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(30*V/rad, 12*V/rad/s, 4*V/rad*s),
+      angle_controller_(30*V/rad, 0*V/rad/s, 4*V/rad*s),
       distance_controller_(3*V/m, 0*V/m/s, 0*V/m*s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
@@ -55,7 +55,7 @@ void DrivetrainSubsystem::Update(Time dt) {
     mutex_lock lock(mu_);
     if (is_operator_controlled_) {
       drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
-      printf("ol: %f\tor: %f\n", out.left_voltage, out.right_voltage);
+      // printf("ol: %f\tor: %f\n", out.left_voltage, out.right_voltage);
       //TODO(Wesley) Find out why this is giving 12V and 0V as output
     } else {
       //TODO(Wesley) Reset the PID controller if we went from tele to auto
@@ -83,22 +83,21 @@ void DrivetrainSubsystem::Update(Time dt) {
       Voltage out_left = feed_forward_angle + out_angle;
       Voltage out_right = -feed_forward_angle - out_angle;
 
-      printf("left: %f\tright: %f\n", out_left.to(V), out_right.to(V));
-      printf("Gyro: %f\n", gyro_reader_->GetAngle().to(deg));
+      // printf("left: %f\tright: %f\n", out_left.to(V), out_right.to(V));
+      // printf("Gyro: %f\n", gyro_reader_->GetAngle().to(deg));
 
       out.left_voltage = out_left.to(V);
       out.right_voltage = out_right.to(V);
 
-      bool profiles_finished_time = angle_profile_->finished(t) && distance_profile_->finished(t);
+      bool profiles_finished_time = angle_profile_->finished(t);
       bool profile_finished_distance =
         target_distance_ >= target_distance_ - (calculated_distance - 2*cm) &&
         target_distance_ <= target_distance_ + (calculated_distance + 2*cm);
-      bool profile_finished_angle =
-        target_angle_ >= target_angle_ - (calculated_gyro_angle - 1*deg) &&
-        target_angle_ <= target_angle_ + (calculated_gyro_angle + 1*deg);
+      bool profile_finished_angle = std::abs((calculated_gyro_angle - angle_profile_->Calculate(t)).to(deg)) < 2;
+      // std::cout << calculated_gyro_angle << ", " << angle_profile_.Calculate(t) << std::endl;
 
       //if(profiles_finished_time && profile_finished_distance && profile_finished_angle) {
-      if(profiles_finished_time && profile_finished_angle) {
+      if(profiles_finished_time) {
         angle_profile_.release();
         distance_profile_.release();
         is_operator_controlled_ = true;
@@ -163,4 +162,5 @@ void DrivetrainSubsystem::CancelMotionProfile() {
   mutex_lock lock(mu_);
   distance_profile_.release();
   angle_profile_.release();
+  is_operator_controlled_ = true;
 }
