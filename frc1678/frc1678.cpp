@@ -6,6 +6,7 @@
 #include "CitrusButton.h"
 #include "vision/vision.h"
 #include "robot_subsystems.h"
+#include "muan/control/linear_motion_profile.h"
 
 class CitrusRobot : public IterativeRobot {
   std::unique_ptr<Joystick> j_wheel_, j_stick_;
@@ -40,8 +41,10 @@ class CitrusRobot : public IterativeRobot {
     using muan::TrapezoidalMotionProfile;
     auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
         0 * m, 5 * ft / s, 10 * ft / s / s);
-    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-        90 * deg, 0.27 * 1.5 * rev / s, 270 * deg / s / s);
+    // auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
+    //     90 * deg, 248.5*deg/s, 270 * deg / s / s);
+    using muan::LinearMotionProfile;
+    auto ap = std::make_unique<LinearMotionProfile<Angle>>(10 * deg, 248.5*deg/s);
     subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
   }
 
@@ -75,7 +78,7 @@ class CitrusRobot : public IterativeRobot {
 
     // TODO (Finn): Act on the output, without bypassing the
     // controller. Or argue that this is fine.
-    if (shift_up_->ButtonClicked()) {
+    /*if (shift_up_->ButtonClicked()) {
       in_highgear_ = true;
     } else if (shift_down_->ButtonClicked()) {
       in_highgear_ = false;
@@ -87,6 +90,8 @@ class CitrusRobot : public IterativeRobot {
 
     // subsystems_.drive.SetDriveGoal(drivetrain_goal);
     subsystems_.drive.SetDriveGoal(drivetrain_goal);
+    */
+    std::cout << subsystems_.drive.IsProfileComplete() << std::endl;
 
     UpdateButtons();
   }
