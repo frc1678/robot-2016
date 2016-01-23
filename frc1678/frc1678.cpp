@@ -6,7 +6,6 @@
 #include "CitrusButton.h"
 #include "vision/vision.h"
 #include "robot_subsystems.h"
-#include "muan/control/linear_motion_profile.h"
 
 class CitrusRobot : public IterativeRobot {
   std::unique_ptr<Joystick> j_wheel_, j_stick_;
@@ -17,7 +16,8 @@ class CitrusRobot : public IterativeRobot {
 
   // Buttonz!
   std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_;
-
+  
+  bool test_flag_;
   bool in_highgear_;
   bool vision_done_ = false; //UGLY HACK
 
@@ -33,6 +33,7 @@ class CitrusRobot : public IterativeRobot {
     shift_up_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
     quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
 
+    test_flag_ = false;
     // drive_subsystem_ = std::make_unique<DrivetrainSubsystem>();
   }
 
@@ -53,6 +54,7 @@ class CitrusRobot : public IterativeRobot {
     // CitrusVision::start(drive_subsystem_.get());
     vision_done_ = false;
     vision_.Start();
+    test_flag_ = true;
   }
   void AutonomousPeriodic() {
     // CitrusVision::updateVision(drive_subsystem_.get());
@@ -64,6 +66,11 @@ class CitrusRobot : public IterativeRobot {
     // TODO (Finn): Get this out of the main loop and into its own
     // thread.
     DrivetrainGoal drivetrain_goal;
+
+    if(test_flag_) {
+      vision_.EndTest();
+      test_flag_ = false;
+    }
 
     // SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
     // SmartDashboard::PutNumber("Stick", j_stick_->GetY());
