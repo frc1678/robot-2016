@@ -1,6 +1,5 @@
 #include "vision.h"
 #include "muan/control/trapezoidal_motion_profile.h"
-#include "muan/control/linear_motion_profile.h"
 #include <iostream>
 #include <memory>
 
@@ -15,17 +14,16 @@ void CitrusVision::Start() {
 
 bool CitrusVision::Update() {
   Angle angle = -table_->GetNumber("angleToTarget", 0) * deg;
-  if (std::abs(angle.to(deg)) < .5) {
+  if (std::abs(angle.to(deg)) < .2) {
     subsystems_.drive.CancelMotionProfile();
     std::cout << "VISION FINISHED " << angle.to(deg) << std::endl;
     return true;
   }
   else if (subsystems_.drive.IsProfileComplete()) {
-    using muan::LinearMotionProfile;
     using muan::TrapezoidalMotionProfile;
     auto distance_profile =
-        std::make_unique<TrapezoidalMotionProfile<Length>>(0, 0, 0);
-    auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, 348.5*deg/s, 260*deg/s/s);
+        std::make_unique<TrapezoidalMotionProfile<Length>>(0*m, 10*m/s, 10*m/s/s);
+    auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, 3.5*rad/s, 270*deg/s/s);
     subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
                                           std::move(angle_profile));
     // std::cout << "REACHED" << std::endl;

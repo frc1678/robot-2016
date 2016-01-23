@@ -37,6 +37,7 @@ void GyroReader::Calibrate(Time dt) {
         calibration_drift = calibration_drift_angle / calibration_time_counter;
         // printf("Final calib val: %f\n", calibration_drift.to(deg/s));
         // printf("#--- START TRIAL %d ---\n", trial);
+        printf("[gyro] finished calibrating :)\n");
         is_calibrated = true;
         need_led_switch = true;
       }
@@ -64,6 +65,7 @@ void GyroReader::Update(Time dt) {
                 dt) *
                (360 / degrees_per_circle);
       time += dt;
+      printf("[gyro] Angle: %f deg\n", angle.to(deg));
       // printf("%f\t%f\n", time.to(s),  angle.to(deg));
       // if (time >= 140*s) {
       // time = 0*s;

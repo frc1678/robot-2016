@@ -55,6 +55,7 @@ class DrivetrainSubsystem : public muan::Updateable {
   float encoder_offset_ = 0;
   Angle gyro_offset_ = 0*rad;
 
+  Angle last_angle_ = 0*rad;
   Time t;
   std::mutex mu_;
 

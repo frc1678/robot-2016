@@ -19,6 +19,7 @@ class CitrusRobot : public IterativeRobot {
   std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_;
 
   bool in_highgear_;
+  bool vision_done_ = false; //UGLY HACK
 
  public:
   CitrusRobot() : vision_(subsystems_) {
@@ -44,17 +45,20 @@ class CitrusRobot : public IterativeRobot {
     // auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
     //     90 * deg, 248.5*deg/s, 270 * deg / s / s);
     using muan::LinearMotionProfile;
-    auto ap = std::make_unique<LinearMotionProfile<Angle>>(10 * deg, 248.5*deg/s);
+    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(180 * deg, 3.5*rad/s, 270*deg/s/s);
     subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
   }
 
   void AutonomousInit() {
     // CitrusVision::start(drive_subsystem_.get());
+    vision_done_ = false;
     vision_.Start();
   }
   void AutonomousPeriodic() {
     // CitrusVision::updateVision(drive_subsystem_.get());
-    vision_.Update();
+    if (!vision_done_) {
+      vision_done_ = vision_.Update();
+    }
   }
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own
