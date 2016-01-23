@@ -5,14 +5,12 @@
 
 CitrusVision::CitrusVision(RobotSubsystems& subs)
     : subsystems_(subs),
-      turn_controller_(10 * V / rad, 0 * V / (rad * s), 0 * V / (rad / s)), 
-      test_log_("vision_test", {"start", "end", "comments"}) {
+      turn_controller_(10 * V / rad, 0 * V / (rad * s), 0 * V / (rad / s)) {
   table_ = NetworkTable::GetTable("vision");
 
 }
 
 void CitrusVision::Start() {
-  test_log_["start"] = std::to_string(table_->GetNumber("angleToTarget", 0));
 }
 
 bool CitrusVision::Update() {
@@ -46,6 +44,6 @@ bool CitrusVision::Update() {
 }
 
 void CitrusVision::EndTest(){
-  test_log_["end"] = std::to_string(table_->GetNumber("angleToTarget", 0));
-  test_log_.EndTest();
+  //test_log_["end"] = std::to_string(table_->GetNumber("angleToTarget", 0));
+  //test_log_.EndTest();
 }
