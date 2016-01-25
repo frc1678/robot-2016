@@ -34,10 +34,10 @@ class GyroReader : public muan::Updateable {
   bool is_calibrated = false;
   bool need_led_switch = false;
 
-  const Time deadzone_time = 15 * s;
+  const Time deadzone_time = 0 * s;
   Time deadzone_time_counter = 0 * s;
 
-  const Time calibration_time = 30 * s;
+  const Time calibration_time = 20 * s;
   Time calibration_time_counter = 0 * s;
 
   Time time = 0 * s;

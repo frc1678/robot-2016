@@ -17,11 +17,11 @@ cc_binary(
   name="frc1678",
   deps=[
     "@wpilib//:main",
-    "//drivetrain:drivetrain_subsystem",
+    ":robot_subsystems",
     "//unitscpp",
     "//muan:multithreading",
-    ":robot_subsystems",
     "//frc1678/auto"
+    "//vision"
   ],
-  srcs=glob(["*.cpp", "*.h"]) #TODO (jasmine): Add button interface as separate target?
+  srcs=glob(["*.cpp"]) #TODO (jasmine): Add button interface as separate target?
 )

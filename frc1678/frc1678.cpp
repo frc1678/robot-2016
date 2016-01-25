@@ -2,8 +2,10 @@
 #include <memory>
 
 #include "drivetrain/drivetrain_subsystem.h"
+#include "muan/control/trapezoidal_motion_profile.h"
 #include "CitrusButton.h"
 #include "frc1678/auto/auto_routines.h"
+#include "vision/vision.h"
 #include "robot_subsystems.h"
 
 class CitrusRobot : public IterativeRobot {
@@ -13,14 +15,18 @@ class CitrusRobot : public IterativeRobot {
  public:
   std::unique_ptr<Joystick> j_wheel_, j_stick_;
 
+  // std::unique_ptr<DrivetrainSubsystem> drive_subsystem_;
   RobotSubsystems subsystems_;
+  CitrusVision vision_;
 
   // Buttonz!
   std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_;
-
+  
+  bool test_flag_;
   bool in_highgear_;
+  bool vision_done_ = false; //UGLY HACK
 
-  CitrusRobot() {
+  CitrusRobot() : vision_(subsystems_) {
     // Joysticks
     j_wheel_ = std::make_unique<Joystick>(0);
     j_stick_ = std::make_unique<Joystick>(1);
@@ -37,20 +43,42 @@ class CitrusRobot : public IterativeRobot {
 
   void RobotInit() { subsystems_.drive.Start(); }
 
-  void AutonomousInit() {}
+  void AutonomousInit() {
+    // CitrusVision::start(drive_subsystem_.get());
+    vision_done_ = false;
+    vision_.Start();
+    test_flag_ = true;
+  }
 
   void AutonomousPeriodic() { 
-          auto_runner->Update(); }
+          auto_runner->Update();
+    //if (!vision_done_) {
+    //  vision_done_ = vision_.Update();
+    //}
+  }
 
-  void TeleopInit() {}
+  void TeleopInit() {
+    using muan::TrapezoidalMotionProfile;
+    auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
+        0 * m, 5 * ft / s, 10 * ft / s / s);
+    // auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
+    //     90 * deg, 248.5*deg/s, 270 * deg / s / s);
+    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(180 * deg, 3.5*rad/s, 270*deg/s/s);
+    subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
+  }
 
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own
     // thread.
     DrivetrainGoal drivetrain_goal;
 
-    SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
-    SmartDashboard::PutNumber("Stick", j_stick_->GetY());
+    if(test_flag_) {
+      vision_.EndTest();
+      test_flag_ = false;
+    }
+
+    // SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
+    // SmartDashboard::PutNumber("Stick", j_stick_->GetY());
     SetDriveGoal(&drivetrain_goal);
 
     subsystems_.drive.SetDriveGoal(drivetrain_goal);
@@ -66,15 +94,18 @@ class CitrusRobot : public IterativeRobot {
 
     // TODO (Finn): Act on the output, without bypassing the
     // controller. Or argue that this is fine.
-    if (shift_up_->ButtonClicked()) {
+    /*if (shift_up_->ButtonClicked()) {
       in_highgear_ = true;
     } else if (shift_down_->ButtonClicked()) {
       in_highgear_ = false;
     }
 
-    SetDriveGoal(&drivetrain_goal);
+    // SetDriveGoal(&drivetrain_goal);
 
-    subsystems_.drive.SetDriveGoal(drivetrain_goal);
+    // subsystems_.drive.SetDriveGoal(drivetrain_goal);
+
+    std::cout << subsystems_.drive.IsProfileComplete() << std::endl;
+    */
 
     UpdateButtons();
   }

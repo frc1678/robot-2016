@@ -6,23 +6,19 @@
 namespace drivetrain {
 namespace control_loops {
 
-StateFeedbackPlantCoefficients<2, 2, 2>
-MakeVelocityDrivetrainLowLowPlantCoefficients();
+StateFeedbackPlantCoefficients<2, 2, 2> MakeVelocityDrivetrainLowLowPlantCoefficients();
 
 StateFeedbackController<2, 2, 2> MakeVelocityDrivetrainLowLowController();
 
-StateFeedbackPlantCoefficients<2, 2, 2>
-MakeVelocityDrivetrainLowHighPlantCoefficients();
+StateFeedbackPlantCoefficients<2, 2, 2> MakeVelocityDrivetrainLowHighPlantCoefficients();
 
 StateFeedbackController<2, 2, 2> MakeVelocityDrivetrainLowHighController();
 
-StateFeedbackPlantCoefficients<2, 2, 2>
-MakeVelocityDrivetrainHighLowPlantCoefficients();
+StateFeedbackPlantCoefficients<2, 2, 2> MakeVelocityDrivetrainHighLowPlantCoefficients();
 
 StateFeedbackController<2, 2, 2> MakeVelocityDrivetrainHighLowController();
 
-StateFeedbackPlantCoefficients<2, 2, 2>
-MakeVelocityDrivetrainHighHighPlantCoefficients();
+StateFeedbackPlantCoefficients<2, 2, 2> MakeVelocityDrivetrainHighHighPlantCoefficients();
 
 StateFeedbackController<2, 2, 2> MakeVelocityDrivetrainHighHighController();
 

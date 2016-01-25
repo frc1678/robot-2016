@@ -1,16 +1,18 @@
-#ifndef DRIVETRAIN_DRIVETRAIN_SUBSYSTEM
-#define DRIVETRAIN_DRIVETRAIN_SUBSYSTEM
+#ifndef DRIVETRAIN_DRIVETRAIN_SUBSYSTEM_H_
+#define DRIVETRAIN_DRIVETRAIN_SUBSYSTEM_H_
 
 #include <memory>
 #include <WPILib.h>
 
 #include "muan/multithreading/updateable.h"
 #include "muan/control/motion_profile.h"
+#include "muan/control/pid_controller.h"
 #include "muan/logging/text_log.h"
 #include "muan/logging/csv_log.h"
 #include "frc1678/robot_ports.h"
 #include "drivetrain/drivetrain.h"
 #include "gyro/gyro_reader.h"
+
 
 using drivetrain::control_loops::DrivetrainGoal;
 using drivetrain::control_loops::DrivetrainPosition;
@@ -49,6 +51,13 @@ class DrivetrainSubsystem : public muan::Updateable {
   std::unique_ptr<muan::MotionProfile<Length>> distance_profile_;
   std::unique_ptr<muan::MotionProfile<Angle>> angle_profile_;
 
+  muan::PidController<Angle, Voltage> angle_controller_;
+  muan::PidController<Length, Voltage> distance_controller_;
+
+  float encoder_offset_ = 0;
+  Angle gyro_offset_ = 0*rad;
+
+  Angle last_angle_ = 0*rad;
   Time t;
   std::mutex mu_;
 
