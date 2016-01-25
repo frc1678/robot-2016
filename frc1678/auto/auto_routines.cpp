@@ -10,24 +10,27 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
       subsystems);  // Whatever goes in userData comes out later.
 
   using lemonscript::AvailableCppCommandDeclaration;
-
   AvailableCppCommandDeclaration *driveStraight2 =
-      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight2,
-                                         "DriveStraight", {FLOAT, FLOAT});
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight2, "DriveStraight", {FLOAT, FLOAT});
 
   std::vector<const AvailableCppCommandDeclaration *> commands = {
       driveStraight2};
-
+  
   std::ifstream ifs(auto_routine_file);  // Take in auto_routine_file
-
+  
   try {
     compiler = new lemonscript::LemonScriptCompiler(ifs, commands, &state);
 
   } catch (std::string error) {
+    compiler = NULL;
     std::cerr << error << std::endl;
   }
 }
 
 LemonScriptRunner::~LemonScriptRunner() { delete compiler; }
 
-void LemonScriptRunner::Update() { compiler->PeriodicUpdate(); }
+void LemonScriptRunner::Update() { 
+        if(compiler) {
+                compiler->PeriodicUpdate();
+        }
+}

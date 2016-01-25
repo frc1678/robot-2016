@@ -1,5 +1,7 @@
 #include "auto_functions.h"
 
+#include <stdio.h>
+
 void AutoFunction::SetUpAutoFunction() {
   // Timer wait_timer = new Timer();
 }
@@ -20,18 +22,29 @@ bool AutoFunction::DriveStraight(RobotSubsystems* robot, Length dist,
   return true;
 }
 
-// Test for LemonScript
 
+// Test for LemonScript
+bool newDriveState = true;
 bool AutoFunction::DriveStraight2(RobotSubsystems* robot, float dist,
                                   float speed) {
-  auto dp = std::make_unique<muan::TrapezoidalMotionProfile<Length>>(
+  if(newDriveState) {
+    auto distanceProfile = std::make_unique<muan::TrapezoidalMotionProfile<Length>>(
       dist * ft, speed * ft / s, 10 * ft / s / s);
-  auto ap = std::make_unique<muan::TrapezoidalMotionProfile<Angle>>(
+    auto angleProfile = std::make_unique<muan::TrapezoidalMotionProfile<Angle>>( 
       0 * deg, 50 * deg / s, 80 * deg / s / s);
 
-  robot->drive.FollowMotionProfile(std::move(dp), std::move(ap));
+    robot->drive.FollowMotionProfile(std::move(distanceProfile), std::move(angleProfile));
+    newDriveState = false;
+  }
 
-  return true;
+
+  if(robot->drive.IsProfileComplete()) { 
+    newDriveState = true; 
+    return true;
+  }else{
+    return false; 
+  }
+
 }
 
 bool AutoFunction::Turn(RobotSubsystems* robot, Angle angle, Velocity speed) {

@@ -1,6 +1,7 @@
 # TODO(Kyle) Change this directory to the actual binary path for the RoboRIO
-ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
+sshpass -p '' ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
 kill -9 $(pidof FRCUserProgram)
 ENDSSH
-scp bazel-bin/frc1678/frc1678 admin@roboRIO-1678-FRC.local:/home/lvuser/FRCUserProgram
-scp robotCommand admin@roboRIO-1678-FRC.local:/home/lvuser/robotCommand
+sshpass -p '' scp bazel-bin/frc1678/frc1678 admin@roboRIO-1678-FRC.local:/home/lvuser/FRCUserProgram
+sshpass -p '' scp frc1678/auto/*.auto admin@roboRIO-1678-FRC.local:/home/lvuser
+sshpass -p '' scp robotCommand admin@roboRIO-1678-FRC.local:/home/lvuser/robotCommand
