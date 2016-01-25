@@ -6,7 +6,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(45*V/rad, 0*V/rad/s, 0*V/rad*s),
+      angle_controller_(40*V/rad, 40*V/rad/s, 7*V/rad*s),
       distance_controller_(3*V/m, 0*V/m/s, 0*V/m*s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
@@ -119,10 +119,10 @@ void DrivetrainSubsystem::Update(Time dt) {
 
       //if(profiles_finished_time && profile_finished_distance && profile_finished_angle) {
       if(profiles_finished_time && profile_finished_angle) {
-        //angle_profile_.release();
-        //distance_profile_.release();
-        //is_operator_controlled_ = true;
-        //printf("[motion] Finished motion profiles: %f deg in %f sec :)\n", calculated_gyro_angle.to(deg), t.to(s));
+        angle_profile_.release();
+        distance_profile_.release();
+        is_operator_controlled_ = true;
+        printf("[motion] Finished motion profiles: %f deg in %f sec :)\n", calculated_gyro_angle.to(deg), t.to(s));
       }
     }
   }
