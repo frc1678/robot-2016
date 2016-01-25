@@ -47,10 +47,34 @@ bool AutoFunction::DriveStraight2(RobotSubsystems* robot, float dist,
 
 }
 
-bool AutoFunction::Turn(RobotSubsystems* robot, Angle angle, Velocity speed) {
-  // this will be implemented when Wesley has his Auto drive stuff done
-  return true;
+
+
+bool newTurnState = true;
+bool AutoFunction::PointTurn(RobotSubsystems* robot, float angle,
+                                  float speed) {
+  if(newTurnState) {
+
+          
+    printf("Starting point turn with angle = %f, speed = %f\n", angle, speed);
+    auto distanceProfile = std::make_unique<muan::TrapezoidalMotionProfile<Length>>(
+      0 * ft, speed * ft / s, 0 * ft / s / s);
+    auto angleProfile = std::make_unique<muan::TrapezoidalMotionProfile<Angle>>( 
+      angle * deg, speed * deg / s, 270 * deg / s / s);
+
+    robot->drive.FollowMotionProfile(std::move(distanceProfile), std::move(angleProfile));
+    newTurnState = false;
+  }
+
+
+  if(robot->drive.IsProfileComplete()) { 
+    newTurnState = true; 
+    return true;
+  }else{
+    return false; 
+  }
+
 }
+
 
 bool AutoFunction::Wait(RobotSubsystems* robot, Time time) {
   if (true) {  // wait_timer->Get() >= time){

@@ -12,9 +12,11 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   using lemonscript::AvailableCppCommandDeclaration;
   AvailableCppCommandDeclaration *driveStraight2 =
       new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight2, "DriveStraight", {FLOAT, FLOAT});
-
+  
+  AvailableCppCommandDeclaration *pointTurn =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::PointTurn, "PointTurn", {FLOAT, FLOAT});
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight2};
+      driveStraight2, pointTurn};
   
   std::ifstream ifs(auto_routine_file);  // Take in auto_routine_file
   

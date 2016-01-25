@@ -20,7 +20,7 @@ void SetUpAutoFunction();
 void DeleteAutoFunction();
 bool DriveStraight(RobotSubsystems* subs, Length dist, Velocity speed);
 bool DriveStraight2(RobotSubsystems* subs, float dist, float speed);
-bool Turn(RobotSubsystems* subs, Angle angle, Velocity speed);
+bool PointTurn(RobotSubsystems *subs, float angle, float speed);
 bool Wait(RobotSubsystems* subs, Time time);
 bool Shoot(RobotSubsystems* subs, Position infield);
 bool RunIntake(RobotSubsystems* subs);

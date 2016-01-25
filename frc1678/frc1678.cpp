@@ -32,7 +32,7 @@ class CitrusRobot : public IterativeRobot {
     quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
     
     // Auto
-    auto_runner = new LemonScriptRunner("twoBall2016.auto", &subsystems_);
+    auto_runner = new LemonScriptRunner("test_pointturn.auto", &subsystems_);
   }
 
   void RobotInit() { subsystems_.drive.Start(); }
