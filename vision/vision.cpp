@@ -11,6 +11,13 @@ CitrusVision::CitrusVision(RobotSubsystems& subs)
 }
 
 void CitrusVision::Start() {
+    Angle angle = -table_->GetNumber("angleToTarget", 0) * deg;
+    using muan::TrapezoidalMotionProfile;
+    auto distance_profile =
+        std::make_unique<TrapezoidalMotionProfile<Length>>(0*m, 10*m/s, 10*m/s/s);
+    auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, 3.5*rad/s, 270*deg/s/s);
+    subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
+                                          std::move(angle_profile));
 }
 
 bool CitrusVision::Update() {
@@ -21,12 +28,6 @@ bool CitrusVision::Update() {
     return true;
   }
   else if (subsystems_.drive.IsProfileComplete()) {
-    using muan::TrapezoidalMotionProfile;
-    auto distance_profile =
-        std::make_unique<TrapezoidalMotionProfile<Length>>(0*m, 10*m/s, 10*m/s/s);
-    auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, 3.5*rad/s, 270*deg/s/s);
-    subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
-                                          std::move(angle_profile));
     // std::cout << "REACHED" << std::endl;
     // Run PID alignment
     // Angle error = table_->GetNumber("angleToTarget") * deg;

@@ -37,7 +37,7 @@ class GyroReader : public muan::Updateable {
   const Time deadzone_time = 0 * s;
   Time deadzone_time_counter = 0 * s;
 
-  const Time calibration_time = 20 * s;
+  const Time calibration_time = 30 * s;
   Time calibration_time_counter = 0 * s;
 
   Time time = 0 * s;

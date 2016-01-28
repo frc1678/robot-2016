@@ -45,7 +45,7 @@ class CitrusRobot : public IterativeRobot {
         0 * m, 5 * ft / s, 10 * ft / s / s);
     // auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
     //     90 * deg, 248.5*deg/s, 270 * deg / s / s);
-    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(180 * deg, 3.5*rad/s, 270*deg/s/s);
+    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(10 * deg, 3.5*rad/s, 270*deg/s/s);
     subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
   }
 
