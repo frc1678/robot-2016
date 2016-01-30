@@ -6,7 +6,8 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(40*V/rad, 40*V/rad/s, 7*V/rad*s),
+      angle_controller_(60*0.6*V/rad, ((2*(60*0.6))/0.2)*V/rad/s, (((60*0.6)*0.2)/8)*V/rad*s),
+      //angle_controller_(60*V/rad, 0*V/rad/s, 0*V/rad*s),
       distance_controller_(3*V/m, 0*V/m/s, 0*V/m*s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
@@ -65,13 +66,14 @@ void DrivetrainSubsystem::Update(Time dt) {
       t += dt;
 
       // Feed forward term
-      AngularVelocity robot_angular_velocity = 3.0*rad/s*(pos.right_shifter_high ? 1 : (1.0/3));
+      AngularVelocity feed_forward_hack = (1.1+0.6*std::log(angle_profile_->GetTotalDistance().to(deg)))*rad/s;
+      AngularVelocity robot_angular_velocity = feed_forward_hack*(pos.right_shifter_high ? 1 : (1.0/3));
       Velocity robot_velocity = 10*ft/s*(pos.right_shifter_high ? 1 : (1.0/3));
 
       Voltage feed_forward_angle = angle_profile_->CalculateDerivative(t)*(12*V / robot_angular_velocity);
       Voltage feed_forward_distance = distance_profile_->CalculateDerivative(t)*(12*V / robot_velocity);
 
-      decltype(V/(rad/s/s)) acceleration_constant = 0.5*V/(rad/s/s);
+      decltype(V/(rad/s/s)) acceleration_constant = 0.3*V/(rad/s/s);
 
       //PID Term
       Angle target_angle_ = angle_profile_->Calculate(t);
@@ -84,7 +86,7 @@ void DrivetrainSubsystem::Update(Time dt) {
       Angle tmp_even_older_angle = even_older_angle_;
 
       if (calculated_gyro_angle == old_angle_) {
-        calculated_gyro_angle = (calculated_gyro_angle + even_older_angle_)/2;
+        calculated_gyro_angle += (calculated_gyro_angle - even_older_angle_)/2;
       }
 
       even_older_angle_ = tmp_old_angle;
@@ -99,10 +101,11 @@ void DrivetrainSubsystem::Update(Time dt) {
       Voltage out_distance = distance_controller_.Calculate(dt, target_distance_ - calculated_distance);
 
 
-      Voltage out_left = feed_forward_angle;// + out_angle;
-      Voltage out_right = -feed_forward_angle;// - out_angle;
+      Voltage out_left = feed_forward_angle + out_angle;
+      Voltage out_right = -feed_forward_angle - out_angle;
 
       if (!(((out_left > 0 && accel_angle < 0) || (out_left < 0 && accel_angle > 0)) && std::abs(out_left.to(V)) < std::abs(accel_angle.to(V)))) {
+      //if ((accel_angle < 0 && out_left > 0) || (accel_angle > 0 && out_left < 0)) {
         out_left += accel_angle;
         out_right -= accel_angle;
       }
@@ -117,7 +120,7 @@ void DrivetrainSubsystem::Update(Time dt) {
       out.right_voltage = out_right.to(V);
 
 
-      printf("%f\t%f\t%f\t%f\t%f   \n", t, target_angle_.to(deg), calculated_gyro_angle.to(deg), out_left.to(V), feed_forward_angle.to(V));
+      printf("%f\t%f\t%f\t%f\t%f   \n", t.to(s), target_angle_.to(deg), calculated_gyro_angle.to(deg), out_left.to(V), feed_forward_angle.to(V));
 //      printf("%f\t%f   \n", t, target_angle_.to(deg));
       last_angle_ = calculated_gyro_angle;
 
@@ -131,7 +134,7 @@ void DrivetrainSubsystem::Update(Time dt) {
       printf("[motiongyro] Angle: %f deg\n", calculated_gyro_angle.to(deg));
 
       if (profiles_finished_time) {
-        angle_controller_.SetIntegralConstant(300*V/rad/s);
+        //angle_controller_.SetIntegralConstant(300*V/rad/s);
       }
 
       //if(profiles_finished_time && profile_finished_distance && profile_finished_angle) {

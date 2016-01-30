@@ -28,18 +28,17 @@ bool CitrusVision::Update() {
     return true;
   }
   else if (subsystems_.drive.IsProfileComplete()) {
-    // std::cout << "REACHED" << std::endl;
-    // Run PID alignment
-    // Angle error = table_->GetNumber("angleToTarget") * deg;
-    // Voltage voltage = turn_controller_.Calculate(.02*s, error);
-    // DrivetrainGoal goal;
-    // bool found = table_->GetBoolean("targetFound");
-    // goal.steering = found ? voltage.to(12*V) : 0;
-    // goal.throttle = 0;
-    // goal.highgear = false;
-    // goal.quickturn = true;
-    // goal.control_loop_driving = false;
-    // subsystems_.drive.SetDriveGoal(goal);
+    //if (std::abs((start_vision_angle_ - (start_gyro_angle_ - subsystems_.drive.gyro_reader_->GetAngle())).to(deg)) < 4) {//untested
+      start_vision_angle_ = angle;
+      start_gyro_angle_ = subsystems_.drive.gyro_reader_->GetAngle();
+
+      using muan::TrapezoidalMotionProfile;
+      auto distance_profile =
+        std::make_unique<TrapezoidalMotionProfile<Length>>(0*m, 10*m/s, 10*m/s/s);
+      auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, 3.5*rad/s, 270*deg/s/s);
+      subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
+          std::move(angle_profile));
+    //}
   }
   return false;
 }

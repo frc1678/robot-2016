@@ -33,6 +33,7 @@ class DrivetrainSubsystem : public muan::Updateable {
   bool IsProfileComplete();
   void CancelMotionProfile();
 
+  std::unique_ptr<GyroReader> gyro_reader_; // Made public so vision can access angle
  private:
   void SetDrivePosition(DrivetrainPosition* drivetrain_position);
 
@@ -40,7 +41,6 @@ class DrivetrainSubsystem : public muan::Updateable {
   std::unique_ptr<DrivetrainLoop> drive_loop_;
   std::unique_ptr<Encoder> left_encoder_, right_encoder_;
   std::unique_ptr<DoubleSolenoid> shifting_;
-  std::unique_ptr<GyroReader> gyro_reader_;
 
   bool in_highgear_;
   bool is_operator_controlled_ = true;

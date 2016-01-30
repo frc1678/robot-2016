@@ -5,9 +5,9 @@ namespace RobotPorts {
 constexpr unsigned int left_encoder_a = 12, left_encoder_b = 13;
 constexpr unsigned int right_encoder_a = 10, right_encoder_b = 11;
 
-constexpr unsigned int drive_left = 2, drive_right = 1;
+constexpr unsigned int drive_left = 1, drive_right = 0;
 
-constexpr unsigned int shift_a = 1, shift_b = 2;
+constexpr unsigned int shift_a = 7, shift_b = 7;
 }
 
 namespace JoystickPorts {
