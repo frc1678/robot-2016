@@ -147,6 +147,10 @@ void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal& goal) {
   current_goal_ = goal;
 }
 
+void DrivetrainSubsystem::Shift(bool high) {
+	shifting_.Set(high);
+}
+
 void DrivetrainSubsystem::SetDrivePosition(
     DrivetrainPosition* drivetrain_position) {
   double click =
