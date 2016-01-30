@@ -120,7 +120,7 @@ void DrivetrainSubsystem::Update(Time dt) {
       out.right_voltage = out_right.to(V);
 
 
-      printf("%f\t%f\t%f\t%f\t%f   \n", t.to(s), target_angle_.to(deg), calculated_gyro_angle.to(deg), out_left.to(V), feed_forward_angle.to(V));
+      //printf("%f\t%f\t%f\t%f\t%f   \n", t.to(s), target_angle_.to(deg), calculated_gyro_angle.to(deg), out_left.to(V), feed_forward_angle.to(V));
 //      printf("%f\t%f   \n", t, target_angle_.to(deg));
       last_angle_ = calculated_gyro_angle;
 
@@ -131,7 +131,7 @@ void DrivetrainSubsystem::Update(Time dt) {
       bool profile_finished_angle = std::abs((calculated_gyro_angle - angle_profile_->Calculate(t)).to(deg)) < .05*angle_profile_->Calculate(t).to(deg); //THIS IS A SHITTY HACK FOR VISION
       // std::cout << calculated_gyro_angle << ", " << angle_profile_.Calculate(t) << std::endl;
 
-      printf("[motiongyro] Angle: %f deg\n", calculated_gyro_angle.to(deg));
+      //printf("[motiongyro] Angle: %f deg\n", calculated_gyro_angle.to(deg));
 
       if (profiles_finished_time) {
         //angle_controller_.SetIntegralConstant(300*V/rad/s);
