@@ -13,7 +13,6 @@
 #include "drivetrain/drivetrain.h"
 #include "gyro/gyro_reader.h"
 
-
 using drivetrain::control_loops::DrivetrainGoal;
 using drivetrain::control_loops::DrivetrainPosition;
 using drivetrain::control_loops::DrivetrainOutput;
@@ -29,9 +28,13 @@ class DrivetrainSubsystem : public muan::Updateable {
   void Start();
   void SetDriveGoal(const DrivetrainGoal& goal);
 
-  void FollowMotionProfile(std::unique_ptr<muan::MotionProfile<Length>> distance_profile, std::unique_ptr<muan::MotionProfile<Angle>> angle_profile);
+  void FollowMotionProfile(
+      std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
+      std::unique_ptr<muan::MotionProfile<Angle>> angle_profile);
   bool IsProfileComplete();
   void CancelMotionProfile();
+
+  Angle GetGyroAngle();
 
  private:
   void SetDrivePosition(DrivetrainPosition* drivetrain_position);
@@ -53,11 +56,11 @@ class DrivetrainSubsystem : public muan::Updateable {
   muan::PidController<Length, Voltage> distance_controller_;
 
   float encoder_offset_ = 0;
-  Angle gyro_offset_ = 0*rad;
-  Angle old_angle_ = 0*rad;
-  Angle even_older_angle_ = 0*rad;
+  Angle gyro_offset_ = 0 * rad;
+  Angle old_angle_ = 0 * rad;
+  Angle even_older_angle_ = 0 * rad;
 
-  Angle last_angle_ = 0*rad;
+  Angle last_angle_ = 0 * rad;
   Time t;
   std::mutex mu_;
 
