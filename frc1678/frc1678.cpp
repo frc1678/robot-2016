@@ -16,10 +16,10 @@ class CitrusRobot : public IterativeRobot {
 
   // Buttonz!
   std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_;
-  
+
   bool test_flag_;
   bool in_highgear_;
-  bool vision_done_ = false; //UGLY HACK
+  bool vision_done_ = false;  // UGLY HACK
 
  public:
   CitrusRobot() : vision_(subsystems_) {
@@ -37,13 +37,16 @@ class CitrusRobot : public IterativeRobot {
     // drive_subsystem_ = std::make_unique<DrivetrainSubsystem>();
   }
 
-  void RobotInit() { subsystems_.drive.Start(); }
+  void RobotInit() {
+    subsystems_.drive.Start();
+  }
 
   void TeleopInit() {
     using muan::TrapezoidalMotionProfile;
     auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
         0 * m, 5 * ft / s, 10 * ft / s / s);
-    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(20 * deg, 4.3*rad/s, 270*deg/s/s);
+    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
+        20 * deg, 4.3 * rad / s, 270 * deg / s / s);
     subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
   }
 
@@ -55,16 +58,14 @@ class CitrusRobot : public IterativeRobot {
   }
   void AutonomousPeriodic() {
     // CitrusVision::updateVision(drive_subsystem_.get());
-    if (!vision_done_) {
-      vision_done_ = vision_.Update();
-    }
+    vision_done_ = vision_.Update();
   }
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own
     // thread.
     DrivetrainGoal drivetrain_goal;
 
-    if(test_flag_) {
+    if (test_flag_) {
       vision_.EndTest();
       test_flag_ = false;
     }
@@ -92,11 +93,11 @@ class CitrusRobot : public IterativeRobot {
       in_highgear_ = false;
     }
 
-     SetDriveGoal(&drivetrain_goal);
+    SetDriveGoal(&drivetrain_goal);
 
-     subsystems_.drive.SetDriveGoal(drivetrain_goal);
+    subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
-     subsystems_.drive.SetDriveGoal(drivetrain_goal);
+    subsystems_.drive.SetDriveGoal(drivetrain_goal);
     subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
     UpdateButtons();

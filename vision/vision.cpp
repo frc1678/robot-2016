@@ -3,38 +3,31 @@
 #include <iostream>
 #include <memory>
 
-CitrusVision::CitrusVision(RobotSubsystems& subs)
-    : subsystems_(subs),
-      turn_controller_(10 * V / rad, 0 * V / (rad * s), 0 * V / (rad / s)),
-      gyro_history_(.02 * s) {
+CitrusVision::CitrusVision(RobotSubsystems& subs) : subsystems_(subs), gyro_history_(.02 * s) {
   table_ = NetworkTable::GetTable("vision");
 }
 
 void CitrusVision::Start() {
-  Angle angle = -table_->GetNumber("angleToTarget", 0) * deg;
-  using muan::TrapezoidalMotionProfile;
-  auto distance_profile = std::make_unique<TrapezoidalMotionProfile<Length>>(
-      0 * m, 10 * m / s, 10 * m / s / s);
-  auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-      angle, 3.5 * rad / s, 270 * deg / s / s);
-  subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
-                                        std::move(angle_profile));
 }
 
 bool CitrusVision::Update() {
-  Angle camera_angle_diff = -table_->GetNumber("angleToTarget", 0) * deg;
-  // Where the robot was at the time the image was taken
-  Angle gyro_angle = gyro_history_.GoBack(table_->GetNumber("latency", 0) * s);
-  Angle target_angle = gyro_angle + camera_angle_diff;
-  Voltage v = turn_controller_.Calculate(
-      .02 * s, target_angle - subsystems_.drive.GetGyroAngle());
-  DrivetrainGoal goal;
-  goal.quickturn = true;
-  goal.throttle = false;
-  goal.highgear = false;
-  goal.steering = v.to(12 * V) / 4.0;
-  subsystems_.drive.SetDriveGoal(goal);
-  gyro_history_.Update(subsystems_.drive.GetGyroAngle());
+  Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * deg;
+  Time latency = table_->GetNumber("captureTime", -100) * s;
+  // Angle camera_diff = -SmartDashboard::GetNumber("angleToTarget", 0) * deg;
+  // Time latency = SmartDashboard::GetNumber("captureTime", -100);
+  Angle target_angle = camera_diff + gyro_history_.GoBack(latency);
+  if (subsystems_.drive.IsProfileComplete() && latency >= 0*s) {
+    using muan::TrapezoidalMotionProfile;
+    auto distance_profile = std::make_unique<TrapezoidalMotionProfile<Length>>(
+        0 * m, 10 * m / s, 10 * m / s / s);
+    auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(
+        target_angle - subsystems_.drive.gyro_reader_->GetAngle(),
+        4.3 * rad / s, 270 * deg / s / s);
+    std::cout << target_angle - subsystems_.drive.gyro_reader_->GetAngle() << " lolnope" << std::endl;
+    subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
+                                          std::move(angle_profile));
+  }
+  gyro_history_.Update(subsystems_.drive.gyro_reader_->GetAngle());
   return false;
 }
 

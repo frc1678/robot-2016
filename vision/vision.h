@@ -4,7 +4,6 @@
 #include "networktables/NetworkTable.h"
 #include <memory>
 #include "frc1678/robot_subsystems.h"
-#include "muan/control/trapezoidal_motion_profile.h"
 #include "muan/utils/history.h"
 
 class CitrusVision {
@@ -19,8 +18,7 @@ class CitrusVision {
   Angle start_gyro_angle_;
   RobotSubsystems& subsystems_;
   std::shared_ptr<NetworkTable> table_;
-  muan::PidController<Angle, Voltage> turn_controller_;
-  muan::History<Angle, 200> gyro_history_;
+  muan::History<Angle, 100> gyro_history_;
 };
 
 #endif
