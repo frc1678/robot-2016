@@ -15,6 +15,8 @@ class CitrusVision {
   void EndTest();
 
  private:
+  Angle start_vision_angle_;
+  Angle start_gyro_angle_;
   RobotSubsystems& subsystems_;
   std::shared_ptr<NetworkTable> table_;
   muan::PidController<Angle, Voltage> turn_controller_;
