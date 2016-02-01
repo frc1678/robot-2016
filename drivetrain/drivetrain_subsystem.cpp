@@ -69,7 +69,7 @@ void DrivetrainSubsystem::Update(Time dt) {
 
       // Feed forward term
       AngularVelocity feed_forward_hack =
-          (1.1 + 0.6 * std::log(std::abs(angle_profile_->GetTotalDistance().to(deg)))) *
+          (1.1 + 0.6 * std::log(std::abs(angle_profile_->GetTotalDistance().to(deg))+0.16)) *
           rad / s;
       AngularVelocity robot_angular_velocity =
           feed_forward_hack * (pos.right_shifter_high ? 1 : (1.0 / 3));
