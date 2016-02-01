@@ -8,7 +8,9 @@ CitrusVision::CitrusVision(RobotSubsystems& subs)
   table_ = NetworkTable::GetTable("vision");
 }
 
-void CitrusVision::Start() {}
+void CitrusVision::Start() {
+  test_timer.Start();
+}
 
 bool CitrusVision::Update(bool enabled) {
   Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * deg;
@@ -20,6 +22,7 @@ bool CitrusVision::Update(bool enabled) {
   Angle target_angle = camera_diff + gyro_history_.GoBack(latency);
   if (subsystems_.drive.IsProfileComplete() && latency >= 0 * s && is_found && enabled) {
     if (std::abs((target_angle - subsystems_.drive.gyro_reader_->GetAngle()).to(deg)) < 0.5) {
+      printf("Finished vision: %f s\n", test_timer.Get().to(s));
       return true;
     }
     using muan::TrapezoidalMotionProfile;

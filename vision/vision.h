@@ -17,6 +17,7 @@ class CitrusVision {
   RobotSubsystems& subsystems_;
   std::shared_ptr<NetworkTable> table_;
   muan::History<Angle, 100> gyro_history_;
+  muan::Timer test_timer;
 };
 
 #endif
