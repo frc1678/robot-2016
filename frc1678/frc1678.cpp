@@ -10,7 +10,6 @@
 class CitrusRobot : public IterativeRobot {
   std::unique_ptr<Joystick> j_wheel_, j_stick_;
 
-  // std::unique_ptr<DrivetrainSubsystem> drive_subsystem_;
   RobotSubsystems subsystems_;
   CitrusVision vision_;
 
@@ -46,7 +45,7 @@ class CitrusRobot : public IterativeRobot {
     auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
         0 * m, 5 * ft / s, 10 * ft / s / s);
     auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-        20 * deg, 4.3 * rad / s, 270 * deg / s / s);
+        -20 * deg, 4.3 * rad / s, 270 * deg / s / s);
     subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
   }
 
@@ -58,7 +57,9 @@ class CitrusRobot : public IterativeRobot {
   }
   void AutonomousPeriodic() {
     // CitrusVision::updateVision(drive_subsystem_.get());
-    vision_done_ = vision_.Update();
+    if (!vision_done_) {
+      vision_done_ = vision_.Update(true);
+    }
   }
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own
@@ -73,6 +74,7 @@ class CitrusRobot : public IterativeRobot {
     // SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
     // SmartDashboard::PutNumber("Stick", j_stick_->GetY());
     SetDriveGoal(&drivetrain_goal);
+    vision_done_ = vision_.Update(false);
 
     subsystems_.drive.SetDriveGoal(drivetrain_goal);
   }
@@ -95,10 +97,7 @@ class CitrusRobot : public IterativeRobot {
 
     SetDriveGoal(&drivetrain_goal);
 
-    subsystems_.drive.SetDriveGoal(drivetrain_goal);
-
-    subsystems_.drive.SetDriveGoal(drivetrain_goal);
-    subsystems_.drive.SetDriveGoal(drivetrain_goal);
+    // subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
     UpdateButtons();
   }

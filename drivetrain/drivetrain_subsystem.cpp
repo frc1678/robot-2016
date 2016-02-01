@@ -69,7 +69,7 @@ void DrivetrainSubsystem::Update(Time dt) {
 
       // Feed forward term
       AngularVelocity feed_forward_hack =
-          (1.1 + 0.6 * std::log(angle_profile_->GetTotalDistance().to(deg))) *
+          (1.1 + 0.6 * std::log(std::abs(angle_profile_->GetTotalDistance().to(deg)))) *
           rad / s;
       AngularVelocity robot_angular_velocity =
           feed_forward_hack * (pos.right_shifter_high ? 1 : (1.0 / 3));
@@ -149,9 +149,9 @@ void DrivetrainSubsystem::Update(Time dt) {
       bool profile_finished_angle =
           std::abs(
               (calculated_gyro_angle - angle_profile_->Calculate(t)).to(deg)) <
-          .05 *
-              angle_profile_->Calculate(t)
-                  .to(deg);  // THIS IS A SHITTY HACK FOR VISION
+          .5*deg;
+              //angle_profile_->Calculate(t)
+              //    .to(deg);  // THIS IS A SHITTY HACK FOR VISION
       // std::cout << calculated_gyro_angle << ", " <<
       // angle_profile_.Calculate(t) << std::endl;
 
@@ -167,7 +167,7 @@ void DrivetrainSubsystem::Update(Time dt) {
         angle_profile_.release();
         distance_profile_.release();
         is_operator_controlled_ = true;
-        angle_controller_.SetIntegralConstant(40 * V / rad / s);
+        angle_controller_.Reset();
         printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
                calculated_gyro_angle.to(deg), t.to(s));
       }

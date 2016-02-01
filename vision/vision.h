@@ -10,12 +10,10 @@ class CitrusVision {
  public:
   CitrusVision(RobotSubsystems& subsystems);
   void Start();
-  bool Update();
+  bool Update(bool enable);
   void EndTest();
 
  private:
-  Angle start_vision_angle_;
-  Angle start_gyro_angle_;
   RobotSubsystems& subsystems_;
   std::shared_ptr<NetworkTable> table_;
   muan::History<Angle, 100> gyro_history_;
