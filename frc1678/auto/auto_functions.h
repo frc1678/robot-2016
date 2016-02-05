@@ -9,10 +9,13 @@
 #include "frc1678/robot_subsystems.h"
 
 enum Position {
+	// Shooting positions
   LOW_BAR,
   BATTER,
   WORKS_3,
   WORKS_4,
+	// Other positions
+	TUCK
 };
 
 namespace AutoFunction {
@@ -24,6 +27,7 @@ bool PointTurn(RobotSubsystems *subs, float angle, float speed);
 bool Wait(RobotSubsystems* subs, Time time);
 bool Shoot(RobotSubsystems* subs, Position infield);
 bool RunIntake(RobotSubsystems* subs);
+bool SetArmPosition(RobotSubsystems* subs, Position arm_position);
 bool DropPinch(RobotSubsystems* subs);
 bool Align(RobotSubsystems* subs, Angle offset);
 bool StopDriving(RobotSubsystems* subs);

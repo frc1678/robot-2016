@@ -103,6 +103,10 @@ bool AutoFunction::RunIntake(RobotSubsystems* robot) {
   return true;
 }
 
+bool AutoFunction::SetArmPosition(RobotSubsystems* subs, Position arm_position) {
+	
+}
+
 bool AutoFunction::DropPinch(RobotSubsystems* robot) { return true; }
 
 bool AutoFunction::Align(RobotSubsystems* robot, Angle offset) {
