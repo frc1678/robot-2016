@@ -13,7 +13,7 @@ void CitrusVision::Start() {
 }
 
 bool CitrusVision::Update(bool enabled) {
-  Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * .88 * deg;
+  Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * deg;
   Time latency = table_->GetNumber("captureTime", -100) * s;
   latency = std::min(latency, 1.99*s);
   bool is_found = table_->GetBoolean("targetFound", false);
