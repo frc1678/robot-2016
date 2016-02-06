@@ -40,6 +40,9 @@ class DrivetrainSubsystem : public muan::Updateable {
       gyro_reader_;  // Made public so vision can access angle
  private:
   void SetDrivePosition(DrivetrainPosition* drivetrain_position);
+  Voltage GetAngleFFVoltage(AngularVelocity velocity,
+                            AngularAcceleration acceleration, bool highgear);
+  Voltage GetDistanceFFVoltage(Velocity velocity, Acceleration acceleration);
 
   std::unique_ptr<RobotDrive> drive_;
   std::unique_ptr<DrivetrainLoop> drive_loop_;
