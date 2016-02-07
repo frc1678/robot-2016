@@ -1,41 +1,32 @@
-# TODO(Kyle) Change this directory to the actual binary path for the RoboRIO
+which sshpass
+if [ $? -eq 1 ]
+then
+  echo "no sshpass"
+  ssh_command=""
+else
+  echo "sshpass"
+  ssh_command="sshpass -p '' "
+fi
 
-#which sshpass
-#if [ $? -eq 1 ]
-#then
-#  echo "no sshpass"
-#  ssh_command=""
-#else
-#  echo "sshpass"
-#  ssh_command="sshpass -p '' "
-#fi
-#
-#echo "Starting ./deploy"
-#
-#$ssh_command ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
-#rm -f /home/lvuser/FRCUserProgram
-## kill -9 $(pidof FRCUserProgram)
-## killall -q netconsole-host || :
-#ENDSSH
-#
-#echo "Copying code over."
-#$ssh_command scp bazel-bin/frc1678/frc1678 admin@roboRIO-1678-FRC.local:/home/lvuser/FRCUserProgram
-#$ssh_command scp frc1678/auto/*.auto admin@roboRIO-1678-FRC.local:/home/lvuser
-#
-#$ssh_command ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
-#killall -q netconsole-host || :
-#ENDSSH
-#
-#$ssh_command scp robotCommand admin@roboRIO-1678-FRC.local:/home/lvuser/robotCommand
-#
-#$ssh_command ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
-#. /etc/profile.d/natinst-path.sh; chmod a+x /home/lvuser/FRCUserProgram; /usr/local/frc/bin/frcKillRobot.sh -t -r;
-#sync
-#ENDSSH
+echo "Starting ./deploy"
 
-sshpass -p '' ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
-kill -9 $(pidof FRCUserProgram)
+$ssh_command ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
+rm -f /home/lvuser/FRCUserProgram
+# kill -9 $(pidof FRCUserProgram)
+# killall -q netconsole-host || :
 ENDSSH
-sshpass -p '' scp bazel-bin/frc1678/frc1678 admin@roboRIO-1678-FRC.local:/home/lvuser/FRCUserProgram
-sshpass -p '' scp frc1678/auto/*.auto admin@roboRIO-1678-FRC.local:/home/lvuser
-sshpass -p '' scp robotCommand admin@roboRIO-1678-FRC.local:/home/lvuser/robotCommand
+
+echo "Copying code over."
+$ssh_command scp bazel-bin/frc1678/frc1678 admin@roboRIO-1678-FRC.local:/home/lvuser/FRCUserProgram
+$ssh_command scp frc1678/auto/*.auto admin@roboRIO-1678-FRC.local:/home/lvuser
+
+$ssh_command ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
+killall -q netconsole-host || :
+ENDSSH
+
+$ssh_command scp robotCommand admin@roboRIO-1678-FRC.local:/home/lvuser/robotCommand
+
+$ssh_command ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
+. /etc/profile.d/natinst-path.sh; chmod a+x /home/lvuser/FRCUserProgram; /usr/local/frc/bin/frcKillRobot.sh -t -r;
+sync
+ENDSSH
