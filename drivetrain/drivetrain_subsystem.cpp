@@ -2,8 +2,12 @@
 
 using mutex_lock = std::lock_guard<std::mutex>;
 
+// this code is an ugly hack but thats ok because the world is an ugly hack.
+
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
+      angle_controller_(45 * V / rad, 50 * V / rad / s, 2 * V / rad * s),
+      distance_controller_(3 * V / m, 0 * V / m / s, 0 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}) {
@@ -19,8 +23,7 @@ DrivetrainSubsystem::DrivetrainSubsystem()
   right_encoder_ = std::make_unique<Encoder>(RobotPorts::right_encoder_a,
                                              RobotPorts::right_encoder_b);
 
-  shifting_ = std::make_unique<DoubleSolenoid>(RobotPorts::shift_a,
-                                               RobotPorts::shift_b);
+  shifting_ = std::make_unique<Solenoid>(RobotPorts::shift_a);
 
   gyro_reader_ = std::make_unique<GyroReader>();
 
@@ -53,19 +56,89 @@ void DrivetrainSubsystem::Update(Time dt) {
     mutex_lock lock(mu_);
     if (is_operator_controlled_) {
       drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
+      // TODO(Wesley) Find out why this is giving 12V and 0V as output
     } else {
+      current_goal_.highgear = false;
+      // TODO(Wesley) Reset the PID controller if we went from tele to auto
+      // TODO(Wesley) Add operator control to exit auto mode
       t += dt;
+
+      // Feed forward term
+      Voltage feed_forward_angle = GetAngleFFVoltage(
+          angle_profile_->CalculateDerivative(t),
+          angle_profile_->CalculateSecondDerivative(t), current_goal_.highgear);
+
+      Velocity max_robot_velocity = 15 * ft / s;
+      Voltage feed_forward_distance =
+          distance_profile_->CalculateDerivative(t) *
+          (12 * V / max_robot_velocity);
+
+      // PID Term
       Angle target_angle_ = angle_profile_->Calculate(t);
       Length target_distance_ = distance_profile_->Calculate(t);
-      // TODO (Kyle): Track the targets here
+
+      // The difference between the gyro at the start of the profile and now
+      Angle angle_from_start = gyro_reader_->GetAngle() - gyro_offset_;
+
+      Angle tmp_angle = angle_from_start;
+      Angle tmp_old_angle = old_angle_;
+      Angle tmp_even_older_angle = even_older_angle_;
+
+      if (angle_from_start == old_angle_) {
+        angle_from_start += (angle_from_start - even_older_angle_) / 2;
+      }
+
+      even_older_angle_ = tmp_old_angle;
+      old_angle_ = tmp_angle;
+
+      Length distance_from_start =
+          ((pos.left_encoder + pos.right_encoder) / 2) * m -
+          encoder_offset_ * m;
+
+      Voltage correction_angle =
+          angle_controller_.Calculate(dt, target_angle_ - angle_from_start);
+      Voltage correction_distance = distance_controller_.Calculate(
+          dt, target_distance_ - distance_from_start);
+
+      Voltage out_left = feed_forward_angle + correction_angle;
+      Voltage out_right = -feed_forward_angle - correction_angle;
+
+      out.left_voltage = out_left.to(V);
+      out.right_voltage = out_right.to(V);
+
+      last_angle_ = angle_from_start;
+
+      bool profiles_finished_time = angle_profile_->finished(t);
+      bool profile_finished_distance =
+          target_distance_ >=
+              target_distance_ - (distance_from_start - 2 * cm) &&
+          target_distance_ <= target_distance_ + (distance_from_start + 2 * cm);
+      bool profile_finished_angle =
+          std::abs((angle_from_start - angle_profile_->Calculate(t)).to(deg)) <
+          .2 * deg;
+
+      printf("%f\t%f\t%f\t%f\t%f\t%f   \n", t.to(s), out.left_voltage,
+             out.right_voltage, angle_from_start.to(deg),
+             angle_profile_->Calculate(t).to(deg),
+             angle_profile_->CalculateDerivative(t).to(rad / s));
+
+      if (profiles_finished_time && profile_finished_angle) {
+        angle_profile_.release();
+        distance_profile_.release();
+        is_operator_controlled_ = true;
+        angle_controller_.Reset();
+        printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
+               angle_from_start.to(deg), t.to(s));
+      }
+      
+      printf("%f motion profile gyro Angle\n", angle_from_start.to(deg));
     }
   }
 
   // TODO (Finn): Also deal with shifting output and with logging
   // from the status.
   drive_->TankDrive(out.left_voltage / 12.0, out.right_voltage / 12.0, false);
-  shifting_->Set(current_goal_.highgear ? DoubleSolenoid::Value::kForward
-                                        : DoubleSolenoid::Value::kReverse);
+  shifting_->Set(!current_goal_.highgear);
 
   csv_log_["enc_left"] = std::to_string(pos.left_encoder);
   csv_log_["enc_right"] = std::to_string(pos.right_encoder);
@@ -81,6 +154,10 @@ void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal& goal) {
   current_goal_ = goal;
 }
 
+void DrivetrainSubsystem::Shift(bool high) {
+  current_goal_.highgear = high;
+}
+
 void DrivetrainSubsystem::SetDrivePosition(
     DrivetrainPosition* drivetrain_position) {
   double click =
@@ -94,11 +171,32 @@ void DrivetrainSubsystem::SetDrivePosition(
   drivetrain_position->right_shifter_high = current_goal_.highgear;
 }
 
+void DrivetrainSubsystem::PointTurn(Angle angle) {
+  AngularVelocity speed = (current_goal_.highgear ? 380 : 240) * deg / s;
+  AngularAcceleration accel = (current_goal_.highgear ? 250 : 500) * deg / s / s;
+  using muan::TrapezoidalMotionProfile;
+  auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
+      0 * m, 10 * ft / s, 10 * ft / s / s);
+  auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
+      angle, speed, accel);
+  FollowMotionProfile(std::move(dp), std::move(ap));
+}
+
+void DrivetrainSubsystem::DriveDistance(Length distance) {}
+
 void DrivetrainSubsystem::FollowMotionProfile(
     std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
     std::unique_ptr<muan::MotionProfile<Angle>> angle_profile) {
   distance_profile_ = std::move(distance_profile);
   angle_profile_ = std::move(angle_profile);
+  is_operator_controlled_ = false;
+  t = 0 * s;
+  DrivetrainPosition pos;
+  SetDrivePosition(&pos);  // Is this bad?
+  encoder_offset_ = (pos.left_encoder + pos.right_encoder) / 2;
+  gyro_offset_ = gyro_reader_->GetAngle();
+  angle_controller_.Reset();
+  distance_controller_.Reset();
 }
 
 bool DrivetrainSubsystem::IsProfileComplete() {
@@ -109,4 +207,34 @@ void DrivetrainSubsystem::CancelMotionProfile() {
   mutex_lock lock(mu_);
   distance_profile_.release();
   angle_profile_.release();
+  is_operator_controlled_ = true;
 }
+
+Angle DrivetrainSubsystem::GetGyroAngle() { return gyro_reader_->GetAngle(); }
+
+Voltage DrivetrainSubsystem::GetAngleFFVoltage(AngularVelocity velocity,
+                                               AngularAcceleration acceleration,
+                                               bool highgear) {
+  // omega_dot = c1 * (V-c2*omega)
+  // V = c2*omega - omega_dot / c1
+  Voltage total_output;
+  /* decltype((deg / s / s) / V) */
+  if (highgear) {
+    AngularVelocity max_robot_angular_velocity = 380 * deg / s;
+    const auto c2 = 24 * V / max_robot_angular_velocity;
+    const auto c1 = 70 / V * (deg / s / s);
+    total_output = c2 * velocity + acceleration / c1;
+  } else {
+    AngularVelocity max_robot_angular_velocity = 240 * deg / s;
+    const auto c2 = 24 * V / max_robot_angular_velocity;
+    const auto c1 = 125 / V * (deg / s / s);
+    total_output = c2 * velocity + acceleration / c1;
+  }
+  if (std::signbit(total_output.to(V)) != std::signbit(velocity.to(rad / s))) {
+    total_output = 0;
+  }
+  return total_output / 2;
+}
+
+Voltage DrivetrainSubsystem::GetDistanceFFVoltage(Velocity velocity,
+                                                  Acceleration acceleration) {}

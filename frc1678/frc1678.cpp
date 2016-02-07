@@ -2,22 +2,31 @@
 #include <memory>
 
 #include "drivetrain/drivetrain_subsystem.h"
+#include "muan/control/trapezoidal_motion_profile.h"
 #include "CitrusButton.h"
+#include "frc1678/auto/auto_routines.h"
+#include "vision/vision.h"
 #include "robot_subsystems.h"
 
 class CitrusRobot : public IterativeRobot {
+ private:
+  LemonScriptRunner* auto_runner;
+
+ public:
   std::unique_ptr<Joystick> j_wheel_, j_stick_;
 
   // std::unique_ptr<DrivetrainSubsystem> drive_subsystem_;
   RobotSubsystems subsystems_;
+  CitrusVision vision_;
 
   // Buttonz!
   std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_;
 
+  bool test_flag_;
   bool in_highgear_;
+  bool vision_done_ = false;  // UGLY HACK
 
- public:
-  CitrusRobot() {
+  CitrusRobot() : vision_(subsystems_) {
     // Joysticks
     j_wheel_ = std::make_unique<Joystick>(0);
     j_stick_ = std::make_unique<Joystick>(1);
@@ -29,20 +38,44 @@ class CitrusRobot : public IterativeRobot {
     quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
 
     // drive_subsystem_ = std::make_unique<DrivetrainSubsystem>();
+    
+    // Auto
+    auto_runner = new LemonScriptRunner("test_pointturn.auto", &subsystems_);
   }
 
   void RobotInit() { subsystems_.drive.Start(); }
 
-  void TeleopInit() {}
+
+  void AutonomousPeriodic() { 
+          auto_runner->Update();
+    //if (!vision_done_) {
+    //  vision_done_ = vision_.Update();
+    //}
+  }
+
+  void TeleopInit() {
+    using muan::TrapezoidalMotionProfile;
+    auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
+        0 * m, 5 * ft / s, 10 * ft / s / s);
+    auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
+        -20 * deg, 240 * deg / s, 500 * deg / s / s);
+    subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
+  }
 
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own
     // thread.
     DrivetrainGoal drivetrain_goal;
 
-    SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
-    SmartDashboard::PutNumber("Stick", j_stick_->GetY());
+    if (test_flag_) {
+      vision_.EndTest();
+      test_flag_ = false;
+    }
+
+    // SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
+    // SmartDashboard::PutNumber("Stick", j_stick_->GetY());
     SetDriveGoal(&drivetrain_goal);
+    vision_done_ = vision_.Update(false);
 
     subsystems_.drive.SetDriveGoal(drivetrain_goal);
   }
