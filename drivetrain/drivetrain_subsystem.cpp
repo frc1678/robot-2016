@@ -148,7 +148,7 @@ void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal& goal) {
 }
 
 void DrivetrainSubsystem::Shift(bool high) {
-	shifting_.Set(high);
+  current_goal_.highgear = high;
 }
 
 void DrivetrainSubsystem::SetDrivePosition(

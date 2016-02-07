@@ -9,13 +9,13 @@
 #include "frc1678/robot_subsystems.h"
 
 enum Position {
-	// Shooting positions
+  // Shooting positions
   LOW_BAR,
   BATTER,
   WORKS_3,
   WORKS_4,
-	// Other positions
-	TUCK
+  // Other positions
+  TUCK
 };
 
 namespace AutoFunction {
