@@ -41,9 +41,9 @@ class CitrusRobot : public IterativeRobot {
   void TeleopInit() {
     using muan::TrapezoidalMotionProfile;
     auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
-        0 * m, 5 * ft / s, 10 * ft / s / s);
+        1 * m, 1.92 * m / s, 10 * ft / s / s);
     auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-        -20 * deg, 240 * deg / s, 500 * deg / s / s);
+        -0 * deg, 240 * deg / s, 500 * deg / s / s);
     subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
   }
 
@@ -53,8 +53,8 @@ class CitrusRobot : public IterativeRobot {
     vision_.Start();
     test_flag_ = true;
   }
-  void AutonomousPeriodic() {
-    // CitrusVision::updateVision(drive_subsystem_.get());
+  void
+  AutonomousPeriodic() {  // CitrusVision::updateVision(drive_subsystem_.get());
     if (!vision_done_) {
       vision_done_ = vision_.Update(true);
     }

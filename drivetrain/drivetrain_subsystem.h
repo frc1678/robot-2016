@@ -42,14 +42,14 @@ class DrivetrainSubsystem : public muan::Updateable {
   void SetDrivePosition(DrivetrainPosition* drivetrain_position);
   Voltage GetAngleFFVoltage(AngularVelocity velocity,
                             AngularAcceleration acceleration, bool highgear);
-  Voltage GetDistanceFFVoltage(Velocity velocity, Acceleration acceleration);
+  Voltage GetDistanceFFVoltage(Velocity velocity, Acceleration acceleration,
+                               bool highgear);
 
   std::unique_ptr<RobotDrive> drive_;
   std::unique_ptr<DrivetrainLoop> drive_loop_;
   std::unique_ptr<Encoder> left_encoder_, right_encoder_;
   std::unique_ptr<Solenoid> shifting_;
 
-  bool in_highgear_;
   bool is_operator_controlled_ = true;
 
   DrivetrainGoal current_goal_;
@@ -59,7 +59,7 @@ class DrivetrainSubsystem : public muan::Updateable {
   muan::PidController<Angle, Voltage> angle_controller_;
   muan::PidController<Length, Voltage> distance_controller_;
 
-  float encoder_offset_ = 0;
+  Length encoder_offset_ = 0 * m;
   Angle gyro_offset_ = 0 * rad;
   Angle old_angle_ = 0 * rad;
   Angle even_older_angle_ = 0 * rad;
