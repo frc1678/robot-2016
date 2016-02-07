@@ -3,4 +3,4 @@
 	url = https://github.com/frc1678/muan
 [submodule "lemonscript"]
 	path = lemonscript
-	url = https://github.com/donald-pinckney/lemonscript.git
+	url = https://github.com/donald-pinckney/lemonscript

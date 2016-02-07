@@ -27,6 +27,7 @@ class DrivetrainSubsystem : public muan::Updateable {
   void Update(Time dt) override;
   void Start();
   void SetDriveGoal(const DrivetrainGoal& goal);
+	void Shift(bool high);
 
   void FollowMotionProfile(
       std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
@@ -49,7 +50,6 @@ class DrivetrainSubsystem : public muan::Updateable {
   std::unique_ptr<Encoder> left_encoder_, right_encoder_;
   std::unique_ptr<Solenoid> shifting_;
 
-  bool in_highgear_;
   bool is_operator_controlled_ = true;
 
   DrivetrainGoal current_goal_;
@@ -72,4 +72,4 @@ class DrivetrainSubsystem : public muan::Updateable {
   muan::CSVLog csv_log_;
 };
 
-#endif
+#endif /* DRIVETRAIN_DRIVETRAIN_SUBSYSTEM */

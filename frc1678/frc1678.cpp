@@ -4,10 +4,15 @@
 #include "drivetrain/drivetrain_subsystem.h"
 #include "muan/control/trapezoidal_motion_profile.h"
 #include "CitrusButton.h"
+#include "frc1678/auto/auto_routines.h"
 #include "vision/vision.h"
 #include "robot_subsystems.h"
 
 class CitrusRobot : public IterativeRobot {
+ private:
+  LemonScriptRunner* auto_runner;
+
+ public:
   std::unique_ptr<Joystick> j_wheel_, j_stick_;
 
   RobotSubsystems subsystems_;
@@ -20,7 +25,6 @@ class CitrusRobot : public IterativeRobot {
   bool in_highgear_;
   bool vision_done_ = false;  // UGLY HACK
 
- public:
   CitrusRobot() : vision_(subsystems_) {
     // Joysticks
     j_wheel_ = std::make_unique<Joystick>(0);
@@ -31,12 +35,20 @@ class CitrusRobot : public IterativeRobot {
     shift_down_ = std::make_unique<CitrusButton>(j_stick_.get(), 2);
     shift_up_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
     quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
-
-    test_flag_ = false;
-    // drive_subsystem_ = std::make_unique<DrivetrainSubsystem>();
+    
+    // Auto
+    auto_runner = new LemonScriptRunner("test_pointturn.auto", &subsystems_);
   }
 
   void RobotInit() { subsystems_.drive.Start(); }
+
+
+  void AutonomousPeriodic() { 
+          auto_runner->Update();
+    //if (!vision_done_) {
+    //  vision_done_ = vision_.Update();
+    //}
+  }
 
   void TeleopInit() {
     using muan::TrapezoidalMotionProfile;
@@ -47,18 +59,6 @@ class CitrusRobot : public IterativeRobot {
     subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
   }
 
-  void AutonomousInit() {
-    // CitrusVision::start(drive_subsystem_.get());
-    vision_done_ = false;
-    vision_.Start();
-    test_flag_ = true;
-  }
-  void AutonomousPeriodic() {
-    // CitrusVision::updateVision(drive_subsystem_.get());
-    if (!vision_done_) {
-      vision_done_ = vision_.Update(true);
-    }
-  }
   void DisabledPeriodic() {
     // TODO (Finn): Get this out of the main loop and into its own
     // thread.
@@ -94,8 +94,6 @@ class CitrusRobot : public IterativeRobot {
     }
 
     SetDriveGoal(&drivetrain_goal);
-
-    // subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
     UpdateButtons();
   }

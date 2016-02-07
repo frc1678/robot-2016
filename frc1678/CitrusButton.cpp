@@ -17,6 +17,19 @@ void CitrusButton::Update(bool input) { oldInput = input; }
 
 void CitrusButton::Update() { Update(stick->GetRawButton(button)); }
 
+void CitrusAxis::Update(bool input) { oldInput = input; }
+
+void CitrusAxis::Update() {
+  bool bclicked;
+  bclicked = false;
+  if (abs(stick->GetRawAxis(button)) >= .7) {
+    bclicked = true;
+  } else {
+    bclicked = false;
+  }
+  Update(bclicked);
+}
+
 bool CitrusButton::ButtonClicked(bool input) {
   // Return true if the button state changes from false to true. (not
   // clicked to clicked)

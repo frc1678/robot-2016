@@ -130,7 +130,7 @@ void DrivetrainSubsystem::Update(Time dt) {
         printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
                angle_from_start.to(deg), t.to(s));
       }
-
+      
       printf("%f motion profile gyro Angle\n", angle_from_start.to(deg));
     }
   }
@@ -152,6 +152,10 @@ void DrivetrainSubsystem::Update(Time dt) {
 void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal& goal) {
   mutex_lock lock(mu_);
   current_goal_ = goal;
+}
+
+void DrivetrainSubsystem::Shift(bool high) {
+  current_goal_.highgear = high;
 }
 
 void DrivetrainSubsystem::SetDrivePosition(

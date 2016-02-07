@@ -6,12 +6,9 @@
 
 // Designed to get input from joysticks & manipulators.
 class CitrusButton {
+ protected:
   bool output;
   bool oldInput;
-
-  // Optional.
-  Joystick* stick;
-  int button;
 
  public:
   CitrusButton(Joystick* tstick, int tbutton);
@@ -42,6 +39,16 @@ class CitrusButton {
 
   // Reset to factory settings!
   void Reset();
+
+  // Optional.
+  Joystick* stick;
+  int button;
+};
+
+class CitrusAxis : public CitrusButton {
+ public:
+  void Update();
+  void Update(bool input);
 };
 
 // Use the following like: input = TurnOn(myButton); input = Toggle(myButton,

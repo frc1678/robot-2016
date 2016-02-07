@@ -1,0 +1,59 @@
+//Lemonscript setup for two ball auto for 2016 game.
+
+//TODO Comment out the WHILES for testing on solo drivetrain
+
+
+//Setup
+//shift low
+//TODO, more going in here
+
+//Crossing Low-Bar
+WHILE:
+  drive straight: speed = 2.0, distance = 7.0 //This may have to be tuned
+ALSO:
+  //Tuck position
+  //CDF Mechanism deploys
+
+WHILE:
+  drive straight: speed = 4.0, distance = 5.0 //After low bar, raising low bar
+ALSO:
+  //goto longshoot position
+
+//swoop turn: speed = 1.0, radius = 0, angular distance = -50
+//center on target (vision)
+//startshooter
+//shoot
+
+//swoop turn: speed = 1.0, radius = 0, angular distance = 50
+
+WHILE:
+  drive straight: speed = -4.0, distance = 10
+ALSO:
+  //Tuck position
+
+//swoop turn: speed = 1.0, radius = 0, angular distance = -30
+drive straight: speed = -2.0, distance = 3
+//swoop turn: speed = 1.0, radius = 0, angular distance = 30
+
+COMPLETE ANY:
+  drive straight: speed = -0.2, distance = 1
+  //Intake till ball is picked up
+
+//swoop turn: speed = 1.0, radius = 0, angular distance = 30
+drive straight: speed = 2.0, distance = 3
+//swoop turn: speed = 1.0, radius = 0, angular distance = -30
+
+drive straight: speed = 4.0, distance = 7.0
+
+WHILE:
+  drive straight: speed = 4.0, distance = 5.0
+ALSO:
+  //goto longshoot position
+
+//startshooter
+//swoop turn: speed = 1.0, radius = 0, angular distance = -50
+//use vision now to center on target
+
+//shoot
+
+//stop driving
