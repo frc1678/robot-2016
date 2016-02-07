@@ -4,7 +4,7 @@
 #include <memory>
 
 CitrusVision::CitrusVision(RobotSubsystems& subs)
-    : subsystems_(subs), gyro_history_(.02 * s) {
+    : subsystems_(subs), gyro_history_(.02 * s), angle_log_("angles",{"cameraAngle","gyroHistory"}) {
   table_ = NetworkTable::GetTable("vision");
 }
 
@@ -13,13 +13,17 @@ void CitrusVision::Start() {
 }
 
 bool CitrusVision::Update(bool enabled) {
-  Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * deg;
+  Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * .88 * deg;
   Time latency = table_->GetNumber("captureTime", -100) * s;
   latency = std::min(latency, 1.99*s);
   bool is_found = table_->GetBoolean("targetFound", false);
   // Angle camera_diff = -SmartDashboard::GetNumber("angleToTarget", 0) * deg;
   // Time latency = SmartDashboard::GetNumber("captureTime", -100);
   Angle target_angle = camera_diff + gyro_history_.GoBack(latency);
+  std::cout<<camera_diff<<", "<<gyro_history_.GoBack(latency)<<std::endl;
+  angle_log_["cameraAngle"] = std::to_string(camera_diff.to(rad));
+  angle_log_["gyroHistory"] = std::to_string(subsystems_.drive.gyro_reader_->GetAngle().to(rad));
+  angle_log_.EndLine();
   if (subsystems_.drive.IsProfileComplete() && latency >= 0 * s && is_found && enabled) {
     if (std::abs((target_angle - subsystems_.drive.gyro_reader_->GetAngle()).to(deg)) < 0.5) {
       printf("Finished vision: %f s\n", test_timer.Get().to(s));
