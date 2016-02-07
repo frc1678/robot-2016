@@ -68,108 +68,55 @@ void DrivetrainSubsystem::Update(Time dt) {
       t += dt;
 
       // Feed forward term
-      AngularVelocity feed_forward_hack =
-          (1.1 + 0.6 * std::log(std::abs(angle_profile_->GetTotalDistance().to(deg))+0.16)) *
-          rad / s;
-      AngularVelocity robot_angular_velocity =
-          feed_forward_hack * (pos.right_shifter_high ? 1 : (1.0 / 3));
-      Velocity robot_velocity =
-          10 * ft / s * (pos.right_shifter_high ? 1 : (1.0 / 3));
+      Voltage feed_forward_angle = GetAngleFFVoltage(
+          angle_profile_->CalculateDerivative(),
+          angle_profile_->CalculateSecondDerivative(), pos.right_shifter_high);
 
-      Voltage feed_forward_angle = angle_profile_->CalculateDerivative(t) *
-                                   (12 * V / robot_angular_velocity);
+      Velocity max_robot_velocity = 15 * ft / s;
       Voltage feed_forward_distance =
-          distance_profile_->CalculateDerivative(t) * (12 * V / robot_velocity);
-
-      decltype(V / (rad / s / s)) acceleration_constant =
-          0.3 * V / (rad / s / s);
+          distance_profile_->CalculateDerivative(t) *
+          (12 * V / max_robot_velocity);
 
       // PID Term
       Angle target_angle_ = angle_profile_->Calculate(t);
       Length target_distance_ = distance_profile_->Calculate(t);
 
-      Angle calculated_gyro_angle = gyro_reader_->GetAngle() - gyro_offset_;
+      // The difference between the gyro at the start of the profile and now
+      Angle angle_from_start = gyro_reader_->GetAngle() - gyro_offset_;
 
-      Angle tmp_angle = calculated_gyro_angle;
-      Angle tmp_old_angle = old_angle_;
-      Angle tmp_even_older_angle = even_older_angle_;
-
-      if (calculated_gyro_angle == old_angle_) {
-        calculated_gyro_angle +=
-            (calculated_gyro_angle - even_older_angle_) / 2;
-      }
-
-      even_older_angle_ = tmp_old_angle;
-      old_angle_ = tmp_angle;
-
-      Length calculated_distance =
+      Length distance_from_start =
           ((pos.left_encoder + pos.right_encoder) / 2) * m -
           encoder_offset_ * m;
 
-      Voltage accel_angle =
-          angle_profile_->CalculateSecondDerivative(t) * acceleration_constant;
+      Voltage correction_angle =
+          angle_controller_.Calculate(dt, target_angle_ - angle_from_start);
+      Voltage correction_distance = distance_controller_.Calculate(
+          dt, target_distance_ - distance_from_start);
 
-      Voltage out_angle = angle_controller_.Calculate(
-          dt, target_angle_ - calculated_gyro_angle);
-      Voltage out_distance = distance_controller_.Calculate(
-          dt, target_distance_ - calculated_distance);
-
-      Voltage out_left = feed_forward_angle + out_angle;
-      Voltage out_right = -feed_forward_angle - out_angle;
-
-      if (!(((out_left > 0 && accel_angle < 0) ||
-             (out_left < 0 && accel_angle > 0)) &&
-            std::abs(out_left.to(V)) < std::abs(accel_angle.to(V)))) {
-        // if ((accel_angle < 0 && out_left > 0) || (accel_angle > 0 && out_left
-        // < 0)) {
-        out_left += accel_angle;
-        out_right -= accel_angle;
-      }
-
-      // out_left += out_angle;
-      // out_right -= out_angle;
-
-      // printf("left: %f\tright: %f\n", out_left.to(V), out_right.to(V));
-      // printf("Gyro: %f\n", gyro_reader_->GetAngle().to(deg));
+      Voltage out_left = feed_forward_angle + correction_angle;
+      Voltage out_right = -feed_forward_angle - correction_angle;
 
       out.left_voltage = out_left.to(V);
       out.right_voltage = out_right.to(V);
 
-      // printf("%f\t%f\t%f\t%f\t%f   \n", t.to(s), target_angle_.to(deg),
-      // calculated_gyro_angle.to(deg), out_left.to(V),
-      // feed_forward_angle.to(V));
-      //      printf("%f\t%f   \n", t, target_angle_.to(deg));
-      last_angle_ = calculated_gyro_angle;
+      last_angle_ = angle_from_start;
 
       bool profiles_finished_time = angle_profile_->finished(t);
       bool profile_finished_distance =
           target_distance_ >=
-              target_distance_ - (calculated_distance - 2 * cm) &&
-          target_distance_ <= target_distance_ + (calculated_distance + 2 * cm);
+              target_distance_ - (distance_from_start - 2 * cm) &&
+          target_distance_ <= target_distance_ + (distance_from_start + 2 * cm);
       bool profile_finished_angle =
-          std::abs(
-              (calculated_gyro_angle - angle_profile_->Calculate(t)).to(deg)) <
-          .5*deg;
-              //angle_profile_->Calculate(t)
-              //    .to(deg);  // THIS IS A SHITTY HACK FOR VISION
-      // std::cout << calculated_gyro_angle << ", " <<
-      // angle_profile_.Calculate(t) << std::endl;
+          std::abs((angle_from_start - angle_profile_->Calculate(t)).to(deg)) <
+          .2 * deg;
 
-      // printf("[motiongyro] Angle: %f deg\n", calculated_gyro_angle.to(deg));
-
-      if (profiles_finished_time) {
-        // angle_controller_.SetIntegralConstant(300*V/rad/s);
-      }
-
-      // if(profiles_finished_time && profile_finished_distance &&
-      // profile_finished_angle) {
       if (profiles_finished_time && profile_finished_angle) {
         angle_profile_.release();
         distance_profile_.release();
         is_operator_controlled_ = true;
         angle_controller_.Reset();
         printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
-               calculated_gyro_angle.to(deg), t.to(s));
+               angle_from_start.to(deg), t.to(s));
       }
     }
   }
@@ -234,3 +181,18 @@ void DrivetrainSubsystem::CancelMotionProfile() {
 }
 
 Angle DrivetrainSubsystem::GetGyroAngle() { return gyro_reader_->GetAngle(); }
+
+Voltage DrivetrainSubsystem::GetAngleFFVoltage(AngularVelocity velocity,
+                                               AngularAcceleration acceleration,
+                                               bool highgear) {
+  // omega_dot = c1 * (V-c2*omega)
+  // V = c2*omega + omega_dot / c1
+  AngularVelocity max_robot_angular_velocity =
+      240 * deg / s * (highgear ? 1 : .333);
+  const auto c2 = 24 * V / max_robot_angular_velocity;
+  const auto c1 = 100 / V * (rad / s / s);
+  return c2 * velocity + acceleration / c1;
+}
+
+Voltage DrivetrainSubsystem::GetDistanceFFVoltage(Velocity velocity,
+                                                  Acceleration acceleration) {}
