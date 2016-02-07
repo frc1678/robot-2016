@@ -5,18 +5,23 @@
 #include <iostream>
 
 LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
-                                     RobotSubsystems *subsystems) {
+                                     CitrusRobot *robot) {
   state.userData = reinterpret_cast<int *>(
-      subsystems);  // Whatever goes in userData comes out later.
+      robot);  // Whatever goes in userData comes out later.
 
   using lemonscript::AvailableCppCommandDeclaration;
+
   AvailableCppCommandDeclaration *driveStraight2 =
       new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight2, "DriveStraight", {FLOAT, FLOAT});
   
   AvailableCppCommandDeclaration *pointTurn =
       new AvailableCppCommandDeclaration((void *)AutoFunction::PointTurn, "PointTurn", {FLOAT, FLOAT});
+
+  AvailableCppCommandDeclaration *align =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::Align, "Align", {});
+
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight2, pointTurn};
+      driveStraight2, pointTurn, align};
   
   std::ifstream ifs(auto_routine_file);  // Take in auto_routine_file
   
