@@ -10,26 +10,16 @@ void AutoFunction::DeleteAutoFunction() {
   // delete wait_timer;
 }
 
-bool AutoFunction::DriveStraight(CitrusRobot* robot, Length dist,
-                                 Velocity speed) {
-  auto dp = std::make_unique<muan::TrapezoidalMotionProfile<Length>>(
-      dist, speed, 10 * ft / s / s);
-  auto ap = std::make_unique<muan::TrapezoidalMotionProfile<Angle>>(
-      0 * deg, 50 * deg / s, 80 * deg / s / s);
-
-  robot->subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
-
-  return true;
-}
-
 
 // Test for LemonScript
 bool newDriveState = true;
-bool AutoFunction::DriveStraight2(CitrusRobot* robot, float dist,
-                                  float speed) {
+bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist) {
+  printf("Fake driving straight\n");
+  return true;
+
   if(newDriveState) {
     auto distanceProfile = std::make_unique<muan::TrapezoidalMotionProfile<Length>>(
-      dist * ft, speed * ft / s, 10 * ft / s / s);
+      dist * ft, 12.0 * ft / s, 10 * ft / s / s);
     auto angleProfile = std::make_unique<muan::TrapezoidalMotionProfile<Angle>>( 
       0 * deg, 50 * deg / s, 80 * deg / s / s);
 
@@ -50,16 +40,15 @@ bool AutoFunction::DriveStraight2(CitrusRobot* robot, float dist,
 
 
 bool newTurnState = true;
-bool AutoFunction::PointTurn(CitrusRobot* robot, float angle,
-                                  float speed) {
+bool AutoFunction::PointTurn(CitrusRobot* robot, float angle) {
   if(newTurnState) {
 
           
-    printf("Starting point turn with angle = %f, speed = %f\n", angle, speed);
+    printf("Starting point turn with angle = %f, speed = %f\n", angle, 240.0);
     auto distanceProfile = std::make_unique<muan::TrapezoidalMotionProfile<Length>>(
-      0 * ft, speed * ft / s, 0 * ft / s / s);
+      0 * ft, 0 * ft / s, 0 * ft / s / s);
     auto angleProfile = std::make_unique<muan::TrapezoidalMotionProfile<Angle>>( 
-      angle * deg, speed * deg / s, 270 * deg / s / s);
+      angle * deg, 240 * deg / s, 500 * deg / s / s);
 
     robot->subsystems_.drive.FollowMotionProfile(std::move(distanceProfile), std::move(angleProfile));
     newTurnState = false;

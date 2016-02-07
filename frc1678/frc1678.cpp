@@ -21,7 +21,7 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
     
   // Auto
-  auto_runner = new LemonScriptRunner("test_align.auto", this);
+  auto_runner = new LemonScriptRunner("twoBall2016.auto", this);
 }
 
 void CitrusRobot::RobotInit() { subsystems_.drive.Start(); }
@@ -49,19 +49,19 @@ void CitrusRobot::TeleopInit() {
 void CitrusRobot::DisabledPeriodic() {
   // TODO (Finn): Get this out of the main loop and into its own
   // thread.
-  DrivetrainGoal drivetrain_goal;
+ // DrivetrainGoal drivetrain_goal;
 
-  if (test_flag_) {
-    vision_.EndTest();
-    test_flag_ = false;
-  }
+  //if (test_flag_) {
+   // vision_.EndTest();
+    //test_flag_ = false;
+ // }
 
   // SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   // SmartDashboard::PutNumber("Stick", j_stick_->GetY());
-  SetDriveGoal(&drivetrain_goal);
-  vision_done_ = vision_.Update(false);
+//  SetDriveGoal(&drivetrain_goal);
+//  vision_done_ = vision_.Update(false);
 
-  subsystems_.drive.SetDriveGoal(drivetrain_goal);
+//  subsystems_.drive.SetDriveGoal(drivetrain_goal);
 }
 
 void CitrusRobot::TeleopPeriodic() {

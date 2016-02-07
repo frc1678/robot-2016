@@ -9,49 +9,53 @@
 
 //Crossing Low-Bar
 WHILE:
-  drive straight: speed = 2.0, distance = 7.0 //This may have to be tuned
+  drive straight: distance = 7.0 //This may have to be tuned
 ALSO:
   //Tuck position
   //CDF Mechanism deploys
 
 WHILE:
-  drive straight: speed = 4.0, distance = 5.0 //After low bar, raising low bar
+  drive straight: distance = 5.0 //After low bar, raising low bar
 ALSO:
   //goto longshoot position
 
-//swoop turn: speed = 1.0, radius = 0, angular distance = -50
-//center on target (vision)
+//swoop turn: radius = 0, angular distance = -50
+point turn: angle = -60.0
+align
 //startshooter
 //shoot
 
+point turn: angle = 60.0
 //swoop turn: speed = 1.0, radius = 0, angular distance = 50
 
 WHILE:
-  drive straight: speed = -4.0, distance = 10.0
+  drive straight: distance = 10.0
 ALSO:
   //Tuck position
 
 //swoop turn: speed = 1.0, radius = 0, angular distance = -30
-drive straight: speed = -2.0, distance = 3.0
+drive straight: distance = 3.0
 //swoop turn: speed = 1.0, radius = 0, angular distance = 30
 
 COMPLETE ANY:
-  drive straight: speed = -0.2, distance = 1.0
+  drive straight: distance = 1.0
   //Intake till ball is picked up
 
 //swoop turn: speed = 1.0, radius = 0, angular distance = 30
-drive straight: speed = 2.0, distance = 3.0
+drive straight: distance = 3.0
 //swoop turn: speed = 1.0, radius = 0, angular distance = -30
 
-drive straight: speed = 4.0, distance = 7.0
+drive straight: distance = 7.0
 
 WHILE:
-  drive straight: speed = 4.0, distance = 5.0
+  drive straight: distance = 5.0
 ALSO:
   //goto longshoot position
 
 //startshooter
+point turn: angle = -60.0
 //swoop turn: speed = 1.0, radius = 0, angular distance = -50
+align
 //use vision now to center on target
 
 //shoot
