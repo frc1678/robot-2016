@@ -7,7 +7,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
       angle_controller_(45 * V / rad, 50 * V / rad / s, 2 * V / rad * s),
-      distance_controller_(3 * V / m, 0 * V / m / s, 0 * V / m * s),
+      distance_controller_(100 * V / m, 300 * V / m / s, 0 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}) {
@@ -68,10 +68,10 @@ void DrivetrainSubsystem::Update(Time dt) {
           angle_profile_->CalculateDerivative(t),
           angle_profile_->CalculateSecondDerivative(t), current_goal_.highgear);
 
-      Velocity max_robot_velocity = 15 * ft / s;
       Voltage feed_forward_distance =
-          distance_profile_->CalculateDerivative(t) *
-          (12 * V / max_robot_velocity);
+          GetDistanceFFVoltage(distance_profile_->CalculateDerivative(t),
+                               distance_profile_->CalculateSecondDerivative(t),
+                               current_goal_.highgear);
 
       // PID Term
       Angle target_angle_ = angle_profile_->Calculate(t);
@@ -79,7 +79,10 @@ void DrivetrainSubsystem::Update(Time dt) {
 
       // The difference between the gyro at the start of the profile and now
       Angle angle_from_start = gyro_reader_->GetAngle() - gyro_offset_;
+      Length distance_from_start =
+          (pos.left_encoder + pos.right_encoder) / 2 * m - encoder_offset_;
 
+      // Gyro interpolation - TODO(Kyle or Wesley) Make this less sketchy
       Angle tmp_angle = angle_from_start;
       Angle tmp_old_angle = old_angle_;
       Angle tmp_even_older_angle = even_older_angle_;
@@ -90,24 +93,24 @@ void DrivetrainSubsystem::Update(Time dt) {
 
       even_older_angle_ = tmp_old_angle;
       old_angle_ = tmp_angle;
-
-      Length distance_from_start =
-          ((pos.left_encoder + pos.right_encoder) / 2) * m -
-          encoder_offset_ * m;
+      // End of gyro interpolation
 
       Voltage correction_angle =
           angle_controller_.Calculate(dt, target_angle_ - angle_from_start);
       Voltage correction_distance = distance_controller_.Calculate(
           dt, target_distance_ - distance_from_start);
 
-      Voltage out_left = feed_forward_angle + correction_angle;
-      Voltage out_right = -feed_forward_angle - correction_angle;
+      Voltage out_left = feed_forward_angle + correction_angle +
+                         feed_forward_distance + correction_distance;
+      Voltage out_right = -feed_forward_angle - correction_angle +
+                          feed_forward_distance + correction_distance;
 
       out.left_voltage = out_left.to(V);
       out.right_voltage = out_right.to(V);
 
       last_angle_ = angle_from_start;
 
+      // End conditions
       bool profiles_finished_time = angle_profile_->finished(t);
       bool profile_finished_distance =
           target_distance_ >=
@@ -118,11 +121,12 @@ void DrivetrainSubsystem::Update(Time dt) {
           .2 * deg;
 
       printf("%f\t%f\t%f\t%f\t%f\t%f   \n", t.to(s), out.left_voltage,
-             out.right_voltage, angle_from_start.to(deg),
-             angle_profile_->Calculate(t).to(deg),
-             angle_profile_->CalculateDerivative(t).to(rad / s));
+             out.right_voltage, distance_from_start.to(m),
+             distance_profile_->Calculate(t).to(m),
+             distance_profile_->CalculateDerivative(t).to(m / s));
 
-      if (profiles_finished_time && profile_finished_angle) {
+      if (profiles_finished_time && profile_finished_angle &&
+          profile_finished_distance) {
         angle_profile_.release();
         distance_profile_.release();
         is_operator_controlled_ = true;
@@ -161,7 +165,7 @@ void DrivetrainSubsystem::Shift(bool high) {
 void DrivetrainSubsystem::SetDrivePosition(
     DrivetrainPosition* drivetrain_position) {
   double click =
-      3.14159 * .1016 / 360.0;  // Translating encoders into ground distances.
+      3.14159 * .1524 / 360.0;  // Translating encoders into ground distances.
   drivetrain_position->left_encoder =
       left_encoder_->Get() * click;  // TODO (Ash): Get this from the encoders
                                      // in the right units and direction.
@@ -237,4 +241,19 @@ Voltage DrivetrainSubsystem::GetAngleFFVoltage(AngularVelocity velocity,
 }
 
 Voltage DrivetrainSubsystem::GetDistanceFFVoltage(Velocity velocity,
-                                                  Acceleration acceleration) {}
+                                                  Acceleration acceleration,
+                                                  bool highgear) {
+  auto c1 = decltype(acceleration / V){0};
+  auto c2 = decltype(V / velocity){0};
+  if (highgear) {
+    Velocity max_robot_velocity = 4 * m / s;
+    c1 = .75 / V * (m / s / s);
+    c2 = 24 * V / max_robot_velocity;
+  } else {
+    Velocity max_robot_velocity = 1.92 * m / s;
+    c1 = 1 / V * (m / s / s);
+    c2 = 24 * V / max_robot_velocity;
+  }
+  Voltage total_output = c2 * velocity + acceleration / c1;
+  return total_output / 2;
+}
