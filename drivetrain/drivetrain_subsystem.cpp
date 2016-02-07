@@ -134,7 +134,7 @@ void DrivetrainSubsystem::Update(Time dt) {
         printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
                angle_from_start.to(deg), t.to(s));
       }
-      
+
       printf("%f motion profile gyro Angle\n", angle_from_start.to(deg));
     }
   }
@@ -158,9 +158,7 @@ void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal& goal) {
   current_goal_ = goal;
 }
 
-void DrivetrainSubsystem::Shift(bool high) {
-  current_goal_.highgear = high;
-}
+void DrivetrainSubsystem::Shift(bool high) { current_goal_.highgear = high; }
 
 void DrivetrainSubsystem::SetDrivePosition(
     DrivetrainPosition* drivetrain_position) {
@@ -175,22 +173,32 @@ void DrivetrainSubsystem::SetDrivePosition(
   drivetrain_position->right_shifter_high = current_goal_.highgear;
 }
 
-void DrivetrainSubsystem::PointTurn(Angle angle) {
+void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
   AngularVelocity speed = (current_goal_.highgear ? 380 : 240) * deg / s;
-  AngularAcceleration accel = (current_goal_.highgear ? 250 : 500) * deg / s / s;
+  AngularAcceleration accel =
+      (current_goal_.highgear ? 250 : 500) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
       0 * m, 10 * ft / s, 10 * ft / s / s);
-  auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-      angle, speed, accel);
-  FollowMotionProfile(std::move(dp), std::move(ap));
+  auto ap =
+      std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, speed, accel);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear);
 }
 
-void DrivetrainSubsystem::DriveDistance(Length distance) {}
+void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
+  Velocity speed = (current_goal_.highgear ? 4.0 : 1.92) * m / s;
+  Acceleration accel = 10 * ft / s / s;
+  using muan::TrapezoidalMotionProfile;
+  auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(distance, speed,
+                                                               accel);
+  auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(0 * rad, rad / s,
+                                                              rad / s / s);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear);
+}
 
 void DrivetrainSubsystem::FollowMotionProfile(
     std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
-    std::unique_ptr<muan::MotionProfile<Angle>> angle_profile) {
+    std::unique_ptr<muan::MotionProfile<Angle>> angle_profile, bool highgear) {
   distance_profile_ = std::move(distance_profile);
   angle_profile_ = std::move(angle_profile);
   is_operator_controlled_ = false;
@@ -201,6 +209,7 @@ void DrivetrainSubsystem::FollowMotionProfile(
   gyro_offset_ = gyro_reader_->GetAngle();
   angle_controller_.Reset();
   distance_controller_.Reset();
+  is_loop_highgear = highgear;
 }
 
 bool DrivetrainSubsystem::IsProfileComplete() {

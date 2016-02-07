@@ -19,49 +19,43 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   shift_down_ = std::make_unique<CitrusButton>(j_stick_.get(), 2);
   shift_up_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
   quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
-    
+
   // Auto
   auto_runner = new LemonScriptRunner("twoBall2016.auto", this);
 }
 
 void CitrusRobot::RobotInit() { subsystems_.drive.Start(); }
 
-void CitrusRobot::AutonomousInit() {
-  
-}
+void CitrusRobot::AutonomousInit() {}
 
-void CitrusRobot::AutonomousPeriodic() { 
+void CitrusRobot::AutonomousPeriodic() {
   auto_runner->Update();
-  //if (!vision_done_) {
+  // if (!vision_done_) {
   //  vision_done_ = vision_.Update();
   //}
 }
 
 void CitrusRobot::TeleopInit() {
   using muan::TrapezoidalMotionProfile;
-  auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
-      0 * m, 5 * ft / s, 10 * ft / s / s);
-  auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-      -20 * deg, 240 * deg / s, 500 * deg / s / s);
-  subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
+  subsystems_.drive.DriveDistance(2 * m);
 }
 
 void CitrusRobot::DisabledPeriodic() {
   // TODO (Finn): Get this out of the main loop and into its own
   // thread.
- // DrivetrainGoal drivetrain_goal;
+  // DrivetrainGoal drivetrain_goal;
 
-  //if (test_flag_) {
-   // vision_.EndTest();
-    //test_flag_ = false;
- // }
+  // if (test_flag_) {
+  // vision_.EndTest();
+  // test_flag_ = false;
+  // }
 
   // SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   // SmartDashboard::PutNumber("Stick", j_stick_->GetY());
-//  SetDriveGoal(&drivetrain_goal);
-//  vision_done_ = vision_.Update(false);
+  //  SetDriveGoal(&drivetrain_goal);
+  //  vision_done_ = vision_.Update(false);
 
-//  subsystems_.drive.SetDriveGoal(drivetrain_goal);
+  //  subsystems_.drive.SetDriveGoal(drivetrain_goal);
 }
 
 void CitrusRobot::TeleopPeriodic() {
@@ -81,8 +75,8 @@ void CitrusRobot::TeleopPeriodic() {
   }
 
   SetDriveGoal(&drivetrain_goal);
-  //subsystems_.drive.SetDriveGoal(drivetrain_goal);
-  
+  // subsystems_.drive.SetDriveGoal(drivetrain_goal);
+
   UpdateButtons();
 }
 

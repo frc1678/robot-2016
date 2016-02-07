@@ -28,16 +28,17 @@ class DrivetrainSubsystem : public muan::Updateable {
   void Update(Time dt) override;
   void Start();
   void SetDriveGoal(const DrivetrainGoal& goal);
-	void Shift(bool high);
+  void Shift(bool high);
 
   void FollowMotionProfile(
       std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
-      std::unique_ptr<muan::MotionProfile<Angle>> angle_profile);
+      std::unique_ptr<muan::MotionProfile<Angle>> angle_profile,
+      bool highgear = false);
   bool IsProfileComplete();
   void CancelMotionProfile();
 
-  void PointTurn(Angle angle);
-  void DriveDistance(Length distance);
+  void PointTurn(Angle angle, bool highgear = false);
+  void DriveDistance(Length distance, bool highgear = false);
 
   Angle GetGyroAngle();
 
@@ -56,6 +57,7 @@ class DrivetrainSubsystem : public muan::Updateable {
   std::unique_ptr<Solenoid> shifting_;
 
   bool is_operator_controlled_ = true;
+  bool is_loop_highgear = true;
 
   DrivetrainGoal current_goal_;
   std::unique_ptr<muan::MotionProfile<Length>> distance_profile_;
