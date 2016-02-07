@@ -1,3 +1,6 @@
 [submodule "muan"]
 	path = muan
 	url = https://github.com/frc1678/muan
+[submodule "lemonscript"]
+	path = lemonscript
+	url = https://github.com/donald-pinckney/lemonscript.git
