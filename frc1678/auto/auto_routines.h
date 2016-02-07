@@ -5,7 +5,6 @@
 #include "lemonscript/lemonscript/LemonScriptCompiler.h"
 #include "lemonscript/lemonscript/LemonScriptState.h"
 #include "lemonscript/lemonscript/AvailableCppCommandDeclaration.h"
-#include "frc1678/robot_subsystems.h"
 
 class CitrusRobot;
 
@@ -16,7 +15,7 @@ class CitrusRobot;
 class LemonScriptRunner {
  public:
   LemonScriptRunner(const std::string& auto_routine_file,
-                    RobotSubsystems* subsystems);
+                    CitrusRobot* robot);
   ~LemonScriptRunner();
   void Update();
 

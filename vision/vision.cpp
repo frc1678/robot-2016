@@ -57,8 +57,9 @@ bool CitrusVision::Update(bool enabled) {
   /* } */
   /* gyro_history_.Update(subsystems_.drive.gyro_reader_->GetAngle()); */
   /* return false; */
-  std::cout << "Angle travelled: " << subsystems_.drive.gyro_reader_->GetAngle()
-            << std::endl;
+//  std::cout << "Angle travelled: " << subsystems_.drive.gyro_reader_->GetAngle()
+//            << std::endl;
+  return subsystems_.drive.IsProfileComplete();
 }
 
 void CitrusVision::EndTest() {

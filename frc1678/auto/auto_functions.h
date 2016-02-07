@@ -6,7 +6,7 @@
 #include "muan/utils/timing_utils.h"
 #include "muan/control/trapezoidal_motion_profile.h"
 #include "auto_functions.h"
-#include "frc1678/robot_subsystems.h"
+#include "frc1678/frc1678.h"
 
 enum Position {
   // Shooting positions
@@ -21,16 +21,15 @@ enum Position {
 namespace AutoFunction {
 void SetUpAutoFunction();
 void DeleteAutoFunction();
-bool DriveStraight(RobotSubsystems* subs, Length dist, Velocity speed);
-bool DriveStraight2(RobotSubsystems* subs, float dist, float speed);
-bool PointTurn(RobotSubsystems *subs, float angle, float speed);
-bool Wait(RobotSubsystems* subs, Time time);
-bool Shoot(RobotSubsystems* subs, Position infield);
-bool RunIntake(RobotSubsystems* subs);
-bool SetArmPosition(RobotSubsystems* subs, Position arm_position);
-bool DropPinch(RobotSubsystems* subs);
-bool Align(RobotSubsystems* subs, Angle offset);
-bool StopDriving(RobotSubsystems* subs);
+bool DriveStraight(CitrusRobot* robot, float dist);
+bool PointTurn(CitrusRobot *robot, float angle);
+bool Wait(CitrusRobot* robot, Time time);
+bool Shoot(CitrusRobot* robot, Position infield);
+bool RunIntake(CitrusRobot* robot);
+bool SetArmPosition(CitrusRobot* robot, Position arm_position);
+bool DropPinch(CitrusRobot* robot);
+bool Align(CitrusRobot* robot);
+bool StopDriving(CitrusRobot* robot);
 }
 
 #endif
