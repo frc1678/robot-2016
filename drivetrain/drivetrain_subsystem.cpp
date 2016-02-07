@@ -6,10 +6,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(60 * 0.6 * V / rad,
-                        ((2 * (60 * 0.6)) / 0.2) * V / rad / s,
-                        (((60 * 0.6) * 0.2) / 8) * V / rad * s),
-      // angle_controller_(60*V/rad, 0*V/rad/s, 0*V/rad*s),
+      angle_controller_(45 * V / rad, 50 * V / rad / s, 2 * V / rad * s),
       distance_controller_(3 * V / m, 0 * V / m / s, 0 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
@@ -26,8 +23,7 @@ DrivetrainSubsystem::DrivetrainSubsystem()
   right_encoder_ = std::make_unique<Encoder>(RobotPorts::right_encoder_a,
                                              RobotPorts::right_encoder_b);
 
-  shifting_ = std::make_unique<DoubleSolenoid>(RobotPorts::shift_a,
-                                               RobotPorts::shift_b);
+  shifting_ = std::make_unique<Solenoid>(RobotPorts::shift_a);
 
   gyro_reader_ = std::make_unique<GyroReader>();
 
@@ -60,17 +56,17 @@ void DrivetrainSubsystem::Update(Time dt) {
     mutex_lock lock(mu_);
     if (is_operator_controlled_) {
       drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
-      // printf("ol: %f\tor: %f\n", out.left_voltage, out.right_voltage);
       // TODO(Wesley) Find out why this is giving 12V and 0V as output
     } else {
+      current_goal_.highgear = false;
       // TODO(Wesley) Reset the PID controller if we went from tele to auto
       // TODO(Wesley) Add operator control to exit auto mode
       t += dt;
 
       // Feed forward term
       Voltage feed_forward_angle = GetAngleFFVoltage(
-          angle_profile_->CalculateDerivative(),
-          angle_profile_->CalculateSecondDerivative(), pos.right_shifter_high);
+          angle_profile_->CalculateDerivative(t),
+          angle_profile_->CalculateSecondDerivative(t), current_goal_.highgear);
 
       Velocity max_robot_velocity = 15 * ft / s;
       Voltage feed_forward_distance =
@@ -83,6 +79,17 @@ void DrivetrainSubsystem::Update(Time dt) {
 
       // The difference between the gyro at the start of the profile and now
       Angle angle_from_start = gyro_reader_->GetAngle() - gyro_offset_;
+
+      Angle tmp_angle = angle_from_start;
+      Angle tmp_old_angle = old_angle_;
+      Angle tmp_even_older_angle = even_older_angle_;
+
+      if (angle_from_start == old_angle_) {
+        angle_from_start += (angle_from_start - even_older_angle_) / 2;
+      }
+
+      even_older_angle_ = tmp_old_angle;
+      old_angle_ = tmp_angle;
 
       Length distance_from_start =
           ((pos.left_encoder + pos.right_encoder) / 2) * m -
@@ -110,6 +117,11 @@ void DrivetrainSubsystem::Update(Time dt) {
           std::abs((angle_from_start - angle_profile_->Calculate(t)).to(deg)) <
           .2 * deg;
 
+      printf("%f\t%f\t%f\t%f\t%f\t%f   \n", t.to(s), out.left_voltage,
+             out.right_voltage, angle_from_start.to(deg),
+             angle_profile_->Calculate(t).to(deg),
+             angle_profile_->CalculateDerivative(t).to(rad / s));
+
       if (profiles_finished_time && profile_finished_angle) {
         angle_profile_.release();
         distance_profile_.release();
@@ -118,14 +130,15 @@ void DrivetrainSubsystem::Update(Time dt) {
         printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
                angle_from_start.to(deg), t.to(s));
       }
+
+      printf("%f motion profile gyro Angle\n", angle_from_start.to(deg));
     }
   }
 
   // TODO (Finn): Also deal with shifting output and with logging
   // from the status.
   drive_->TankDrive(out.left_voltage / 12.0, out.right_voltage / 12.0, false);
-  shifting_->Set(current_goal_.highgear ? DoubleSolenoid::Value::kForward
-                                        : DoubleSolenoid::Value::kReverse);
+  shifting_->Set(!current_goal_.highgear);
 
   csv_log_["enc_left"] = std::to_string(pos.left_encoder);
   csv_log_["enc_right"] = std::to_string(pos.right_encoder);
@@ -186,12 +199,24 @@ Voltage DrivetrainSubsystem::GetAngleFFVoltage(AngularVelocity velocity,
                                                AngularAcceleration acceleration,
                                                bool highgear) {
   // omega_dot = c1 * (V-c2*omega)
-  // V = c2*omega + omega_dot / c1
-  AngularVelocity max_robot_angular_velocity =
-      240 * deg / s * (highgear ? 1 : .333);
-  const auto c2 = 24 * V / max_robot_angular_velocity;
-  const auto c1 = 100 / V * (rad / s / s);
-  return c2 * velocity + acceleration / c1;
+  // V = c2*omega - omega_dot / c1
+  Voltage total_output;
+  /* decltype((deg / s / s) / V) */
+  if (highgear) {
+    AngularVelocity max_robot_angular_velocity = 380 * deg / s;
+    const auto c2 = 24 * V / max_robot_angular_velocity;
+    const auto c1 = 70 / V * (deg / s / s);
+    total_output = c2 * velocity + acceleration / c1;
+  } else {
+    AngularVelocity max_robot_angular_velocity = 240 * deg / s;
+    const auto c2 = 24 * V / max_robot_angular_velocity;
+    const auto c1 = 125 / V * (deg / s / s);
+    total_output = c2 * velocity + acceleration / c1;
+  }
+  if (std::signbit(total_output.to(V)) != std::signbit(velocity.to(rad / s))) {
+    total_output = 0;
+  }
+  return total_output / 2;
 }
 
 Voltage DrivetrainSubsystem::GetDistanceFFVoltage(Velocity velocity,

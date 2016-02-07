@@ -36,16 +36,14 @@ class CitrusRobot : public IterativeRobot {
     // drive_subsystem_ = std::make_unique<DrivetrainSubsystem>();
   }
 
-  void RobotInit() {
-    subsystems_.drive.Start();
-  }
+  void RobotInit() { subsystems_.drive.Start(); }
 
   void TeleopInit() {
     using muan::TrapezoidalMotionProfile;
     auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
         0 * m, 5 * ft / s, 10 * ft / s / s);
     auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-        -20 * deg, 4.3 * rad / s, 270 * deg / s / s);
+        -20 * deg, 240 * deg / s, 500 * deg / s / s);
     subsystems_.drive.FollowMotionProfile(std::move(dp), std::move(ap));
   }
 

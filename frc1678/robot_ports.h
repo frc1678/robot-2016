@@ -7,7 +7,7 @@ constexpr unsigned int right_encoder_a = 10, right_encoder_b = 11;
 
 constexpr unsigned int drive_left = 1, drive_right = 0;
 
-constexpr unsigned int shift_a = 7, shift_b = 7;
+constexpr unsigned int shift_a = 7;
 }
 
 namespace JoystickPorts {
