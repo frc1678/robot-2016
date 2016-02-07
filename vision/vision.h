@@ -18,6 +18,7 @@ class CitrusVision {
   std::shared_ptr<NetworkTable> table_;
   muan::History<Angle, 100> gyro_history_;
   muan::Timer test_timer;
+  muan::CSVLog angle_log_;
 };
 
 #endif

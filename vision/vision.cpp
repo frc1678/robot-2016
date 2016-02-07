@@ -4,7 +4,9 @@
 #include <memory>
 
 CitrusVision::CitrusVision(RobotSubsystems& subs)
-    : subsystems_(subs), gyro_history_(.02 * s) {
+    : subsystems_(subs),
+      gyro_history_(.02 * s),
+      angle_log_("angles", {"cameraAngle", "gyroHistory"}) {
   table_ = NetworkTable::GetTable("vision");
 }
 
