@@ -171,6 +171,19 @@ void DrivetrainSubsystem::SetDrivePosition(
   drivetrain_position->right_shifter_high = current_goal_.highgear;
 }
 
+void DrivetrainSubsystem::PointTurn(Angle angle) {
+  AngularVelocity speed = (current_goal_.highgear ? 380 : 240) * deg / s;
+  AngularAcceleration accel = (current_goal_.highgear ? 250 : 500) * deg / s / s;
+  using muan::TrapezoidalMotionProfile;
+  auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
+      0 * m, 10 * ft / s, 10 * ft / s / s);
+  auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
+      angle, speed, accel);
+  FollowMotionProfile(std::move(dp), std::move(ap));
+}
+
+void DrivetrainSubsystem::DriveDistance(Length distance) {}
+
 void DrivetrainSubsystem::FollowMotionProfile(
     std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
     std::unique_ptr<muan::MotionProfile<Angle>> angle_profile) {

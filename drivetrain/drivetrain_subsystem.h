@@ -6,6 +6,7 @@
 
 #include "muan/multithreading/updateable.h"
 #include "muan/control/motion_profile.h"
+#include "muan/control/trapezoidal_motion_profile.h"
 #include "muan/control/pid_controller.h"
 #include "muan/logging/text_log.h"
 #include "muan/logging/csv_log.h"
@@ -34,6 +35,9 @@ class DrivetrainSubsystem : public muan::Updateable {
       std::unique_ptr<muan::MotionProfile<Angle>> angle_profile);
   bool IsProfileComplete();
   void CancelMotionProfile();
+
+  void PointTurn(Angle angle);
+  void DriveDistance(Length distance);
 
   Angle GetGyroAngle();
 
