@@ -113,9 +113,8 @@ void DrivetrainSubsystem::Update(Time dt) {
       // End conditions
       bool profiles_finished_time = angle_profile_->finished(t);
       bool profile_finished_distance =
-          target_distance_ >=
-              target_distance_ - (distance_from_start - 2 * cm) &&
-          target_distance_ <= target_distance_ + (distance_from_start + 2 * cm);
+          std::abs((distance_from_start - distance_profile_->Calculate(t)).to(cm)) <
+          2 * cm;
       bool profile_finished_angle =
           std::abs((angle_from_start - angle_profile_->Calculate(t)).to(deg)) <
           .2 * deg;
