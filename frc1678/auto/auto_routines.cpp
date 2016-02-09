@@ -20,8 +20,11 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *align =
       new AvailableCppCommandDeclaration((void *)AutoFunction::Align, "Align", {});
 
+  AvailableCppCommandDeclaration *wait =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::Wait, "Wait", {FLOAT});
+
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, pointTurn, align};
+      driveStraight, pointTurn, align, wait};
   
   std::ifstream ifs(auto_routine_file);  // Take in auto_routine_file
   

@@ -111,13 +111,13 @@ void DrivetrainSubsystem::Update(Time dt) {
       last_angle_ = angle_from_start;
 
       // End conditions
-      bool profiles_finished_time = angle_profile_->finished(t);
+      bool profiles_finished_time = angle_profile_->finished(t) && distance_profile_->finished(t);
       bool profile_finished_distance =
           std::abs((distance_from_start - distance_profile_->Calculate(t)).to(cm)) <
-          2 * cm;
+          10 * cm;
       bool profile_finished_angle =
           std::abs((angle_from_start - angle_profile_->Calculate(t)).to(deg)) <
-          .2 * deg;
+          2 * deg;
 
       printf("%f\t%f\t%f\t%f\t%f\t%f   \n", t.to(s), out.left_voltage,
              out.right_voltage, distance_from_start.to(m),
@@ -190,8 +190,8 @@ void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(distance, speed,
                                                                accel);
-  auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(0 * rad, rad / s,
-                                                              rad / s / s);
+  auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(0 * rad, 1 * rad / s,
+                                                              1 * rad / s / s);
   FollowMotionProfile(std::move(dp), std::move(ap), highgear);
 }
 

@@ -21,7 +21,7 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
 
   // Auto
-  auto_runner = new LemonScriptRunner("twoBall2016.auto", this);
+  auto_runner = new LemonScriptRunner("test.auto", this);
 }
 
 void CitrusRobot::RobotInit() { subsystems_.drive.Start(); }

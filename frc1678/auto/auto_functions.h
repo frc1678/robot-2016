@@ -23,7 +23,7 @@ void SetUpAutoFunction();
 void DeleteAutoFunction();
 bool DriveStraight(CitrusRobot* robot, float dist);
 bool PointTurn(CitrusRobot *robot, float angle);
-bool Wait(CitrusRobot* robot, Time time);
+bool Wait(CitrusRobot* robot, float time);
 bool Shoot(CitrusRobot* robot, Position infield);
 bool RunIntake(CitrusRobot* robot);
 bool SetArmPosition(CitrusRobot* robot, Position arm_position);
