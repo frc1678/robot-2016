@@ -6,24 +6,25 @@
 #include "vision/vision.h"
 #include "robot_subsystems.h"
 
-//class LemonScriptRunner { };
+// class LemonScriptRunner { };
 
 class CitrusRobot : public IterativeRobot {
  private:
   LemonScriptRunner* auto_runner;
 
  public:
-  std::unique_ptr<Joystick> j_wheel_, j_stick_;
+  std::unique_ptr<Joystick> j_wheel_, j_stick_, j_manip_;
 
   RobotSubsystems subsystems_;
   CitrusVision vision_;
 
   // Buttonz!
-  std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_;
-  
+  std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_, intake_,
+      outtake_, move_long_, move_fender_, move_tuck_, move_intake_;
+
   bool test_flag_;
   bool in_highgear_;
-  bool vision_done_ = false; //UGLY HACK
+  bool vision_done_ = false;  // UGLY HACK
 
   CitrusRobot();
   void RobotInit();
@@ -36,6 +37,5 @@ class CitrusRobot : public IterativeRobot {
   void UpdateButtons();
   ~CitrusRobot();
 };
-
 
 #endif

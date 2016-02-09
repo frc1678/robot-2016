@@ -13,6 +13,7 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   // Joysticks
   j_wheel_ = std::make_unique<Joystick>(0);
   j_stick_ = std::make_unique<Joystick>(1);
+  j_manip_ = std::make_unique<Joystick>(2);
   // manipulator = new Joystick(2);
 
   // Buttonz!
@@ -20,24 +21,30 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   shift_up_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
   quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
 
+  intake_ = std::make_unique<CitrusButton>(j_manip_.get(), 2);
+  outtake_ = std::make_unique<CitrusButton>(j_manip_.get(), 3);
+  move_tuck_ = std::make_unique<CitrusButton>(j_manip_.get(), 1);
+  move_long_ = std::make_unique<CitrusButton>(j_manip_.get(), 4);
+  move_fender_ = std::make_unique<CitrusButton>(j_manip_.get(), 5);
+  move_intake_ = std::make_unique<CitrusButton>(j_manip_.get(), 6);
+
   // Auto
   auto_runner = new LemonScriptRunner("twoBall2016.auto", this);
 }
 
-void CitrusRobot::RobotInit() { subsystems_.drive.Start(); }
+void CitrusRobot::RobotInit() {
+  /* subsystems_.drive.Start(); */
+  subsystems_.arm.Start();
+}
 
 void CitrusRobot::AutonomousInit() {}
 
-void CitrusRobot::AutonomousPeriodic() {
-  auto_runner->Update();
-  // if (!vision_done_) {
-  //  vision_done_ = vision_.Update();
-  //}
-}
+void CitrusRobot::AutonomousPeriodic() { auto_runner->Update(); }
 
 void CitrusRobot::TeleopInit() {
-  using muan::TrapezoidalMotionProfile;
-  subsystems_.drive.DriveDistance(2 * m);
+  // using muan::TrapezoidalMotionProfile;
+  // subsystems_.drive.DriveDistance(2 * m);
+  subsystems_.arm.SetEnabled(true);
 }
 
 void CitrusRobot::DisabledPeriodic() {
@@ -74,6 +81,22 @@ void CitrusRobot::TeleopPeriodic() {
     in_highgear_ = false;
   }
 
+  if (move_tuck_->ButtonClicked()) {
+    subsystems_.arm.GoToTuck();
+  }
+  if (move_intake_->ButtonClicked()) {
+    subsystems_.arm.GoToIntake();
+  }
+  if (move_fender_->ButtonClicked()) {
+    subsystems_.arm.GoToFender();
+  }
+  if (move_long_->ButtonClicked()) {
+    subsystems_.arm.GoToLong();
+  }
+
+  subsystems_.arm.SetIntake(intake_->ButtonPressed() ? true : false);
+  subsystems_.arm.SetShooter(outtake_->ButtonPressed() ? true : false);
+
   SetDriveGoal(&drivetrain_goal);
   // subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
@@ -92,6 +115,10 @@ void CitrusRobot::UpdateButtons() {
   shift_down_->Update();
   shift_up_->Update();
   quick_turn_->Update();
+  move_long_->Update();
+  move_tuck_->Update();
+  move_fender_->Update();
+  move_intake_->Update();
 }
 
 CitrusRobot::~CitrusRobot() {}
