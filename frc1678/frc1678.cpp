@@ -37,7 +37,7 @@ void CitrusRobot::AutonomousPeriodic() {
 
 void CitrusRobot::TeleopInit() {
   using muan::TrapezoidalMotionProfile;
-  subsystems_.drive.DriveDistance(2 * m);
+  subsystems_.drive.PointTurn(5*deg);
 }
 
 void CitrusRobot::DisabledPeriodic() {

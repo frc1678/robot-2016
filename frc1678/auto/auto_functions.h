@@ -21,8 +21,10 @@ enum Position {
 namespace AutoFunction {
 void SetUpAutoFunction();
 void DeleteAutoFunction();
-bool DriveStraight(CitrusRobot* robot, float dist);
+bool DriveStraight(CitrusRobot* robot, float dist); //TODO(Wesley) Change name to be the same as elsewhere
+bool DriveStraightAtAngle(CitrusRobot* robot, float dist, float angle);
 bool PointTurn(CitrusRobot *robot, float angle);
+bool AbsolutePointTurn(CitrusRobot *robot, float angle);
 bool Wait(CitrusRobot* robot, float time);
 bool Shoot(CitrusRobot* robot, Position infield);
 bool RunIntake(CitrusRobot* robot);

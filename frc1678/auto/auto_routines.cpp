@@ -14,9 +14,14 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *driveStraight =
       new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight, "DriveStraight", {FLOAT});
   
+  AvailableCppCommandDeclaration *driveStraightAtAngle =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight, "DriveStraightAtAngle", {FLOAT, FLOAT});
+
   AvailableCppCommandDeclaration *pointTurn =
       new AvailableCppCommandDeclaration((void *)AutoFunction::PointTurn, "PointTurn", {FLOAT});
 
+  AvailableCppCommandDeclaration *absolutePointTurn =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::AbsolutePointTurn, "AbsolutePointTurn", {FLOAT});
   AvailableCppCommandDeclaration *align =
       new AvailableCppCommandDeclaration((void *)AutoFunction::Align, "Align", {});
 
@@ -24,7 +29,7 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
       new AvailableCppCommandDeclaration((void *)AutoFunction::Wait, "Wait", {FLOAT});
 
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, pointTurn, align, wait};
+      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, align, wait};
   
   std::ifstream ifs(auto_routine_file);  // Take in auto_routine_file
   

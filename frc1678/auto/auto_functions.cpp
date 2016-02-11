@@ -29,6 +29,23 @@ bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist) {
 
 }
 
+bool newDriveAtAngleState = true;
+bool AutoFunction::DriveStraightAtAngle(CitrusRobot* robot, float angle, float dist) {
+  if(newDriveState) {
+    robot->subsystems_.drive.DriveDistanceAtAngle(dist * ft, angle * deg);
+    newDriveState = false;
+  }
+
+
+  if(robot->subsystems_.drive.IsProfileComplete()) { 
+    newDriveAtAngleState = true; 
+    return true;
+  }else{
+    return false; 
+  }
+
+}
+
 
 
 bool newTurnState = true;
@@ -38,7 +55,6 @@ bool AutoFunction::PointTurn(CitrusRobot* robot, float angle) {
     newTurnState = false;
   }
 
-
   if(robot->subsystems_.drive.IsProfileComplete()) { 
     newTurnState = true; 
     return true;
@@ -47,6 +63,23 @@ bool AutoFunction::PointTurn(CitrusRobot* robot, float angle) {
   }
 
 }
+
+bool newAbsTurnState = true;
+bool AutoFunction::AbsolutePointTurn(CitrusRobot* robot, float angle) {
+  if(newAbsTurnState) {
+    robot->subsystems_.drive.AbsolutePointTurn(angle * deg);
+    newAbsTurnState = false;
+  }
+
+  if(robot->subsystems_.drive.IsProfileComplete()) { 
+    newAbsTurnState = true; 
+    return true;
+  }else{
+    return false; 
+  }
+
+}
+
 
 
 bool AutoFunction::Wait(CitrusRobot* robot, float time) {

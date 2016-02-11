@@ -38,7 +38,9 @@ class DrivetrainSubsystem : public muan::Updateable {
   void CancelMotionProfile();
 
   void PointTurn(Angle angle, bool highgear = false);
+  void AbsolutePointTurn(Angle angle, bool highgear = false);
   void DriveDistance(Length distance, bool highgear = false);
+  void DriveDistanceAtAngle(Length distance, Angle angle, bool highgear = false);
 
   Angle GetGyroAngle();
 
