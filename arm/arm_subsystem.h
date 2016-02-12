@@ -6,6 +6,7 @@
 #include "muan/multithreading/updateable.h"
 #include "pivot/pivot_controller.h"
 #include "elevator/elevator_controller.h"
+#include "shooter/shooter_bang.h"
 
 struct ArmGoal {
   Angle pivot_goal;
@@ -54,6 +55,7 @@ class ArmSubsystem : public muan::Updateable {
 
   PivotController pivot_controller_;
   ElevatorController elevator_controller_;
+  ShooterBang shooter_controller_;
 
   bool enabled_ = false;
 };
