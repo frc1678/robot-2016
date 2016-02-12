@@ -10,7 +10,7 @@ constexpr unsigned int drive_left = 1, drive_right = 0;
 constexpr unsigned int shift = 7;
 
 // Arm Ports
-constexpr unsigned int elevator_a = 4, elevator_b = 5;
+constexpr unsigned int elevator_motor_a = 4, elevator_motor_b = 5;
 constexpr unsigned int shooter_a = 6, shooter_b = 7;
 constexpr unsigned int pivot_motor_a = 2, pivot_motor_b = 3;
 constexpr unsigned int intake_side = 9, intake_front = 8;

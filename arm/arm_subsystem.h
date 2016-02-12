@@ -5,6 +5,7 @@
 #include <memory>
 #include "muan/multithreading/updateable.h"
 #include "pivot/pivot_controller.h"
+#include "elevator/elevator_controller.h"
 
 struct ArmGoal {
   Angle pivot_goal;
@@ -39,6 +40,10 @@ class ArmSubsystem : public muan::Updateable {
   std::unique_ptr<DoubleSolenoid> pivot_disk_brake_;
   std::unique_ptr<VictorSP> pivot_motor_a_, pivot_motor_b_;
 
+  std::unique_ptr<Encoder> elevator_encoder_;
+  std::unique_ptr<DoubleSolenoid> elevator_disk_brake_;
+  std::unique_ptr<VictorSP> elevator_motor_a_, elevator_motor_b_;
+
   std::unique_ptr<Encoder> shooter_encoder_;
   std::unique_ptr<VictorSP> shooter_motor_a_, shooter_motor_b_;
 
@@ -48,6 +53,7 @@ class ArmSubsystem : public muan::Updateable {
   std::unique_ptr<VictorSP> intake_side_;
 
   PivotController pivot_controller_;
+  ElevatorController elevator_controller_;
 
   bool enabled_ = false;
 };

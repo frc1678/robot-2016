@@ -289,6 +289,7 @@ const Time ms = 1e-3 * s;
 const Time us = 1e-6 * s;
 const Time hour = 3600 * s;
 const Current A = 1;
+const Force N = 1;
 const Voltage V = kg * m * m / (A * s * s * s);
 const Voltage pwm = 12 * V;
 const Length click = pi * 6 * in / 360;

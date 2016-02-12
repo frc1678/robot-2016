@@ -18,6 +18,9 @@ class PivotController {
   Angle goal_;
   Angle offset_;
   PivotState state_ = PivotState::DISABLED;
+
+  Voltage GetFFVoltage(Angle a);
+
   bool calibrated_ = false;
 };
 

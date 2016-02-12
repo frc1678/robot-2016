@@ -1,7 +1,9 @@
 #include "arm_subsystem.h"
 #include "frc1678/robot_ports.h"
+#include "muan/utils/math_utils.h"
 
-ArmSubsystem::ArmSubsystem() : muan::Updateable(200 * hz) {
+ArmSubsystem::ArmSubsystem()
+    : muan::Updateable(200 * hz), elevator_controller_(.005 * s) {
   pivot_encoder_ = std::make_unique<Encoder>(RobotPorts::pivot_encoder_a,
                                              RobotPorts::pivot_encoder_b);
   pivot_hall_ = std::make_unique<DigitalInput>(RobotPorts::pivot_hall);
@@ -15,6 +17,13 @@ ArmSubsystem::ArmSubsystem() : muan::Updateable(200 * hz) {
   shooter_motor_a_ = std::make_unique<VictorSP>(RobotPorts::shooter_a);
   shooter_motor_b_ = std::make_unique<VictorSP>(RobotPorts::shooter_b);
 
+  elevator_encoder_ = std::make_unique<Encoder>(RobotPorts::elevator_encoder_a,
+                                                RobotPorts::elevator_encoder_b);
+  elevator_disk_brake_ = std::make_unique<DoubleSolenoid>(
+      RobotPorts::elevator_brake_a, RobotPorts::elevator_brake_b);
+  elevator_motor_a_ = std::make_unique<VictorSP>(RobotPorts::elevator_motor_a);
+  elevator_motor_b_ = std::make_unique<VictorSP>(RobotPorts::elevator_motor_b);
+
   shooter_hood_ = std::make_unique<Solenoid>(RobotPorts::shooter_hood);
   intake_front_ = std::make_unique<VictorSP>(RobotPorts::intake_front);
   intake_side_ = std::make_unique<VictorSP>(RobotPorts::intake_side);
@@ -23,21 +32,36 @@ ArmSubsystem::ArmSubsystem() : muan::Updateable(200 * hz) {
 ArmSubsystem::~ArmSubsystem() {}
 
 void ArmSubsystem::Update(Time dt) {
-  Voltage v_pivot = pivot_controller_.Update(
-      dt, pivot_encoder_->Get() * deg / 5.0, !pivot_hall_->Get(), enabled_);
-  // std::cout << v_pivot.to(V) << std::endl;
-  if (pivot_controller_.IsDone()) v_pivot = 0 * V;
-  pivot_motor_a_->Set(v_pivot.to(12 * V));
-  pivot_motor_b_->Set(v_pivot.to(12 * V));
-  pivot_disk_brake_->Set(pivot_controller_.IsDone()
-                             ? DoubleSolenoid::Value::kReverse
-                             : DoubleSolenoid::Value::kForward);
+  {
+    Voltage v_pivot = pivot_controller_.Update(
+        dt, pivot_encoder_->Get() * deg / 5.0, !pivot_hall_->Get(), enabled_);
+    if (pivot_controller_.IsDone()) v_pivot = 0 * V;
+    pivot_motor_a_->Set(v_pivot.to(12 * V));
+    pivot_motor_b_->Set(v_pivot.to(12 * V));
+    pivot_disk_brake_->Set(pivot_controller_.IsDone()
+                               ? DoubleSolenoid::Value::kReverse
+                               : DoubleSolenoid::Value::kForward);
+  }
+
+  {
+    Voltage v_elevator = elevator_controller_.Update(
+        dt, elevator_encoder_->Get() * .0003191764 * m, enabled_);
+    v_elevator = muan::Cap(v_elevator, -12 * V, 12 * V);
+    if (elevator_controller_.IsDone()) {
+      v_elevator = 0 * V;
+    }
+    elevator_motor_a_->Set(-v_elevator.to(12 * V));
+    elevator_motor_b_->Set(-v_elevator.to(12 * V));
+    elevator_disk_brake_->Set(elevator_controller_.IsDone()
+                                  ? DoubleSolenoid::Value::kReverse
+                                  : DoubleSolenoid::Value::kForward);
+  }
 
   // shooter_motor_a_->Set(shooter_voltage_.to(12 * V));
 }
 
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{45 * deg, 0 * m, 0 * rad / s};
+  ArmGoal goal{44 * deg, .38 * m, 0 * rad / s};
   SetGoal(goal);
 }
 
@@ -73,4 +97,5 @@ void ArmSubsystem::SetShooter(bool on) {
 
 void ArmSubsystem::SetGoal(ArmGoal goal) {
   pivot_controller_.SetGoal(goal.pivot_goal);
+  elevator_controller_.SetGoal(goal.elevator_goal);
 }
