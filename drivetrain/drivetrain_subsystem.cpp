@@ -173,9 +173,9 @@ void DrivetrainSubsystem::SetDrivePosition(
 //TODO(Wesley) Add generate motion profile functions so I don't repeat as much code
 
 void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
-  AngularVelocity speed = (current_goal_.highgear ? 380 : 240) * deg / s;
+  AngularVelocity speed = (highgear ? 380 : 240) * deg / s;
   AngularAcceleration accel =
-      (current_goal_.highgear ? 250 : 500) * deg / s / s;
+      (highgear ? 250 : 500) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
       0 * m, 10 * ft / s, 10 * ft / s / s);
@@ -185,9 +185,9 @@ void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
 }
 
 void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
-  AngularVelocity speed = (current_goal_.highgear ? 380 : 240) * deg / s;
+  AngularVelocity speed = (highgear ? 380 : 240) * deg / s;
   AngularAcceleration accel =
-      (current_goal_.highgear ? 250 : 500) * deg / s / s;
+      (highgear ? 250 : 500) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
       0 * m, 10 * ft / s, 10 * ft / s / s);
@@ -197,7 +197,7 @@ void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
 }
 
 void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
-  Velocity speed = (current_goal_.highgear ? 4.0 : 1.92) * m / s;
+  Velocity speed = (highgear ? 4.0 : 1.92) * m / s;
   Acceleration accel = 10 * ft / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(distance, speed,
@@ -208,11 +208,11 @@ void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
 }
 
 void DrivetrainSubsystem::DriveDistanceAtAngle(Length distance, Angle angle, bool highgear) {
-  Velocity speed = (current_goal_.highgear ? 4.0 : 1.92) * m / s;
+  Velocity speed = (highgear ? 4.0 : 1.92) * m / s;
   Acceleration accel = 10 * ft / s / s;
-  AngularVelocity angular_speed = (current_goal_.highgear ? 380 : 240) * deg / s;
+  AngularVelocity angular_speed = (highgear ? 380 : 240) * deg / s;
   AngularAcceleration angular_accel =
-      (current_goal_.highgear ? 250 : 500) * deg / s / s;
+      (highgear ? 250 : 500) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(distance, speed,
                                                                accel);
