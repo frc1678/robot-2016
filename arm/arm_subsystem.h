@@ -35,6 +35,17 @@ class ArmSubsystem : public muan::Updateable {
  private:
   void SetGoal(ArmGoal goal);
 
+  enum class ArmState {
+    DISABLED,
+    RETRACTING,
+    MOVING_PIVOT,
+    EXTENDING,
+    FINISHED,
+    ESTOP
+  };
+
+  ArmState state_;
+
   std::unique_ptr<Encoder> pivot_encoder_;
   std::unique_ptr<DigitalInput> pivot_hall_;
   std::unique_ptr<DoubleSolenoid> pivot_disk_brake_;
@@ -56,6 +67,8 @@ class ArmSubsystem : public muan::Updateable {
   ElevatorController elevator_controller_;
 
   bool enabled_ = false;
+
+  ArmGoal current_goal_;
 };
 
 #endif /* ARM_ARM_SUBSYSTEM_H_ */

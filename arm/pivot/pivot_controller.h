@@ -11,6 +11,7 @@ class PivotController {
   Voltage Update(Time dt, Angle encoder_angle, bool min_hall_triggered,
                  bool enabled);
   bool IsDone();
+  bool IsCalibrated();
 
  private:
   enum class PivotState { DISABLED = 0, CALIBRATING, MOVING, FINISHED, ESTOP };

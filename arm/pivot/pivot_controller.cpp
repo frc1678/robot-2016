@@ -52,14 +52,15 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       out_voltage_ = 0 * V;
       break;
   }
-  out_voltage_ = muan::Cap(out_voltage_, (calibrated_ ? -4 * std::sin(angle.to(rad)) * V : -12 * V), 12 * V);
+  out_voltage_ =
+      muan::Cap(out_voltage_, (calibrated_ ? -4 * V : -12 * V), 12 * V);
   return out_voltage_;
 }
 
 bool PivotController::IsDone() { return state_ == PivotState::FINISHED; }
 
 Voltage PivotController::GetFFVoltage(Angle a) {
-  decltype(Force(0)*m) stall_torque = .71 * Force(1) * m;
+  decltype(Force(0) * m) stall_torque = .71 * Force(1) * m;
   Current stall_current = 134 * A;
   Unitless gear_ratio = 1.0 / 609.52;
   Unitless Q = .85;
@@ -67,9 +68,12 @@ Voltage PivotController::GetFFVoltage(Angle a) {
   auto motor_resistance = 12.0 * V / stall_current / 2.0;
   auto K_t = stall_torque / stall_current;
 
-  auto grav = 9.81 * m/s/s;
+  auto grav = 9.81 * m / s / s;
   auto C_g = .57 * m;
   auto mass = 12 * kg;
-  decltype(Force(0)*m) gravity_torque = C_g * mass * grav * std::cos(a.to(rad));
+  decltype(Force(0) * m) gravity_torque =
+      C_g * mass * grav * std::cos(a.to(rad));
   return gravity_torque * gear_ratio * motor_resistance / (Q * K_t);
 }
+
+bool PivotController::IsCalibrated() { return calibrated_; }

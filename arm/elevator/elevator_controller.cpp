@@ -11,7 +11,8 @@ ElevatorController::ElevatorController(Time dt)
   current_goal_ = 0 * m;
 }
 
-Voltage ElevatorController::Update(Time dt, Length displacement, bool enabled) {
+Voltage ElevatorController::Update(Time dt, Length displacement,
+                                   Angle arm_angle, bool enabled) {
   if (!enabled) {
     state_ = ElevatorState::DISABLED;
   }
@@ -38,7 +39,7 @@ Voltage ElevatorController::Update(Time dt, Length displacement, bool enabled) {
       break;
   }
   current_displacement_ = displacement;
-  return out_voltage;
+  return out_voltage + 1.2 * std::sin(arm_angle.to(rad)) * V;
 }
 
 void ElevatorController::SetGoal(Length goal) {

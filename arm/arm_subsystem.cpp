@@ -32,32 +32,59 @@ ArmSubsystem::ArmSubsystem()
 ArmSubsystem::~ArmSubsystem() {}
 
 void ArmSubsystem::Update(Time dt) {
-  {
-    Voltage v_pivot = pivot_controller_.Update(
-        dt, pivot_encoder_->Get() * deg / 5.0, !pivot_hall_->Get(), enabled_);
-    if (pivot_controller_.IsDone()) v_pivot = 0 * V;
-    pivot_motor_a_->Set(v_pivot.to(12 * V));
-    pivot_motor_b_->Set(v_pivot.to(12 * V));
-    pivot_disk_brake_->Set(pivot_controller_.IsDone()
-                               ? DoubleSolenoid::Value::kReverse
-                               : DoubleSolenoid::Value::kForward);
+  Voltage elevator_voltage = elevator_controller_.Update(
+      dt, elevator_encoder_->Get() * .0003191764 * m,
+      pivot_encoder_->Get() * deg / 5.0, enabled_);
+  Voltage pivot_voltage = pivot_controller_.Update(
+      dt, pivot_encoder_->Get() * deg / 5.0, !pivot_hall_->Get(), enabled_);
+  if (!enabled_) state_ = ArmState::DISABLED;
+  switch (state_) {
+    case ArmState::DISABLED:
+      if (enabled_) state_ = ArmState::FINISHED;
+      pivot_voltage = elevator_voltage = 0 * V;
+      break;
+    case ArmState::RETRACTING:
+      pivot_voltage = 0 * V;
+      if (elevator_controller_.IsDone()) {
+        state_ = ArmState::MOVING_PIVOT;
+        pivot_controller_.SetGoal(current_goal_.pivot_goal);
+      }
+      break;
+    case ArmState::MOVING_PIVOT:
+      elevator_voltage = 0 * V;
+      if (pivot_controller_.IsDone()) {
+        state_ = ArmState::EXTENDING;
+        elevator_controller_.SetGoal(current_goal_.elevator_goal);
+      }
+      break;
+    case ArmState::EXTENDING:
+      pivot_voltage = 0 * V;
+      if (elevator_controller_.IsDone()) {
+        state_ = ArmState::FINISHED;
+      }
+      break;
+    case ArmState::FINISHED:
+      if (pivot_controller_.IsCalibrated()) {
+        pivot_voltage = 0 * V;
+      }
+      elevator_voltage = 0 * V;
+      break;
+    case ArmState::ESTOP:
+      pivot_voltage = elevator_voltage = 0 * V;
+      break;
   }
 
-  {
-    Voltage v_elevator = elevator_controller_.Update(
-        dt, elevator_encoder_->Get() * .0003191764 * m, enabled_);
-    v_elevator = muan::Cap(v_elevator, -12 * V, 12 * V);
-    if (elevator_controller_.IsDone()) {
-      v_elevator = 0 * V;
-    }
-    elevator_motor_a_->Set(-v_elevator.to(12 * V));
-    elevator_motor_b_->Set(-v_elevator.to(12 * V));
-    elevator_disk_brake_->Set(elevator_controller_.IsDone()
-                                  ? DoubleSolenoid::Value::kReverse
-                                  : DoubleSolenoid::Value::kForward);
-  }
+  pivot_motor_a_->Set(pivot_voltage.to(12 * V));
+  pivot_motor_b_->Set(pivot_voltage.to(12 * V));
+  pivot_disk_brake_->Set(pivot_controller_.IsDone()
+                             ? DoubleSolenoid::Value::kReverse
+                             : DoubleSolenoid::Value::kForward);
 
-  // shooter_motor_a_->Set(shooter_voltage_.to(12 * V));
+  elevator_motor_a_->Set(-elevator_voltage.to(12 * V));
+  elevator_motor_b_->Set(-elevator_voltage.to(12 * V));
+  elevator_disk_brake_->Set(elevator_controller_.IsDone()
+                                ? DoubleSolenoid::Value::kReverse
+                                : DoubleSolenoid::Value::kForward);
 }
 
 void ArmSubsystem::GoToLong() {
@@ -96,6 +123,10 @@ void ArmSubsystem::SetShooter(bool on) {
 }
 
 void ArmSubsystem::SetGoal(ArmGoal goal) {
-  pivot_controller_.SetGoal(goal.pivot_goal);
-  elevator_controller_.SetGoal(goal.elevator_goal);
+  if (pivot_controller_.IsCalibrated() &&
+      !(state_ == ArmState::DISABLED || state_ == ArmState::ESTOP)) {
+    elevator_controller_.SetGoal(0 * m);
+    state_ = ArmState::RETRACTING;
+    current_goal_ = goal;
+  }
 }
