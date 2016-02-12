@@ -88,22 +88,22 @@ void ArmSubsystem::Update(Time dt) {
 }
 
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{44 * deg, .38 * m, 0 * rad / s};
+  ArmGoal goal{44 * deg, .38 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
 }
 
 void ArmSubsystem::GoToTuck() {
-  ArmGoal goal{0 * deg, 0 * m, 0 * rad / s};
+  ArmGoal goal{0 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
 }
 
 void ArmSubsystem::GoToFender() {
-  ArmGoal goal{10 * deg, 0 * m, 0 * rad / s};
+  ArmGoal goal{10 * deg, 0 * m, 4000 * rev / (60 * s)};
   SetGoal(goal);
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{5 * deg, 0 * m, 0 * rad / s};
+  ArmGoal goal{5 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
 }
 
@@ -118,8 +118,10 @@ void ArmSubsystem::SetIntake(bool on) {
 
 void ArmSubsystem::SetShooter(bool on) {
   SetHoodOpen(on);
-  shooter_motor_a_->Set(on ? -1. : 0.);
-  shooter_motor_b_->Set(on ? 1. : 0.);
+  Voltage v_shooter =
+      shooter_controller_.Update(0.005 * s, shooter_encoder_->Get() * deg);
+  shooter_motor_a_->Set(on ? -v_shooter.to(12 * V) : 0.);
+  shooter_motor_b_->Set(on ? v_shooter.to(12 * V) : 0.);
 }
 
 void ArmSubsystem::SetGoal(ArmGoal goal) {
@@ -129,4 +131,5 @@ void ArmSubsystem::SetGoal(ArmGoal goal) {
     state_ = ArmState::RETRACTING;
     current_goal_ = goal;
   }
+  shooter_controller_.SetGoal(goal.shooter_goal);
 }
