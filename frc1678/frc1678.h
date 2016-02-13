@@ -18,9 +18,14 @@ class CitrusRobot : public IterativeRobot {
   RobotSubsystems subsystems_;
   CitrusVision vision_;
 
-  // Buttonz!
-  std::unique_ptr<CitrusButton> shift_down_, shift_up_, quick_turn_, intake_,
-      outtake_, move_long_, move_fender_, move_tuck_, move_intake_;
+  // Avery's buttons
+  std::unique_ptr<CitrusButton> shoot_, align_, shift_high_, shift_low_,
+      quick_turn_;
+
+  // Kelly's buttons
+  std::unique_ptr<CitrusButton> tuck_pos_, defensive_pos_, climb_, intake_pos_;
+  std::unique_ptr<CitrusPOV> fender_pos_, long_pos_;
+  std::unique_ptr<CitrusAxis> run_intake_, reverse_intake_;
 
   bool test_flag_;
   bool in_highgear_;
