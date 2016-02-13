@@ -8,6 +8,7 @@
 #include "elevator/elevator_controller.h"
 #include "shooter/shooter_bang.h"
 
+
 struct ArmGoal {
   Angle pivot_goal;
   Length elevator_goal;
@@ -34,18 +35,19 @@ class ArmSubsystem : public muan::Updateable {
   void SetShooter(bool on);
 
  private:
-  void SetGoal(ArmGoal goal);
-
+ 
   enum class ArmState {
-    DISABLED,
+    DISABLED, 
     RETRACTING,
     MOVING_PIVOT,
-    EXTENDING,
+    EXTENDING, 
     FINISHED,
-    ESTOP
+    ESTOP 
   };
 
   ArmState state_;
+
+  void SetGoal(ArmGoal goal);
 
   std::unique_ptr<Encoder> pivot_encoder_;
   std::unique_ptr<DigitalInput> pivot_hall_;

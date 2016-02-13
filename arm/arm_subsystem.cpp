@@ -87,23 +87,24 @@ void ArmSubsystem::Update(Time dt) {
                                 : DoubleSolenoid::Value::kForward);
 }
 
+//Sets targets for the arm subsystem
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{44 * deg, .38 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{44 * deg, .38 * m, 4500 * (rev / (60*s))};
   SetGoal(goal);
 }
 
 void ArmSubsystem::GoToTuck() {
-  ArmGoal goal{0 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{0 * deg, 0 * m, 0 * (rev / (60*s))};
   SetGoal(goal);
 }
 
 void ArmSubsystem::GoToFender() {
-  ArmGoal goal{10 * deg, 0 * m, 4000 * rev / (60 * s)};
+  ArmGoal goal{10 * deg, 0 * m, 2000 * (rev / (60*s))};
   SetGoal(goal);
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{5 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{5 * deg, 0 * m, 0 * (rev / (60*s))};
   SetGoal(goal);
 }
 

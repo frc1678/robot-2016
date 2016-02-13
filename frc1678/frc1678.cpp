@@ -21,12 +21,12 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   shift_up_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
   quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
 
-  intake_ = std::make_unique<CitrusButton>(j_manip_.get(), 2);
-  outtake_ = std::make_unique<CitrusButton>(j_manip_.get(), 3);
-  move_tuck_ = std::make_unique<CitrusButton>(j_manip_.get(), 1);
+  intake_ = std::make_unique<CitrusButton>(j_manip_.get(), 1);
+  outtake_ = std::make_unique<CitrusButton>(j_manip_.get(), 5);
+  move_tuck_ = std::make_unique<CitrusButton>(j_manip_.get(), 2);
   move_long_ = std::make_unique<CitrusButton>(j_manip_.get(), 4);
-  move_fender_ = std::make_unique<CitrusButton>(j_manip_.get(), 5);
-  move_intake_ = std::make_unique<CitrusButton>(j_manip_.get(), 6);
+  move_fender_ = std::make_unique<CitrusButton>(j_manip_.get(), 6);
+  move_intake_ = std::make_unique<CitrusButton>(j_manip_.get(), 3);
 
   // Auto
   auto_runner = new LemonScriptRunner("twoBall2016.auto", this);

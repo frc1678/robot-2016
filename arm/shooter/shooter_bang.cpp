@@ -11,7 +11,7 @@ ShooterBang::~ShooterBang() {}
 Voltage ShooterBang::Update(Time dt, Angle displacement) {
   Voltage out_voltage = 0 * V;
   AngularVelocity velocity = -((displacement - previous_displacement_)/(2*pi*dt));
-  std::cout << velocity.to(rev/(60*s)) << std::endl; 
+  std::cout << velocity.to(rev/(60*s)) << ", " << (displacement - previous_displacement_).to(rev)<< std::endl; 
   if(velocity < goal_) {
     out_voltage = 12 * V;
   }
