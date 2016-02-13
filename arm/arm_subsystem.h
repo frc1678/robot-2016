@@ -52,6 +52,8 @@ class ArmSubsystem : public muan::Updateable {
 
   ArmState state_;
 
+  void SetGoal(ArmGoal goal);
+
   std::unique_ptr<Encoder> pivot_encoder_;
   std::unique_ptr<DigitalInput> pivot_hall_;
   std::unique_ptr<DoubleSolenoid> pivot_disk_brake_;
