@@ -7,6 +7,7 @@
 #include "pivot/pivot_controller.h"
 #include "elevator/elevator_controller.h"
 #include "shooter/shooter_bang.h"
+#include "muan/utils/timer.h"
 
 struct ArmGoal {
   Angle pivot_goal;
@@ -14,26 +15,30 @@ struct ArmGoal {
   AngularVelocity shooter_goal;
 };
 
+enum class IntakeGoal { OFF = 0, REVERSE, FORWARD };
+
 class ArmSubsystem : public muan::Updateable {
  public:
   ArmSubsystem();
   ~ArmSubsystem();
 
   void Update(Time dt) override;
-
   void GoToLong();
   void GoToTuck();
   void GoToFender();
   void GoToIntake();
-
-  void SetHoodOpen(bool open);
+  void GoToDefensive();
 
   void SetEnabled(bool enabled);
 
-  void SetIntake(bool on);
+  void SetIntake(IntakeGoal goal);
   void SetShooter(bool on);
 
+  void Shoot();
+
  private:
+  void SetHoodOpen(bool open);
+
   void SetGoal(ArmGoal goal);
 
   enum class ArmState {
@@ -71,6 +76,12 @@ class ArmSubsystem : public muan::Updateable {
   bool enabled_ = false;
 
   ArmGoal current_goal_;
+
+  muan::Timer shot_timer_;
+  bool should_shoot_ = false;
+  const Time shot_time = 1 * s;
+
+  IntakeGoal intake_target_ = IntakeGoal::OFF;
 };
 
 #endif /* ARM_ARM_SUBSYSTEM_H_ */

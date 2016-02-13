@@ -288,6 +288,7 @@ const Time s = 1;
 const Time ms = 1e-3 * s;
 const Time us = 1e-6 * s;
 const Time hour = 3600 * s;
+const AngularVelocity rpm = rev / (60 * s);
 const Current A = 1;
 const Force N = 1;
 const Voltage V = kg * m * m / (A * s * s * s);

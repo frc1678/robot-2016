@@ -35,7 +35,15 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
     case PivotState::MOVING:
       out_voltage_ = controller_.Calculate(dt, goal_ - angle);
       if (muan::abs(goal_ - angle) < .5 * deg) {
-        state_ = PivotState::FINISHED;
+        should_fire_brake_ = true;
+      }
+      if (ShouldFireBrake()) {
+        brake_timer_ += dt;
+        if (brake_timer_ > 50 * ms) {
+          state_ = PivotState::FINISHED;
+          brake_timer_ = 0 * s;
+          should_fire_brake_ = false;
+        }
       }
       out_voltage_ += GetFFVoltage(angle);
       break;
@@ -52,6 +60,8 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       out_voltage_ = 0 * V;
       break;
   }
+  last_ = angle;
+  std::cout << (goal_ - angle).to(deg) << std::endl;
   out_voltage_ =
       muan::Cap(out_voltage_, (calibrated_ ? -4 * V : -12 * V), 12 * V);
   return out_voltage_;
@@ -74,6 +84,10 @@ Voltage PivotController::GetFFVoltage(Angle a) {
   decltype(Force(0) * m) gravity_torque =
       C_g * mass * grav * std::cos(a.to(rad));
   return gravity_torque * gear_ratio * motor_resistance / (Q * K_t);
+}
+
+bool PivotController::ShouldFireBrake() {
+  return (IsDone() || should_fire_brake_) && calibrated_;
 }
 
 bool PivotController::IsCalibrated() { return calibrated_; }

@@ -27,6 +27,8 @@ ArmSubsystem::ArmSubsystem()
   shooter_hood_ = std::make_unique<Solenoid>(RobotPorts::shooter_hood);
   intake_front_ = std::make_unique<VictorSP>(RobotPorts::intake_front);
   intake_side_ = std::make_unique<VictorSP>(RobotPorts::intake_side);
+
+  shot_timer_.Start();
 }
 
 ArmSubsystem::~ArmSubsystem() {}
@@ -48,6 +50,7 @@ void ArmSubsystem::Update(Time dt) {
       if (elevator_controller_.IsDone()) {
         state_ = ArmState::MOVING_PIVOT;
         pivot_controller_.SetGoal(current_goal_.pivot_goal);
+        std::cout << "MOVING_PIVOT" << std::endl;
       }
       break;
     case ArmState::MOVING_PIVOT:
@@ -55,12 +58,15 @@ void ArmSubsystem::Update(Time dt) {
       if (pivot_controller_.IsDone()) {
         state_ = ArmState::EXTENDING;
         elevator_controller_.SetGoal(current_goal_.elevator_goal);
+        shooter_controller_.SetGoal(current_goal_.shooter_goal);
+        std::cout << "EXTENDING" << std::endl;
       }
       break;
     case ArmState::EXTENDING:
       pivot_voltage = 0 * V;
       if (elevator_controller_.IsDone()) {
         state_ = ArmState::FINISHED;
+        std::cout << "FINISHED" << std::endl;
       }
       break;
     case ArmState::FINISHED:
@@ -76,7 +82,7 @@ void ArmSubsystem::Update(Time dt) {
 
   pivot_motor_a_->Set(pivot_voltage.to(12 * V));
   pivot_motor_b_->Set(pivot_voltage.to(12 * V));
-  pivot_disk_brake_->Set(pivot_controller_.IsDone()
+  pivot_disk_brake_->Set(pivot_controller_.ShouldFireBrake()
                              ? DoubleSolenoid::Value::kReverse
                              : DoubleSolenoid::Value::kForward);
 
@@ -85,44 +91,72 @@ void ArmSubsystem::Update(Time dt) {
   elevator_disk_brake_->Set(elevator_controller_.IsDone()
                                 ? DoubleSolenoid::Value::kReverse
                                 : DoubleSolenoid::Value::kForward);
+
+  Voltage shooter_voltage =
+      shooter_controller_.Update(0.005 * s, shooter_encoder_->Get() * deg);
+  shooter_motor_a_->Set(
+      state_ != ArmState::DISABLED ? -shooter_voltage.to(12 * V) : 0.0);
+  shooter_motor_b_->Set(
+      state_ != ArmState::DISABLED ? shooter_voltage.to(12 * V) : 0.0);
+
+  // Yes, this code is structured weirdly. Yes, it is necessary because of weird
+  // possible multithreading races
+  if (should_shoot_) {
+    intake_front_->Set(-1);
+    intake_side_->Set(1);
+    if (shot_timer_.Get() > shot_time) {
+      should_shoot_ = false;
+      shooter_controller_.SetGoal(0 * rad / s);
+      SetHoodOpen(false);
+    }
+  } else if (intake_target_ == IntakeGoal::FORWARD) {
+    intake_front_->Set(-1);
+    intake_side_->Set(1);
+  } else if (intake_target_ == IntakeGoal::REVERSE) {
+    intake_front_->Set(1);
+    intake_side_->Set(0);
+  } else {
+    intake_front_->Set(0);
+    intake_side_->Set(0);
+  }
 }
 
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{44 * deg, .38 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{42 * deg, .38 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
+  SetHoodOpen(true);
+  std::cout << "Opening hood" << std::endl;
 }
 
 void ArmSubsystem::GoToTuck() {
   ArmGoal goal{0 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
+  SetHoodOpen(false);
 }
 
 void ArmSubsystem::GoToFender() {
-  ArmGoal goal{10 * deg, 0 * m, 4000 * rev / (60 * s)};
+  ArmGoal goal{10 * deg, 0 * m, 2500 * rev / (60 * s)};
   SetGoal(goal);
+  SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToIntake() {
   ArmGoal goal{5 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
+  SetHoodOpen(false);
+}
+
+void ArmSubsystem::GoToDefensive() {
+  ArmGoal goal{30 * deg, 0 * m, 0 * rev / (60 * s)};
+  SetGoal(goal);
+  SetHoodOpen(false);
 }
 
 void ArmSubsystem::SetHoodOpen(bool open) { shooter_hood_->Set(open); }
 
 void ArmSubsystem::SetEnabled(bool enabled) { enabled_ = enabled; }
 
-void ArmSubsystem::SetIntake(bool on) {
-  intake_front_->Set(on ? -1. : 0.);
-  intake_side_->Set(on ? 1. : 0.);
-}
-
-void ArmSubsystem::SetShooter(bool on) {
-  SetHoodOpen(on);
-  Voltage v_shooter =
-      shooter_controller_.Update(0.005 * s, shooter_encoder_->Get() * deg);
-  shooter_motor_a_->Set(on ? -v_shooter.to(12 * V) : 0.);
-  shooter_motor_b_->Set(on ? v_shooter.to(12 * V) : 0.);
-}
+void ArmSubsystem::SetIntake(IntakeGoal goal) { intake_target_ = goal; }
 
 void ArmSubsystem::SetGoal(ArmGoal goal) {
   if (pivot_controller_.IsCalibrated() &&
@@ -131,5 +165,10 @@ void ArmSubsystem::SetGoal(ArmGoal goal) {
     state_ = ArmState::RETRACTING;
     current_goal_ = goal;
   }
-  shooter_controller_.SetGoal(goal.shooter_goal);
+  shooter_controller_.SetGoal(0 * rad / s);
+}
+
+void ArmSubsystem::Shoot() {
+  shot_timer_.Reset();
+  should_shoot_ = true;
 }
