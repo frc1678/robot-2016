@@ -7,8 +7,11 @@
 // Designed to get input from joysticks & manipulators.
 class CitrusButton {
  protected:
-  bool output;
-  bool oldInput;
+  bool current, old;
+
+  // Optional.
+  Joystick* stick;
+  int button;
 
  public:
   CitrusButton(Joystick* tstick, int tbutton);
@@ -19,19 +22,12 @@ class CitrusButton {
   // needing a button that's not from a joystick.
 
   // Call at the end of every loop (once per loop)!
-  void Update(bool input);
-
   void Update();
-
-  bool ButtonClicked(bool input);
+  void Update(bool input);
 
   bool ButtonClicked();
 
-  bool ButtonReleased(bool input);
-
   bool ButtonReleased();
-
-  bool ButtonPressed(bool input);
 
   bool ButtonPressed();
 
@@ -39,16 +35,32 @@ class CitrusButton {
 
   // Reset to factory settings!
   void Reset();
-
-  // Optional.
-  Joystick* stick;
-  int button;
 };
 
 class CitrusAxis : public CitrusButton {
  public:
+  CitrusAxis(Joystick* stick, int button);
   void Update();
-  void Update(bool input);
+};
+
+enum class POVPosition {
+  NORTH = 0,
+  NORTHEAST = 45,
+  EAST = 90,
+  SOUTHEAST = 135,
+  SOUTH = 180,
+  SOUTHWEST = 225,
+  WEST = 270,
+  NORTHWEST = 315
+};
+
+class CitrusPOV : public CitrusButton {
+ public:
+  CitrusPOV(Joystick* joy, int pov, POVPosition pos);
+  void Update();
+
+ protected:
+  POVPosition position;
 };
 
 // Use the following like: input = TurnOn(myButton); input = Toggle(myButton,

@@ -13,31 +13,44 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   // Joysticks
   j_wheel_ = std::make_unique<Joystick>(0);
   j_stick_ = std::make_unique<Joystick>(1);
-  // manipulator = new Joystick(2);
+  j_manip_ = std::make_unique<Joystick>(2);
 
   // Buttonz!
-  shift_down_ = std::make_unique<CitrusButton>(j_stick_.get(), 2);
-  shift_up_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
+  shoot_ = std::make_unique<CitrusButton>(j_stick_.get(), 2);
+  align_ = std::make_unique<CitrusButton>(j_stick_.get(), 1);
+  shift_high_ = std::make_unique<CitrusButton>(j_stick_.get(), 5);
+  shift_low_ = std::make_unique<CitrusButton>(j_stick_.get(), 4);
   quick_turn_ = std::make_unique<CitrusButton>(j_wheel_.get(), 5);
+
+  tuck_pos_ = std::make_unique<CitrusButton>(j_manip_.get(), 1);
+  defensive_pos_ = std::make_unique<CitrusButton>(j_manip_.get(), 2);
+  intake_pos_ = std::make_unique<CitrusButton>(j_manip_.get(), 3);
+  climb_ = std::make_unique<CitrusButton>(j_manip_.get(), 4);
+
+  fender_pos_ =
+      std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::SOUTH);
+  long_pos_ =
+      std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::NORTH);
+
+  run_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
+  reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
   // Auto
   auto_runner = new LemonScriptRunner("test.auto", this);
 }
 
-void CitrusRobot::RobotInit() { subsystems_.drive.Start(); }
+void CitrusRobot::RobotInit() {
+  subsystems_.drive.Start();
+  subsystems_.arm.Start();
+}
 
 void CitrusRobot::AutonomousInit() {}
 
-void CitrusRobot::AutonomousPeriodic() {
-  auto_runner->Update();
-  // if (!vision_done_) {
-  //  vision_done_ = vision_.Update();
-  //}
-}
+void CitrusRobot::AutonomousPeriodic() { auto_runner->Update(); }
 
 void CitrusRobot::TeleopInit() {
   using muan::TrapezoidalMotionProfile;
-  subsystems_.drive.PointTurn(25*deg);
+  subsystems_.arm.SetEnabled(true);
 }
 
 void CitrusRobot::DisabledPeriodic() {
@@ -66,16 +79,42 @@ void CitrusRobot::TeleopPeriodic() {
   SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   SmartDashboard::PutNumber("Stick", j_stick_->GetY());
 
-  // TODO (Finn): Act on the output, without bypassing the
-  // controller. Or argue that this is fine.
-  if (shift_up_->ButtonClicked()) {
+  if (shoot_->ButtonClicked()) {
+    subsystems_.arm.Shoot();
+  }
+  if (align_->ButtonClicked()) {
+  }
+  if (shift_high_->ButtonClicked()) {
     in_highgear_ = true;
-  } else if (shift_down_->ButtonClicked()) {
+  }
+  if (shift_low_->ButtonClicked()) {
     in_highgear_ = false;
+  }
+  if (tuck_pos_->ButtonClicked()) {
+    subsystems_.arm.GoToTuck();
+  }
+  if (defensive_pos_->ButtonClicked()) {
+    subsystems_.arm.GoToDefensive();
+  }
+  if (intake_pos_->ButtonClicked()) {
+    subsystems_.arm.GoToIntake();
+  }
+  if (fender_pos_->ButtonClicked()) {
+    subsystems_.arm.GoToFender();
+  }
+  if (long_pos_->ButtonClicked()) {
+    subsystems_.arm.GoToLong();
+  }
+  if (run_intake_->ButtonPressed()) {
+    subsystems_.arm.SetIntake(IntakeGoal::FORWARD);
+  } else if (reverse_intake_->ButtonPressed()) {
+    subsystems_.arm.SetIntake(IntakeGoal::REVERSE);
+  } else {
+    subsystems_.arm.SetIntake(IntakeGoal::OFF);
   }
 
   SetDriveGoal(&drivetrain_goal);
-  // subsystems_.drive.SetDriveGoal(drivetrain_goal);
+  subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
   UpdateButtons();
 }
@@ -89,9 +128,19 @@ void CitrusRobot::SetDriveGoal(DrivetrainGoal* drivetrain_goal) {
 }
 
 void CitrusRobot::UpdateButtons() {
-  shift_down_->Update();
-  shift_up_->Update();
+  shoot_->Update();
+  align_->Update();
+  shift_high_->Update();
+  shift_low_->Update();
   quick_turn_->Update();
+  tuck_pos_->Update();
+  defensive_pos_->Update();
+  climb_->Update();
+  intake_pos_->Update();
+  fender_pos_->Update();
+  long_pos_->Update();
+  run_intake_->Update();
+  reverse_intake_->Update();
 }
 
 CitrusRobot::~CitrusRobot() {}

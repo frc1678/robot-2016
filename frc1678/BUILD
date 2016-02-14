@@ -9,7 +9,7 @@ cc_library(
 cc_library(
   name = "robot_subsystems",
   hdrs = ["robot_subsystems.h"],
-  deps = ["//drivetrain:drivetrain_subsystem"],
+  deps = ["//drivetrain:drivetrain_subsystem", "//arm:arm_subsystem"],
   visibility = ["//visibility:public"]
 )
 
