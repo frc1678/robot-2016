@@ -25,6 +25,7 @@ bool DriveStraight(CitrusRobot* robot, float dist); //TODO(Wesley) Change name t
 bool DriveStraightAtAngle(CitrusRobot* robot, float dist, float angle);
 bool PointTurn(CitrusRobot *robot, float angle);
 bool AbsolutePointTurn(CitrusRobot *robot, float angle);
+bool Shift(CitrusRobot* robot, bool highgear);
 bool Wait(CitrusRobot* robot, float time);
 bool Shoot(CitrusRobot* robot, Position infield);
 bool RunIntake(CitrusRobot* robot);

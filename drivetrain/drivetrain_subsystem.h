@@ -10,6 +10,7 @@
 #include "muan/control/pid_controller.h"
 #include "muan/logging/text_log.h"
 #include "muan/logging/csv_log.h"
+#include "muan/utils/math_utils.h"
 #include "frc1678/robot_ports.h"
 #include "drivetrain/drivetrain.h"
 #include "gyro/gyro_reader.h"

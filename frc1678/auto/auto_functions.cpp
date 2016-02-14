@@ -80,10 +80,12 @@ bool AutoFunction::AbsolutePointTurn(CitrusRobot* robot, float angle) {
 
 }
 
-
+bool AutoFunction::Shift(CitrusRobot* robot, bool highgear) {
+  robot->subsystems_.drive.Shift(highgear);
+  return true;
+}
 
 bool AutoFunction::Wait(CitrusRobot* robot, float time) {
-  printf("Wait function\n");
   return false;
 }
 

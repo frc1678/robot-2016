@@ -6,8 +6,8 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(45 * V / rad, 50 * V / rad / s, 2 * V / rad * s),
-      distance_controller_(100 * V / m, 300 * V / m / s, 0 * V / m * s),
+      angle_controller_(60 * V / rad, 45 * V / rad / s, 1.5 * V / rad * s),
+      distance_controller_(100 * V / m, 300 * V / m / s, 4 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}) {
@@ -58,7 +58,6 @@ void DrivetrainSubsystem::Update(Time dt) {
       drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
       // TODO(Wesley) Find out why this is giving 12V and 0V as output
     } else {
-      current_goal_.highgear = false;
       // TODO(Wesley) Reset the PID controller if we went from tele to auto
       // TODO(Wesley) Add operator control to exit auto mode
       t += dt;
@@ -113,14 +112,14 @@ void DrivetrainSubsystem::Update(Time dt) {
       // End conditions
       bool profiles_finished_time = angle_profile_->finished(t) && distance_profile_->finished(t);
       bool profile_finished_distance =
-          std::abs((distance_from_start - distance_profile_->Calculate(t)).to(cm)) <
-          1 * cm;
+          muan::abs(distance_from_start - distance_profile_->Calculate(t)) <
+          10 * cm;
       bool profile_finished_angle =
-          std::abs((angle_from_start - angle_profile_->Calculate(t)).to(deg)) <
-          .5 * deg;
+          muan::abs(angle_from_start - angle_profile_->Calculate(t)) <
+          1 * deg;
 
-      printf("%f\t%f\t%f\t%f\t%f      \n", t.to(s), out.left_voltage,
-             out.right_voltage, angle_from_start, angle_profile_->Calculate(t));
+      printf("%f\t%f\t%f\t%f\t%f\t%f      \n", t.to(s), out.left_voltage,
+             out.right_voltage, angle_from_start.to(deg), angle_profile_->Calculate(t).to(deg), distance_from_start);
 
       if (profiles_finished_time && profile_finished_angle &&
           profile_finished_distance) {
@@ -224,6 +223,7 @@ void DrivetrainSubsystem::DriveDistanceAtAngle(Length distance, Angle angle, boo
 void DrivetrainSubsystem::FollowMotionProfile(
     std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
     std::unique_ptr<muan::MotionProfile<Angle>> angle_profile, bool highgear) {
+  current_goal_.highgear = highgear;
   distance_profile_ = std::move(distance_profile);
   angle_profile_ = std::move(angle_profile);
   is_operator_controlled_ = false;
