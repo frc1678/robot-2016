@@ -12,7 +12,8 @@ cc_library(
     "//muan:utils",
     "//gyro",
     "//frc1678:robot_subsystems",
-    "//lemonscript"
+    "//lemonscript",
+    "//arm:arm_subsystem"
   ],
   visibility = ["//visibility:public"]
 )

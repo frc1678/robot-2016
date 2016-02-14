@@ -22,8 +22,6 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
 
   AvailableCppCommandDeclaration *absolutePointTurn =
       new AvailableCppCommandDeclaration((void *)AutoFunction::AbsolutePointTurn, "AbsolutePointTurn", {FLOAT});
-  AvailableCppCommandDeclaration *align =
-      new AvailableCppCommandDeclaration((void *)AutoFunction::Align, "Align", {});
 
   AvailableCppCommandDeclaration *shift =
       new AvailableCppCommandDeclaration((void *)AutoFunction::Wait, "Shift", {BOOLEAN});
@@ -31,8 +29,21 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *wait =
       new AvailableCppCommandDeclaration((void *)AutoFunction::Wait, "Wait", {FLOAT});
 
+  AvailableCppCommandDeclaration *shoot = 
+          new AvailableCppCommandDeclaration((void *)AutoFunction::Shoot, "Shoot", {});
+
+  AvailableCppCommandDeclaration *runIntake = 
+          new AvailableCppCommandDeclaration((void *)AutoFunction::RunIntake, "RunIntake", {});
+
+  AvailableCppCommandDeclaration *setArmPosition = 
+          new AvailableCppCommandDeclaration((void *)AutoFunction::SetArmPosition, "SetArmPosition", {INT});
+
+  AvailableCppCommandDeclaration *align =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::Align, "Align", {});
+  
+
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, align, shift, wait};
+      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, shoot, runIntake, setArmPosition, align, shift};
   
   std::ifstream ifs(auto_routine_file);  // Take in auto_routine_file
   

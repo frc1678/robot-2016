@@ -8,14 +8,10 @@
 #include "auto_functions.h"
 #include "frc1678/frc1678.h"
 
-enum Position {
-  // Shooting positions
-  LOW_BAR,
-  BATTER,
-  WORKS_3,
-  WORKS_4,
-  // Other positions
-  TUCK
+enum Position { 
+  LONG = 0,
+  TUCK,
+  INTAKE
 };
 
 namespace AutoFunction {
@@ -27,7 +23,7 @@ bool PointTurn(CitrusRobot *robot, float angle);
 bool AbsolutePointTurn(CitrusRobot *robot, float angle);
 bool Shift(CitrusRobot* robot, bool highgear);
 bool Wait(CitrusRobot* robot, float time);
-bool Shoot(CitrusRobot* robot, Position infield);
+bool Shoot(CitrusRobot* robot);
 bool RunIntake(CitrusRobot* robot);
 bool SetArmPosition(CitrusRobot* robot, Position arm_position);
 bool DropPinch(CitrusRobot* robot);

@@ -1,4 +1,5 @@
 #include "auto_functions.h"
+#include "arm/arm_subsystem.h"
 
 #include <stdio.h>
 
@@ -89,32 +90,33 @@ bool AutoFunction::Wait(CitrusRobot* robot, float time) {
   return false;
 }
 
-bool AutoFunction::Shoot(CitrusRobot* robot, Position infield) {
-  if (infield == LOW_BAR) {
-    // call shoot from low bar
-  } else if (infield == BATTER) {
-    // call shoof trom batter
-  } else if (infield == WORKS_3) {
-    // call shoof trom Outer Works 3
-  } else if (infield == WORKS_4) {
-    // call shoof trom Outer Works 4
-  }
-
+bool AutoFunction::Shoot(CitrusRobot* robot) {
+  robot->subsystems_.arm.GoToLong();
+  robot->subsystems_.arm.Shoot();
   return true;  // shooter->finished();
 }
 
 bool AutoFunction::RunIntake(CitrusRobot* robot) {
-  // intake->IntakePickup();
+  robot->subsystems_.arm.GoToIntake();
   return true;
 }
 
-bool toSetPosition = true;
 bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
-  // (TODO) Ash: Set this up later.
+  switch (arm_position) {
+    case LONG:
+      robot->subsystems_.arm.GoToLong();
+      break;
+    case TUCK:
+      robot->subsystems_.arm.GoToTuck();
+      break;
+    case INTAKE:
+      robot->subsystems_.arm.GoToIntake();
+      break;
+  }
   return true;
 }
 
-bool AutoFunction::DropPinch(CitrusRobot* robot) { return true; }
+bool AutoFunction::DropPinch(CitrusRobot* robot) { return true; } // Why is this needed?
 
 bool toStartVision = true;
 bool AutoFunction::Align(CitrusRobot* robot) {

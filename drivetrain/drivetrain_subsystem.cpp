@@ -23,7 +23,7 @@ DrivetrainSubsystem::DrivetrainSubsystem()
   right_encoder_ = std::make_unique<Encoder>(RobotPorts::right_encoder_a,
                                              RobotPorts::right_encoder_b);
 
-  shifting_ = std::make_unique<Solenoid>(RobotPorts::shift_a);
+  shifting_ = std::make_unique<Solenoid>(RobotPorts::shift);
 
   gyro_reader_ = std::make_unique<GyroReader>();
 
