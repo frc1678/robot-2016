@@ -1,0 +1,3 @@
+set arm position: LONG = 0
+set arm position: TUCK = 1
+set arm position: INTAKE = 2

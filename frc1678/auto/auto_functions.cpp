@@ -101,6 +101,7 @@ bool AutoFunction::RunIntake(CitrusRobot* robot) {
   return true;
 }
 
+
 bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
   switch (arm_position) {
     case LONG:
@@ -113,7 +114,11 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
       robot->subsystems_.arm.GoToIntake();
       break;
   }
-  return true;
+  return robot->subsystems_.arm.IsDone();
+}
+
+bool AutoFunction::CheckArmCalibration(CitrusRobot* robot) {
+  return robot->subsystems_.arm.IsCalibrated();
 }
 
 bool AutoFunction::DropPinch(CitrusRobot* robot) { return true; } // Why is this needed?

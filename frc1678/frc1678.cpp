@@ -36,12 +36,13 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
   // Auto
-  auto_runner = new LemonScriptRunner("test.auto", this);
+  auto_runner = new LemonScriptRunner("test_armposition.auto", this);
 }
 
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
+  subsystems_.arm.SetEnabled(true);
 }
 
 void CitrusRobot::AutonomousInit() {}
@@ -50,7 +51,7 @@ void CitrusRobot::AutonomousPeriodic() { auto_runner->Update(); }
 
 void CitrusRobot::TeleopInit() {
   using muan::TrapezoidalMotionProfile;
-  subsystems_.arm.SetEnabled(true);
+//  subsystems_.arm.SetEnabled(true);
 }
 
 void CitrusRobot::DisabledPeriodic() {
@@ -75,6 +76,8 @@ void CitrusRobot::TeleopPeriodic() {
   // TODO (Finn): Get this out of the main loop and into its own
   // thread.
   DrivetrainGoal drivetrain_goal;
+
+  printf("Arm calibrated: %d", subsystems_.arm.IsCalibrated());
 
   SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   SmartDashboard::PutNumber("Stick", j_stick_->GetY());

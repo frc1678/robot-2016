@@ -38,12 +38,15 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *setArmPosition = 
           new AvailableCppCommandDeclaration((void *)AutoFunction::SetArmPosition, "SetArmPosition", {INT});
 
+  AvailableCppCommandDeclaration *checkArmCalibration = 
+          new AvailableCppCommandDeclaration((void *)AutoFunction::CheckArmCalibration, "CheckArmCalibration", {});
+
   AvailableCppCommandDeclaration *align =
       new AvailableCppCommandDeclaration((void *)AutoFunction::Align, "Align", {});
   
 
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, shoot, runIntake, setArmPosition, align, shift};
+      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift};
   
   std::ifstream ifs(auto_routine_file);  // Take in auto_routine_file
   

@@ -33,6 +33,10 @@ ArmSubsystem::ArmSubsystem()
 
 ArmSubsystem::~ArmSubsystem() {}
 
+bool ArmSubsystem::IsCalibrated() {
+  return pivot_controller_.IsCalibrated();
+}
+
 void ArmSubsystem::Update(Time dt) {
   Voltage elevator_voltage = elevator_controller_.Update(
       dt, elevator_encoder_->Get() * .0003191764 * m,
@@ -119,6 +123,10 @@ void ArmSubsystem::Update(Time dt) {
     intake_front_->Set(0);
     intake_side_->Set(0);
   }
+}
+
+bool ArmSubsystem::IsDone() {
+  return state_ == ArmState::FINISHED;
 }
 
 // Sets targets for the arm subsystem

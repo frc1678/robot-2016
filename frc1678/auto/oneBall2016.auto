@@ -1,0 +1,13 @@
+// Crossing low bar
+// In high gear because the robot will slow down because
+// the drive straight at angle is split.
+WHILE:
+  drive straight at angle: distance = 6.0, angle = 0.0
+ALSO:
+  set arm position: TUCK = 1
+drive straight at angle: distance = 10.5, angle = 0.0
+point turn: angle = -45.0
+
+align
+shoot
+

@@ -26,6 +26,7 @@ bool Wait(CitrusRobot* robot, float time);
 bool Shoot(CitrusRobot* robot);
 bool RunIntake(CitrusRobot* robot);
 bool SetArmPosition(CitrusRobot* robot, Position arm_position);
+bool CheckArmCalibration(CitrusRobot* robot);
 bool DropPinch(CitrusRobot* robot);
 bool Align(CitrusRobot* robot);
 bool StopDriving(CitrusRobot* robot);
