@@ -56,6 +56,8 @@ void DrivetrainSubsystem::Update(Time dt) {
     mutex_lock lock(mu_);
     if (is_operator_controlled_) {
       drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
+      out.left_voltage = 0;
+      out.right_voltage = 0;
       // TODO(Wesley) Find out why this is giving 12V and 0V as output
     } else {
       // TODO(Wesley) Reset the PID controller if we went from tele to auto

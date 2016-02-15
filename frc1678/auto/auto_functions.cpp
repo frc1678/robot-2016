@@ -91,7 +91,7 @@ bool AutoFunction::Wait(CitrusRobot* robot, float time) {
 }
 
 bool AutoFunction::Shoot(CitrusRobot* robot) { // (TODO) Ash: Make this have a bool to start.
-  SetArmPosition(robot, LONG);
+  //SetArmPosition(robot, LONG);
   robot->subsystems_.arm.Shoot();
   return true;  // shooter->finished();
 }
