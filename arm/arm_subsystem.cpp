@@ -138,7 +138,7 @@ void ArmSubsystem::GoToLong() {
 }
 
 void ArmSubsystem::GoToTuck() {
-  ArmGoal goal{0 * deg, 0 * m, 0 * (rev / (60 * s))};
+  ArmGoal goal{0 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }
@@ -150,7 +150,7 @@ void ArmSubsystem::GoToFender() {
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{5 * deg, 0 * m, 0 * (rev / (60 * s))};
+  ArmGoal goal{5 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }
