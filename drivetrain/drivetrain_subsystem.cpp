@@ -6,7 +6,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(60 * V / rad, 45 * V / rad / s, 1.5 * V / rad * s),
+      angle_controller_(80 * V / rad, 0 * V / rad / s, 0 * V / rad * s),
       distance_controller_(100 * V / m, 300 * V / m / s, 4 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
@@ -99,10 +99,10 @@ void DrivetrainSubsystem::Update(Time dt) {
       Voltage correction_distance = distance_controller_.Calculate(
           dt, target_distance_ - distance_from_start);
 
-      Voltage out_left = feed_forward_angle + correction_angle +
-                         feed_forward_distance + correction_distance;
-      Voltage out_right = -feed_forward_angle - correction_angle +
-                          feed_forward_distance + correction_distance;
+      Voltage out_left = -feed_forward_angle - correction_angle + 
+                         feed_forward_distance /*+ correction_distance */;
+      Voltage out_right = feed_forward_angle  + correction_angle +
+                          feed_forward_distance /* + correction_distance */;
 
       out.left_voltage = out_left.to(V);
       out.right_voltage = out_right.to(V);
@@ -137,7 +137,7 @@ void DrivetrainSubsystem::Update(Time dt) {
 
   // TODO (Finn): Also deal with shifting output and with logging
   // from the status.
-  drive_->TankDrive(out.left_voltage / 12.0, out.right_voltage / 12.0, false);
+  drive_->TankDrive(-out.left_voltage / 12.0, -out.right_voltage / 12.0, false);
   shifting_->Set(!current_goal_.highgear);
 
   csv_log_["enc_left"] = std::to_string(pos.left_encoder);
@@ -260,12 +260,12 @@ Voltage DrivetrainSubsystem::GetAngleFFVoltage(AngularVelocity velocity,
   if (highgear) {
     AngularVelocity max_robot_angular_velocity = 380 * deg / s;
     const auto c2 = 24 * V / max_robot_angular_velocity;
-    const auto c1 = 70 / V * (deg / s / s);
+    const auto c1 = 70 * .63 / V * (deg / s / s);
     total_output = c2 * velocity + acceleration / c1;
   } else {
     AngularVelocity max_robot_angular_velocity = 240 * deg / s;
     const auto c2 = 24 * V / max_robot_angular_velocity;
-    const auto c1 = 125 / V * (deg / s / s);
+    const auto c1 = 125 * .63 / V * (deg / s / s);
     total_output = c2 * velocity + acceleration / c1;
   }
   if (std::signbit(total_output.to(V)) != std::signbit(velocity.to(rad / s))) {
@@ -281,11 +281,11 @@ Voltage DrivetrainSubsystem::GetDistanceFFVoltage(Velocity velocity,
   auto c2 = decltype(V / velocity){0};
   if (highgear) {
     Velocity max_robot_velocity = 4 * m / s;
-    c1 = .75 / V * (m / s / s);
+    c1 = .75 * .63 / V * (m / s / s);
     c2 = 24 * V / max_robot_velocity;
   } else {
     Velocity max_robot_velocity = 1.92 * m / s;
-    c1 = 1 / V * (m / s / s);
+    c1 = 1 * .63 / V * (m / s / s);
     c2 = 24 * V / max_robot_velocity;
   }
   Voltage total_output = c2 * velocity + acceleration / c1;

@@ -36,7 +36,7 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
   // Auto
-  auto_runner = new LemonScriptRunner("test_armposition.auto", this);
+  auto_runner = new LemonScriptRunner("oneBall2016.auto", this);
 }
 
 void CitrusRobot::RobotInit() {
@@ -52,6 +52,7 @@ void CitrusRobot::AutonomousPeriodic() { auto_runner->Update(); }
 void CitrusRobot::TeleopInit() {
   using muan::TrapezoidalMotionProfile;
 //  subsystems_.arm.SetEnabled(true);
+  subsystems_.drive.PointTurn(20 * deg);
 }
 
 void CitrusRobot::DisabledPeriodic() {

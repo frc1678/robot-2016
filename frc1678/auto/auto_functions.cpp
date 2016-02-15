@@ -90,31 +90,42 @@ bool AutoFunction::Wait(CitrusRobot* robot, float time) {
   return false;
 }
 
-bool AutoFunction::Shoot(CitrusRobot* robot) {
-  robot->subsystems_.arm.GoToLong();
+bool AutoFunction::Shoot(CitrusRobot* robot) { // (TODO) Ash: Make this have a bool to start.
+  SetArmPosition(robot, LONG);
   robot->subsystems_.arm.Shoot();
   return true;  // shooter->finished();
 }
 
 bool AutoFunction::RunIntake(CitrusRobot* robot) {
-  robot->subsystems_.arm.GoToIntake();
+  SetArmPosition(robot, INTAKE);
   return true;
 }
 
-
+bool newArmPosition = true;
 bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
-  switch (arm_position) {
-    case LONG:
-      robot->subsystems_.arm.GoToLong();
-      break;
-    case TUCK:
-      robot->subsystems_.arm.GoToTuck();
-      break;
-    case INTAKE:
-      robot->subsystems_.arm.GoToIntake();
-      break;
+  if (newArmPosition) {
+    switch (arm_position) {
+      case LONG:
+        robot->subsystems_.arm.GoToLong();
+         break;
+      case TUCK:
+        robot->subsystems_.arm.GoToTuck();
+        break;
+     case INTAKE:
+       robot->subsystems_.arm.GoToIntake();
+        break;
+    }
+  
+    newArmPosition = false;
   }
-  return robot->subsystems_.arm.IsDone();
+  
+  
+  if (robot->subsystems_.arm.IsDone()) {
+    newArmPosition = true;
+    return true;
+  } else {
+    return false;
+  }
 }
 
 bool AutoFunction::CheckArmCalibration(CitrusRobot* robot) {
