@@ -7,7 +7,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
       angle_controller_(80 * V / rad, 90 * V / rad / s, 8 * V / rad * s),
-      distance_controller_(100 * V / m, 300 * V / m / s, 4 * V / m * s),
+      distance_controller_(100 * V / m, 370 * V / m / s, 17 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}) {
@@ -100,9 +100,9 @@ void DrivetrainSubsystem::Update(Time dt) {
           dt, target_distance_ - distance_from_start);
 
       Voltage out_left = -feed_forward_angle - correction_angle + 
-                         feed_forward_distance /*+ correction_distance */;
+                         feed_forward_distance + correction_distance;
       Voltage out_right = feed_forward_angle  + correction_angle +
-                          feed_forward_distance /* + correction_distance */;
+                          feed_forward_distance + correction_distance;
 
       out.left_voltage = out_left.to(V);
       out.right_voltage = out_right.to(V);
@@ -118,8 +118,8 @@ void DrivetrainSubsystem::Update(Time dt) {
           muan::abs(angle_from_start - angle_profile_->Calculate(t)) <
           1 * deg;
 
-      printf("%f\t%f\t%f\t%f\t%f\t%f      \n", t.to(s), out.left_voltage,
-             out.right_voltage, angle_from_start.to(deg), angle_profile_->Calculate(t).to(deg), distance_from_start);
+      printf("%f\t%f\t%f\t%f\t%f\t%f\t%f      \n", t.to(s), out.left_voltage,
+             out.right_voltage, angle_from_start.to(deg), angle_profile_->Calculate(t).to(deg), distance_from_start, distance_profile_->Calculate(t));
 
       if (profiles_finished_time && profile_finished_angle &&
           profile_finished_distance) {
@@ -196,7 +196,7 @@ void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
 }
 
 void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
-  Velocity speed = (highgear ? 4.0 : 1.92) * m / s;
+  Velocity speed = (highgear ? 3.0 : 1.44) * m / s;
   Acceleration accel = 10 * ft / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(distance, speed,
@@ -207,7 +207,7 @@ void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
 }
 
 void DrivetrainSubsystem::DriveDistanceAtAngle(Length distance, Angle angle, bool highgear) {
-  Velocity speed = (highgear ? 4.0 : 1.92) * m / s;
+  Velocity speed = (highgear ? 3.0 : 1.44) * m / s;
   Acceleration accel = 10 * ft / s / s;
   AngularVelocity angular_speed = (highgear ? 380 : 240) * deg / s;
   AngularAcceleration angular_accel =
@@ -280,11 +280,11 @@ Voltage DrivetrainSubsystem::GetDistanceFFVoltage(Velocity velocity,
   auto c1 = decltype(acceleration / V){0};
   auto c2 = decltype(V / velocity){0};
   if (highgear) {
-    Velocity max_robot_velocity = 4 * m / s;
+    Velocity max_robot_velocity = 3.0 * m / s;
     c1 = .75 * .75 / V * (m / s / s);
     c2 = 24 * V / max_robot_velocity;
   } else {
-    Velocity max_robot_velocity = 1.92 * m / s;
+    Velocity max_robot_velocity = 1.44 * m / s;
     c1 = 1 * .75 / V * (m / s / s);
     c2 = 24 * V / max_robot_velocity;
   }

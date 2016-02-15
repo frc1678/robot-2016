@@ -52,7 +52,7 @@ void CitrusRobot::AutonomousPeriodic() { auto_runner->Update(); }
 void CitrusRobot::TeleopInit() {
   using muan::TrapezoidalMotionProfile;
 //  subsystems_.arm.SetEnabled(true);
-  subsystems_.drive.PointTurn(20 * deg);
+  subsystems_.drive.DriveDistance(3 * ft);
 }
 
 void CitrusRobot::DisabledPeriodic() {
@@ -77,8 +77,6 @@ void CitrusRobot::TeleopPeriodic() {
   // TODO (Finn): Get this out of the main loop and into its own
   // thread.
   DrivetrainGoal drivetrain_goal;
-
-  printf("Arm calibrated: %d", subsystems_.arm.IsCalibrated());
 
   SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   SmartDashboard::PutNumber("Stick", j_stick_->GetY());
