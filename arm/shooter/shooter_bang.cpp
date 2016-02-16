@@ -11,6 +11,7 @@ ShooterBang::~ShooterBang() {}
 
 Voltage ShooterBang::Update(Time dt, Angle displacement) {
   Voltage out_voltage = 0 * V;
+  time += dt;
   AngularVelocity velocity = -(displacement - previous_displacement_) / dt;
   if (velocity < goal_) {
     out_voltage = 12 * V;
@@ -20,7 +21,13 @@ Voltage ShooterBang::Update(Time dt, Angle displacement) {
     out_voltage = 0 * V;
   }
   std::cout << velocity.to(rpm) << ", " << out_voltage << std::endl;
+  last_ = velocity;
+  printf("%f\t%f\t%f        \n", out_voltage.to(V), velocity.to(rad / s), time.to(s));
   return muan::Cap(out_voltage, -12 * V, 12 * V);
 }
 
 void ShooterBang::SetGoal(AngularVelocity goal) { goal_ = goal; }
+
+bool ShooterBang::IsDone() {
+  return muan::abs(goal_ - last_) < 20.0 * rad / s;
+}

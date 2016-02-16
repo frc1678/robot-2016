@@ -126,7 +126,7 @@ void ArmSubsystem::Update(Time dt) {
 }
 
 bool ArmSubsystem::IsDone() {
-  return state_ == ArmState::FINISHED;
+  return state_ == ArmState::FINISHED && shooter_controller_.IsDone();
 }
 
 // Sets targets for the arm subsystem

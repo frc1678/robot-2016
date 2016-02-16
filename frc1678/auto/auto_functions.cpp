@@ -86,14 +86,29 @@ bool AutoFunction::Shift(CitrusRobot* robot, bool highgear) {
   return true;
 }
 
+Time startTime = -1 * s;
 bool AutoFunction::Wait(CitrusRobot* robot, float time) {
+  if (startTime < 0 * s) {
+    startTime = muan::now();
+  }
+
+  if (muan::now() - startTime > time * s) {
+    startTime = -1 * s;
+    return true;
+  }
+
   return false;
 }
 
-bool AutoFunction::Shoot(CitrusRobot* robot) { // (TODO) Ash: Make this have a bool to start.
-  //SetArmPosition(robot, LONG);
-  robot->subsystems_.arm.Shoot();
-  return true;  // shooter->finished();
+bool AutoFunction::Shoot(CitrusRobot* robot) { 
+  // Need to set arm position to LONG before calling this shoot
+  // Wait for shooter to reach shooting speed
+  if (robot->subsystems_.arm.IsDone()) {
+    robot->subsystems_.arm.Shoot();
+    return true;  // shooter->finished();
+  }
+
+  return false;
 }
 
 bool AutoFunction::RunIntake(CitrusRobot* robot) {

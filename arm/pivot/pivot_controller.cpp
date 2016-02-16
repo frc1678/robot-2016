@@ -27,7 +27,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
     case PivotState::CALIBRATING:
       out_voltage_ = -1 * V;
       if (min_hall_triggered) {
-        offset_ = encoder_angle - 20.2 * deg;
+        offset_ = encoder_angle - 18.4 * deg;
         state_ = PivotState::FINISHED;
         calibrated_ = true;
       }
@@ -61,9 +61,9 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       break;
   }
   last_ = angle;
-  std::cout << (goal_ - angle).to(deg) << std::endl;
   out_voltage_ =
       muan::Cap(out_voltage_, (calibrated_ ? -4 * V : -12 * V), 12 * V);
+  printf("Angle: %f\n", angle.to(deg));
   return out_voltage_;
 }
 
