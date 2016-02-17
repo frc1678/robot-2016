@@ -27,4 +27,5 @@ cc_library(
     'include/**/*.inc',
   ]),
   includes = ['include'],
+  linkstatic = 1,
 )

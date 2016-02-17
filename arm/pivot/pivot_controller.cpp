@@ -69,7 +69,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
 }
 
 Voltage PivotController::UpdateClimb(Time dt, Angle encoder_angle,
-                                     bool min_hall_triggered, bool enabled) {
+                                     bool /*min_hall_triggered*/, bool enabled) {
   Voltage out_voltage_;
   Angle angle = encoder_angle - offset_;
   if (!enabled) {
