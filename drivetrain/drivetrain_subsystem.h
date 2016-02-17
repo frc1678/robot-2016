@@ -40,6 +40,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   void PointTurn(Angle angle, bool highgear = false);
   void DriveDistance(Length distance, bool highgear = false);
 
+  void SetEnabled(bool enabled);
+
   Angle GetGyroAngle();
 
   std::unique_ptr<GyroReader>
@@ -58,6 +60,8 @@ class DrivetrainSubsystem : public muan::Updateable {
 
   bool is_operator_controlled_ = true;
   bool is_loop_highgear = true;
+
+  bool is_enabled_ = false;
 
   DrivetrainGoal current_goal_;
   std::unique_ptr<muan::MotionProfile<Length>> distance_profile_;

@@ -25,7 +25,9 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   tuck_pos_ = std::make_unique<CitrusButton>(j_manip_.get(), 1);
   defensive_pos_ = std::make_unique<CitrusButton>(j_manip_.get(), 2);
   intake_pos_ = std::make_unique<CitrusButton>(j_manip_.get(), 3);
-  climb_ = std::make_unique<CitrusButton>(j_manip_.get(), 4);
+  climb_pos_ = std::make_unique<CitrusButton>(j_manip_.get(), 4);
+  climb_pos_continue_ = std::make_unique<CitrusButton>(j_manip_.get(), 7);
+  climb_end_ = std::make_unique<CitrusButton>(j_manip_.get(), 8);
 
   fender_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::SOUTH);
@@ -51,7 +53,13 @@ void CitrusRobot::AutonomousPeriodic() { auto_runner->Update(); }
 void CitrusRobot::TeleopInit() {
   // using muan::TrapezoidalMotionProfile;
   // subsystems_.drive.DriveDistance(2 * m);
+  subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
+}
+
+void CitrusRobot::DisabledInit() {
+  subsystems_.arm.SetEnabled(false);
+  subsystems_.drive.SetEnabled(false);
 }
 
 void CitrusRobot::DisabledPeriodic() {
@@ -114,6 +122,16 @@ void CitrusRobot::TeleopPeriodic() {
     subsystems_.arm.SetIntake(IntakeGoal::OFF);
   }
 
+  if (climb_pos_->ButtonClicked()) {
+    subsystems_.arm.StartClimb();
+  }
+  if (climb_pos_continue_->ButtonClicked()) {
+    subsystems_.arm.ContinueClimb();
+  }
+  if (climb_end_->ButtonClicked()) {
+    subsystems_.arm.CompleteClimb();
+  }
+
   SetDriveGoal(&drivetrain_goal);
   subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
@@ -136,7 +154,9 @@ void CitrusRobot::UpdateButtons() {
   quick_turn_->Update();
   tuck_pos_->Update();
   defensive_pos_->Update();
-  climb_->Update();
+  climb_pos_->Update();
+  climb_pos_continue_->Update();
+  climb_end_->Update();
   intake_pos_->Update();
   fender_pos_->Update();
   long_pos_->Update();

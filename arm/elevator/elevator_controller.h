@@ -12,16 +12,21 @@ class ElevatorController {
   ElevatorController(Time dt);
   Eigen::Matrix<double, 2, 1> GetObservedState();
   Voltage Update(Time dt, Length displacement, Angle arm_angle, bool enabled);
+  Voltage UpdateClimb(Time dt, Length displacement, Angle arm_angle,
+                      bool enabled);
   void SetGoal(Length goal);
   bool IsDone();
 
-  Length current_goal_;
-  Length current_displacement_;
+  Length GetPosition() { return current_displacement_; }
 
  private:
   enum class ElevatorState { DISABLED = 0, MOVING, FINISHED, ESTOP };
   ElevatorState state_ = ElevatorState::DISABLED;
   muan::PidController<Length, Voltage> controller_;
+  muan::PidController<Length, Voltage> climb_controller_;
+
+  Length current_goal_;
+  Length current_displacement_;
 };
 
 #endif

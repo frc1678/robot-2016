@@ -23,7 +23,8 @@ class CitrusRobot : public IterativeRobot {
       quick_turn_;
 
   // Kelly's buttons
-  std::unique_ptr<CitrusButton> tuck_pos_, defensive_pos_, climb_, intake_pos_;
+  std::unique_ptr<CitrusButton> tuck_pos_, defensive_pos_, climb_pos_,
+      climb_pos_continue_, climb_end_, intake_pos_;
   std::unique_ptr<CitrusPOV> fender_pos_, long_pos_;
   std::unique_ptr<CitrusAxis> run_intake_, reverse_intake_;
 
@@ -36,6 +37,7 @@ class CitrusRobot : public IterativeRobot {
   void AutonomousInit();
   void AutonomousPeriodic();
   void TeleopInit();
+  void DisabledInit();
   void DisabledPeriodic();
   void TeleopPeriodic();
   void SetDriveGoal(DrivetrainGoal* drivetrain_goal);

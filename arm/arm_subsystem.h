@@ -14,7 +14,6 @@ struct ArmGoal {
   Length elevator_goal;
   AngularVelocity shooter_goal;
 };
-
 enum class IntakeGoal { OFF = 0, REVERSE, FORWARD };
 
 class ArmSubsystem : public muan::Updateable {
@@ -29,6 +28,10 @@ class ArmSubsystem : public muan::Updateable {
   void GoToIntake();
   void GoToDefensive();
 
+  void StartClimb();
+  void ContinueClimb();
+  void CompleteClimb();
+
   void SetEnabled(bool enabled);
 
   void SetIntake(IntakeGoal goal);
@@ -37,6 +40,8 @@ class ArmSubsystem : public muan::Updateable {
   void Shoot();
 
  private:
+  std::tuple<Voltage, bool, Voltage, bool> UpdateClimb(Time dt);
+
   void SetHoodOpen(bool open);
 
   void SetGoal(ArmGoal goal);
@@ -47,10 +52,14 @@ class ArmSubsystem : public muan::Updateable {
     MOVING_PIVOT,
     EXTENDING,
     FINISHED,
+    CLIMBING,
     ESTOP
   };
 
-  ArmState state_;
+  enum class ClimbState { PULLING_UP, PIVOTING_ROBOT, SECOND_PULLUP, DONE };
+
+  ArmState state_ = ArmState::DISABLED;
+  ClimbState climb_state_ = ClimbState::DONE;
 
   std::unique_ptr<Encoder> pivot_encoder_;
   std::unique_ptr<DigitalInput> pivot_hall_;
@@ -73,6 +82,8 @@ class ArmSubsystem : public muan::Updateable {
   ElevatorController elevator_controller_;
   ShooterBang shooter_controller_;
 
+  muan::CSVLog csv_log_;
+
   bool enabled_ = false;
 
   ArmGoal current_goal_;
@@ -80,6 +91,8 @@ class ArmSubsystem : public muan::Updateable {
   muan::Timer shot_timer_;
   bool should_shoot_ = false;
   const Time shot_time = 1 * s;
+
+  Time t = 0 * s;
 
   IntakeGoal intake_target_ = IntakeGoal::OFF;
 };
