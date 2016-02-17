@@ -48,18 +48,19 @@ void DrivetrainSubsystem::Start() {
 void DrivetrainSubsystem::Update(Time dt) {
   DrivetrainPosition pos;
   DrivetrainOutput out;
-  DrivetrainStatus status;
 
   SetDrivePosition(&pos);
 
   {
     mutex_lock lock(mu_);
-    if (is_operator_controlled_) {
-      current_goal_.control_loop_driving = false;
-      drive_loop_->RunIteration(&current_goal_, &pos,
-                                is_enabled_ ? &out : nullptr, &status);
-      // TODO(Wesley) Find out why this is giving 12V and 0V as output
-    } else {
+
+    // TODO(Wesley) Find out why this is giving 12V and 0V as output
+    current_goal_.control_loop_driving = false;
+    drive_loop_->RunIteration(
+        &current_goal_, &pos,
+        (is_enabled_ && is_operator_controlled_) ? &out : nullptr);
+
+    if (!is_operator_controlled_) {
       current_goal_.highgear = false;
       // TODO(Wesley) Reset the PID controller if we went from tele to auto
       // TODO(Wesley) Add operator control to exit auto mode

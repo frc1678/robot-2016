@@ -54,34 +54,9 @@ struct DrivetrainOutput {
   bool right_high;
 };
 
-struct DrivetrainStatus {
-  double robot_speed;
-  double filtered_left_position;
-  double filtered_right_position;
-  double filtered_left_velocity;
-  double filtered_right_velocity;
-
-  double uncapped_left_voltage;
-  double uncapped_right_voltage;
-  bool output_was_capped;
-
-  bool is_done;
-};
-
 class DrivetrainLoop {
  public:
   // TODO (Finn): Write a constructor to zero-initialize everything?
-
-  // Returns true if all the counters etc in the sensor data have been reset.
-  // This will return true only a single time per reset.
-  bool WasReset() {
-    if (reset_) {
-      reset_ = false;
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   // Constructs and sends a message on the output queue which sets everything to
   // a safe state (generally motors off). For some subclasses, this will be a
@@ -90,19 +65,10 @@ class DrivetrainLoop {
   // without the 971 idiom.
   void ZeroOutputs();
 
-  // Runs the loop forever.
-  void Run();
-
-  // Runs one cycle of the loop.
-  void Iterate();
-
   // Executes one cycle of the control loop.
   void RunIteration(const DrivetrainGoal *goal,
                     const DrivetrainPosition *position,
-                    DrivetrainOutput *output, DrivetrainStatus *status);
-
- private:
-  bool reset_ = false;
+                    DrivetrainOutput *output);
 };
 
 }  // namespace control_loops

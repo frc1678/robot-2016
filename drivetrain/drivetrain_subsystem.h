@@ -17,7 +17,6 @@
 using drivetrain::control_loops::DrivetrainGoal;
 using drivetrain::control_loops::DrivetrainPosition;
 using drivetrain::control_loops::DrivetrainOutput;
-using drivetrain::control_loops::DrivetrainStatus;
 using drivetrain::control_loops::DrivetrainLoop;
 
 class DrivetrainSubsystem : public muan::Updateable {

@@ -426,22 +426,10 @@ void DrivetrainLoop::ZeroOutputs() {
 // This will be important once we get it running in its own thread
 // but for now, let's just throw it directly into the main loop
 // to see what happens.
-void DrivetrainLoop::Iterate() {
-}
-
-// TODO (Finn): How are we implementing this? Does this need to be called at all?
-void DrivetrainLoop::Run() {
-  while (true) {
-    Iterate();
-  }
-}
-
-
 
 void DrivetrainLoop::RunIteration(const DrivetrainGoal *goal,
                                   const DrivetrainPosition *position,
-                                  DrivetrainOutput *output,
-                                  DrivetrainStatus * /*status*/) {
+                                  DrivetrainOutput *output) {
   static PolyDrivetrain dt_openloop;
 
   double wheel = goal->steering;
