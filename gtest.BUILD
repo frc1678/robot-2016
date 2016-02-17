@@ -3,11 +3,14 @@ cc_library(
     srcs = glob(
         ["gtest-1.7.0/src/*.cc"],
         exclude = ["gtest-1.7.0/src/gtest-all.cc"]
-    ),
-    hdrs = glob(["gtest-1.7.0/include/**/*.h"]),
+    ) + glob(['gtest-1.7.0/src/**/*.h']),
+    hdrs = glob(['gtest-1.7.0/include/**/*.h']),
     includes = [
-        "gtest-1.7.0",
-        "gtest-1.7.0/include"
+      'gtest-1.7.0',
+      'gtest-1.7.0/include',
+    ],
+    copts = [
+      '-Wno-switch-enum',
     ],
     linkopts = ["-pthread"],
     visibility = ["//visibility:public"],

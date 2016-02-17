@@ -1,12 +1,10 @@
 #ifndef FRC1678_H
 #define FRC1678_H
 
-#include "CitrusButton.h"
+#include "frc1678/CitrusButton.h"
 #include "frc1678/auto/auto_routines.h"
+#include "frc1678/robot_subsystems.h"
 #include "vision/vision.h"
-#include "robot_subsystems.h"
-
-// class LemonScriptRunner { };
 
 class CitrusRobot : public IterativeRobot {
  private:

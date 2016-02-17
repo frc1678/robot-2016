@@ -64,8 +64,7 @@ bool AutoFunction::PointTurn(CitrusRobot* robot, float angle) {
 
 }
 
-
-bool AutoFunction::Wait(CitrusRobot* robot, Time time) {
+bool AutoFunction::Wait(CitrusRobot* /*robot*/, Time /*time*/) {
   if (true) {  // wait_timer->Get() >= time){
     return true;
   } else {
@@ -73,7 +72,7 @@ bool AutoFunction::Wait(CitrusRobot* robot, Time time) {
   }
 }
 
-bool AutoFunction::Shoot(CitrusRobot* robot, Position infield) {
+bool AutoFunction::Shoot(CitrusRobot* /*robot*/, Position infield) {
   if (infield == LOW_BAR) {
     // call shoot from low bar
   } else if (infield == BATTER) {
@@ -87,18 +86,19 @@ bool AutoFunction::Shoot(CitrusRobot* robot, Position infield) {
   return true;  // shooter->finished();
 }
 
-bool AutoFunction::RunIntake(CitrusRobot* robot) {
+bool AutoFunction::RunIntake(CitrusRobot* /*robot*/) {
   // intake->IntakePickup();
   return true;
 }
 
 bool toSetPosition = true;
-bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
+bool AutoFunction::SetArmPosition(CitrusRobot* /*robot*/,
+                                  Position /*arm_position*/) {
   // (TODO) Ash: Set this up later.
   return true;
 }
 
-bool AutoFunction::DropPinch(CitrusRobot* robot) { return true; }
+bool AutoFunction::DropPinch(CitrusRobot* /*robot*/) { return true; }
 
 bool toStartVision = true;
 bool AutoFunction::Align(CitrusRobot* robot) {
@@ -115,7 +115,7 @@ bool AutoFunction::Align(CitrusRobot* robot) {
   return false;
 }
 
-bool AutoFunction::StopDriving(CitrusRobot* robot) {
+bool AutoFunction::StopDriving(CitrusRobot* /*robot*/) {
   // driveSystem->DriveStraight(0,0);
   return true;
 }

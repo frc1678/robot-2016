@@ -1,5 +1,7 @@
 licenses(['notice'])
 
+load('/tools/build_rules/select', 'compiler_select')
+
 cc_library(
   name = 'cddlib',
   visibility = ['//visibility:public'],
@@ -18,4 +20,22 @@ cc_library(
   hdrs = [
     'lib-src/cdd.h',
   ],
+  copts = [
+    #'-Wno-sometimes-uninitialized',
+    '-Wno-unused-parameter',
+    '-Wno-switch-enum',
+    '-Wno-empty-body',
+    '-Wno-sign-compare',
+    '-Wno-unused-result',
+  ] + compiler_select({
+      'gcc': ['-Wno-unused-but-set-variable'],
+      'clang': []
+  }),
+)
+cc_binary(
+  name = '_cddlib.so',
+  deps = [':cddlib'],
+  linkshared = True,
+  visibility = ['//visibility:public'],
+  linkstatic = False,
 )

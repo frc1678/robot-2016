@@ -5,6 +5,24 @@ new_http_archive(
     build_file = "gtest.BUILD",
 )
 
+new_http_archive(
+  name = 'arm_frc_linux_gnueabi_repo',
+  build_file = 'tools/cpp/arm-frc-linux-gnueabi/arm-frc-linux-gnueabi.BUILD',
+  sha256 = '9e93b0712e90d11895444f720f0c90c649fb9becb4ca28bb50749d9074eb1306',
+  url = 'http://frc971.org/Build-Dependencies/roborio-compiler-2016.tar.gz',
+)
+
+# Recompressed version of the one downloaded from Linaro at
+# <https://releases.linaro.org/15.05/components/toolchain/binaries/arm-linux-gnueabihf/gcc-linaro-4.9-2015.05-x86_64_arm-linux-gnueabihf.tar.xz>,
+# with workarounds for <https://github.com/bazelbuild/bazel/issues/574> and the
+# top-level folder stripped off.
+new_http_archive(
+  name = 'linaro_linux_gcc_4.9_repo',
+  build_file = 'compilers/linaro_linux_gcc_4.9.BUILD',
+  sha256 = '25e97bcb0af4fd7cd626d5bb1b303c7d2cb13acf2474e335e3d431d1a53fbb52',
+  url = 'http://frc971.org/Build-Dependencies/gcc-linaro-4.9-2015.05-x86_64_arm-linux-gnueabihf.tar.gz',
+)
+
 # Frozen copy of wpilib source
 new_http_archive(
   name = 'wpilib',
@@ -18,11 +36,4 @@ new_http_archive(
   build_file = 'eigen.BUILD',
   sha256 = 'e37ad303cddf324a16b49e43edfb00129972442c0d8a2d866605bc29de94571a',
   url = 'https://bitbucket.org/eigen/eigen/get/4111270ba6e1.zip'
-)
-
-new_git_repository(
-  name = 'cddlib',
-  build_file = 'cddlib.BUILD',
-  remote = 'https://github.com/mcmtroffaes/cddlib',
-  commit = '370919d'
 )

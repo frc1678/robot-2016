@@ -5,7 +5,7 @@
 #include "muan/utils/math_utils.h"
 #include <iostream>
 
-ElevatorController::ElevatorController(Time dt)
+ElevatorController::ElevatorController(Time /*dt*/)
     : controller_(60 * V / m, 10 * V / m / s, 0 * V / m * s),
       climb_controller_(60 * V / m, 10 * V / m / s, 0 * V / m * s) {
   current_displacement_ = 0 * m;
