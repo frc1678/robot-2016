@@ -29,6 +29,7 @@ DrivetrainSubsystem::DrivetrainSubsystem()
 
   event_log_.Write("Done initializing drivetrain subsystem components", "INIT",
                    CODE_STAMP);
+  current_goal_ = {};
 }
 
 DrivetrainSubsystem::~DrivetrainSubsystem() {}
@@ -46,9 +47,9 @@ void DrivetrainSubsystem::Start() {
 }
 
 void DrivetrainSubsystem::Update(Time dt) {
-  DrivetrainPosition pos;
-  DrivetrainOutput out;
-  DrivetrainStatus status;
+  DrivetrainPosition pos{};
+  DrivetrainOutput out{};
+  DrivetrainStatus status{};
 
   SetDrivePosition(&pos);
 
@@ -87,7 +88,6 @@ void DrivetrainSubsystem::Update(Time dt) {
       // Gyro interpolation - TODO(Kyle or Wesley) Make this less sketchy
       Angle tmp_angle = angle_from_start;
       Angle tmp_old_angle = old_angle_;
-      Angle tmp_even_older_angle = even_older_angle_;
 
       if (angle_from_start == old_angle_) {
         angle_from_start += (angle_from_start - even_older_angle_) / 2;
