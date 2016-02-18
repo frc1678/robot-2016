@@ -23,12 +23,13 @@ DrivetrainSubsystem::DrivetrainSubsystem()
   right_encoder_ = std::make_unique<Encoder>(RobotPorts::right_encoder_a,
                                              RobotPorts::right_encoder_b);
 
-  shifting_ = std::make_unique<Solenoid>(RobotPorts::shift_a);
+  shifting_ = std::make_unique<Solenoid>(RobotPorts::shift);
 
   gyro_reader_ = std::make_unique<GyroReader>();
 
   event_log_.Write("Done initializing drivetrain subsystem components", "INIT",
                    CODE_STAMP);
+  current_goal_ = {0.0, 0.0, false, false, false, 0.0, 0.0, 0.0, 0.0};
 }
 
 DrivetrainSubsystem::~DrivetrainSubsystem() {}
@@ -46,16 +47,18 @@ void DrivetrainSubsystem::Start() {
 }
 
 void DrivetrainSubsystem::Update(Time dt) {
-  DrivetrainPosition pos;
-  DrivetrainOutput out;
-  DrivetrainStatus status;
+  DrivetrainPosition pos{};
+  DrivetrainOutput out{};
+  DrivetrainStatus status{};
 
   SetDrivePosition(&pos);
 
   {
     mutex_lock lock(mu_);
     if (is_operator_controlled_) {
-      drive_loop_->RunIteration(&current_goal_, &pos, &out, &status);
+      current_goal_.control_loop_driving = false;
+      drive_loop_->RunIteration(&current_goal_, &pos,
+                                is_enabled_ ? &out : nullptr, &status);
       // TODO(Wesley) Find out why this is giving 12V and 0V as output
     } else {
       current_goal_.highgear = false;
@@ -85,7 +88,6 @@ void DrivetrainSubsystem::Update(Time dt) {
       // Gyro interpolation - TODO(Kyle or Wesley) Make this less sketchy
       Angle tmp_angle = angle_from_start;
       Angle tmp_old_angle = old_angle_;
-      Angle tmp_even_older_angle = even_older_angle_;
 
       if (angle_from_start == old_angle_) {
         angle_from_start += (angle_from_start - even_older_angle_) / 2;
@@ -119,15 +121,10 @@ void DrivetrainSubsystem::Update(Time dt) {
           std::abs((angle_from_start - angle_profile_->Calculate(t)).to(deg)) <
           .2 * deg;
 
-      printf("%f\t%f\t%f\t%f\t%f\t%f   \n", t.to(s), out.left_voltage,
-             out.right_voltage, distance_from_start.to(m),
-             distance_profile_->Calculate(t).to(m),
-             distance_profile_->CalculateDerivative(t).to(m / s));
-
       if (profiles_finished_time && profile_finished_angle &&
           profile_finished_distance) {
-        angle_profile_.release();
-        distance_profile_.release();
+        angle_profile_.reset();
+        distance_profile_.reset();
         is_operator_controlled_ = true;
         angle_controller_.Reset();
         printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
@@ -230,7 +227,6 @@ Voltage DrivetrainSubsystem::GetAngleFFVoltage(AngularVelocity velocity,
   // omega_dot = c1 * (V-c2*omega)
   // V = c2*omega - omega_dot / c1
   Voltage total_output;
-  /* decltype((deg / s / s) / V) */
   if (highgear) {
     AngularVelocity max_robot_angular_velocity = 380 * deg / s;
     const auto c2 = 24 * V / max_robot_angular_velocity;
@@ -265,3 +261,5 @@ Voltage DrivetrainSubsystem::GetDistanceFFVoltage(Velocity velocity,
   Voltage total_output = c2 * velocity + acceleration / c1;
   return total_output / 2;
 }
+
+void DrivetrainSubsystem::SetEnabled(bool enabled) { is_enabled_ = enabled; }
