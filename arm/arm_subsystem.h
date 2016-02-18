@@ -39,6 +39,8 @@ class ArmSubsystem : public muan::Updateable {
 
   void Shoot();
 
+  bool AllIsDone();
+
  private:
   std::tuple<Voltage, bool, Voltage, bool> UpdateClimb(Time dt);
 

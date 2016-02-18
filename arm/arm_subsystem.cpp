@@ -264,3 +264,7 @@ void ArmSubsystem::Shoot() {
   shot_timer_.Reset();
   should_shoot_ = true;
 }
+
+bool ArmSubsystem::AllIsDone() {
+  return false;
+}
