@@ -1,7 +1,7 @@
 #ifndef ARM_PIVOT_PIVOT_CONTROLLER_H_
 #define ARM_PIVOT_PIVOT_CONTROLLER_H_
 
-#include "muan/control/pid_controller.h"
+#include "muan/control/average_filter_pid.h"
 
 class PivotController {
  public:
@@ -19,7 +19,7 @@ class PivotController {
 
  private:
   enum class PivotState { DISABLED = 0, CALIBRATING, MOVING, FINISHED, ESTOP };
-  muan::PidController<Angle, Voltage> controller_, climb_controller_;
+  muan::AverageFilterPidController<Angle, Voltage> controller_, climb_controller_;
   Angle goal_;
   Angle last_;
   Angle offset_;

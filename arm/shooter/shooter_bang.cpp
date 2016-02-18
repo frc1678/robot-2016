@@ -19,7 +19,6 @@ Voltage ShooterBang::Update(Time dt, Angle displacement) {
   if (goal_ == 0) {
     out_voltage = 0 * V;
   }
-  std::cout << velocity.to(rpm) << ", " << out_voltage << std::endl;
   return muan::Cap(out_voltage, -12 * V, 12 * V);
 }
 

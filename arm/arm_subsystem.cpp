@@ -190,7 +190,7 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
 }
 
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{42 * deg, .38 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{45 * deg, .38 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
   /* std::cout << "Opening hood" << std::endl; */

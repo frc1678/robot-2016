@@ -4,7 +4,7 @@
 #include <cmath>
 
 PivotController::PivotController()
-    : controller_(30 * V / rad, 20 * V / (rad * s), 0 * V / (rad / s)),
+    : controller_(40 * V / rad, 0 * V / (rad * s), 1 * V / (rad / s)),
       climb_controller_(60 * V / rad, 40 * V / (rad * s), 0 * V / (rad / s)) {
   goal_ = offset_ = 0 * deg;
 }
@@ -28,7 +28,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
     case PivotState::CALIBRATING:
       out_voltage_ = -1 * V;
       if (min_hall_triggered) {
-        offset_ = encoder_angle - 20.2 * deg;
+        offset_ = encoder_angle - 23.4 * deg;
         state_ = PivotState::FINISHED;
         calibrated_ = true;
       }
@@ -62,7 +62,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       break;
   }
   last_ = angle;
-  /* std::cout << (goal_ - angle).to(deg) << std::endl; */
+  std::cout << (angle).to(deg) << std::endl;
   out_voltage_ =
       muan::Cap(out_voltage_, (calibrated_ ? -4 * V : -12 * V), 12 * V);
   return out_voltage_;

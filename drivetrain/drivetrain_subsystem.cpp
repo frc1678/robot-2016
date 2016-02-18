@@ -29,7 +29,7 @@ DrivetrainSubsystem::DrivetrainSubsystem()
 
   event_log_.Write("Done initializing drivetrain subsystem components", "INIT",
                    CODE_STAMP);
-  current_goal_ = {};
+  current_goal_ = {0.0, 0.0, false, false, false, 0.0, 0.0, 0.0, 0.0};
 }
 
 DrivetrainSubsystem::~DrivetrainSubsystem() {}
