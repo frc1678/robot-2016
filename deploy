@@ -1,5 +1,5 @@
 which sshpass
-if [ $? -eq 1 ]
+if [ 1 -eq 1 ]
 then
   echo "no sshpass"
   ssh_command=""
