@@ -1,15 +1,15 @@
 which sshpass
 if [ 1 -eq 1 ]
-then
-  echo "no sshpass"
-  ssh_command=""
+ then
+   echo "no sshpass"
+   ssh_command=""
 else
   echo "sshpass"
   ssh_command="sshpass -p '' "
-fi
-
-echo "Starting ./deploy"
-
+ fi
+ 
+ echo "Starting ./deploy"
+ 
 $ssh_command ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
 rm -f /home/lvuser/FRCUserProgram
 # kill -9 $(pidof FRCUserProgram)
@@ -26,7 +26,13 @@ ENDSSH
 
 $ssh_command scp robotCommand admin@roboRIO-1678-FRC.local:/home/lvuser/robotCommand
 
-$ssh_command ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
-. /etc/profile.d/natinst-path.sh; chmod a+x /home/lvuser/FRCUserProgram; /usr/local/frc/bin/frcKillRobot.sh -t -r;
-sync
+if [ $1 == "debug" ]
+then
+ echo "running debug, not automatically running"
+else
+ echo "default to run automatically, run './deploy debug' to not run automatically"
+ $ssh_command ssh admin@roboRIO-1678-FRC.local <<'ENDSSH'
+ . /etc/profile.d/natinst-path.sh; chmod a+x /home/lvuser/FRCUserProgram; /usr/local/frc/bin/frcKillRobot.sh -t -r;
+ sync
 ENDSSH
+fi
