@@ -9,8 +9,7 @@ drive straight at angle: distance = 6.0, angle = 0.0
 drive straight at angle: distance = 10.5, angle = 0.0
 
 point turn: angle = -45.0
-wait: seconds = 2.0
-align
-
 set arm position: LONG = 0
+align
+wait: seconds = 2.0
 shoot

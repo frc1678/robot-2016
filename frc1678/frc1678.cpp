@@ -44,10 +44,12 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
-  subsystems_.arm.SetEnabled(true);
 }
 
-void CitrusRobot::AutonomousInit() {}
+void CitrusRobot::AutonomousInit() {
+  subsystems_.drive.SetEnabled(true);
+  subsystems_.arm.SetEnabled(true);
+}
 
 void CitrusRobot::AutonomousPeriodic() { auto_runner->Update(); }
 

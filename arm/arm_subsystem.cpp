@@ -194,7 +194,7 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
 }
 
 bool ArmSubsystem::IsDone() {
-  return state_ == ArmState::FINISHED && shooter_controller_.IsDone();
+  return state_ == ArmState::FINISHED;
 }
 
 // Sets targets for the arm subsystem
