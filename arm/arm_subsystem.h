@@ -21,7 +21,12 @@ class ArmSubsystem : public muan::Updateable {
   ArmSubsystem();
   ~ArmSubsystem();
 
+  bool IsCalibrated();
+
   void Update(Time dt) override;
+
+  bool IsDone();
+
   void GoToLong();
   void GoToTuck();
   void GoToFender();

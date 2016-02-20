@@ -37,6 +37,10 @@ ArmSubsystem::ArmSubsystem()
 
 ArmSubsystem::~ArmSubsystem() {}
 
+bool ArmSubsystem::IsCalibrated() {
+  return pivot_controller_.IsCalibrated();
+}
+
 void ArmSubsystem::Update(Time dt) {
   Voltage elevator_voltage = elevator_controller_.Update(
       dt, elevator_encoder_->Get() * .0003191764 * m,
@@ -189,6 +193,11 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
                          elevator_brake);
 }
 
+bool ArmSubsystem::IsDone() {
+  return state_ == ArmState::FINISHED && shooter_controller_.IsDone();
+}
+
+// Sets targets for the arm subsystem
 void ArmSubsystem::GoToLong() {
   ArmGoal goal{45 * deg, .38 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);

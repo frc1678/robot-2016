@@ -102,6 +102,7 @@ Voltage PivotController::UpdateClimb(Time dt, Angle encoder_angle,
   /* std::cout << (goal_ - angle).to(deg) << std::endl; */
   out_voltage_ =
       muan::Cap(out_voltage_, (calibrated_ ? -4 * V : -12 * V), 12 * V);
+  printf("Angle: %f\n", angle.to(deg));
   return out_voltage_;
 }
 

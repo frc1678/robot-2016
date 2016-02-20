@@ -38,12 +38,13 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
   // Auto
-  auto_runner = new LemonScriptRunner("twoBall2016.auto", this);
+  auto_runner = new LemonScriptRunner("oneBall2016.auto", this);
 }
 
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
+  subsystems_.arm.SetEnabled(true);
 }
 
 void CitrusRobot::AutonomousInit() {}
