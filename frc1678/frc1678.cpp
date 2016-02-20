@@ -102,18 +102,28 @@ void CitrusRobot::TeleopPeriodic() {
   }
   if (tuck_pos_->ButtonClicked()) {
     subsystems_.arm.GoToTuck();
+    shootable_ = false;
+    start_climb_ = false;
   }
   if (defensive_pos_->ButtonClicked()) {
     subsystems_.arm.GoToDefensive();
+    shootable_ = false;
+    start_climb_ = false;
   }
   if (intake_pos_->ButtonClicked()) {
     subsystems_.arm.GoToIntake();
+    shootable_ = false;
+    start_climb_ = false;
   }
   if (fender_pos_->ButtonClicked()) {
     subsystems_.arm.GoToFender();
+    shootable_ = false;
+    start_climb_ = false;
   }
   if (long_pos_->ButtonClicked()) {
     subsystems_.arm.GoToLong();
+    shootable_ = true;
+    start_climb_ = false;
   }
   if (run_intake_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::FORWARD);
@@ -125,12 +135,18 @@ void CitrusRobot::TeleopPeriodic() {
 
   if (climb_pos_->ButtonClicked()) {
     subsystems_.arm.StartClimb();
+    shootable_ = false;
+    start_climb_ = true;
   }
   if (climb_pos_continue_->ButtonClicked()) {
     subsystems_.arm.ContinueClimb();
+    shootable_ = false;
+    start_climb_ = false;
   }
   if (climb_end_->ButtonClicked()) {
     subsystems_.arm.CompleteClimb();
+    shootable_ = false;
+    start_climb_ = false;
   }
 
   SetDriveGoal(&drivetrain_goal);
@@ -167,25 +183,27 @@ void CitrusRobot::UpdateButtons() {
 }
 
 void CitrusRobot::UpdateLights() {
-  // if(subsystems_.arm.AllIsDone()) {
-  lights_ = ColorLight::RED;
-  // }
-  // if(armistolock) {
-  lights_ = ColorLight::YELLOW;
-  // }
-  // if(armisreadyfire) {
-  lights_ = ColorLight::GREEN;
-  // }
-  // if(armisclimbready) {
-  lights_ = ColorLight::RED;
-  // }
-  // if(armisclimbhalf) {
-  lights_ = ColorLight::YELLOW;
-  // }
-  // if(armisclimbdone) {
-  lights_ = ColorLight::GREEN;
-  // }
-  SmartDashboard::PutString("Color", "UNFINNISHED");  // lights_.tostring());
+  //  if (subsystems_.arm.ClimbIsDone()) {
+  //    lights_ = ColorLight::GREEN;
+  //  }
+  if (subsystems_.arm.AllIsDone() &&
+      !vision_.IsSeeing()) {  // if arm is at position, not seeing
+                              // vision
+    lights_ = ColorLight::RED;
+  }
+  if (vision_.IsSeeing() &&
+      subsystems_.arm
+          .AllIsDone()) {  // if vision sees target + arm is done, yellow!
+    lights_ = ColorLight::YELLOW;
+  }
+  if (vision_.Update(true) && shootable_ &&
+      subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
+    lights_ = ColorLight::GREEN;
+  }
+  //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
+  //    lights_ = ColorLight::YELLOW;
+  //  }
+  std::cout << "lights" << static_cast<int>(lights_) << std::endl;
 }
 
 CitrusRobot::~CitrusRobot() {}

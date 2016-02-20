@@ -7,7 +7,8 @@ ArmSubsystem::ArmSubsystem()
       elevator_controller_(.005 * s),
       csv_log_("arm_subsystem",
                {"time", "pivot_voltage", "elevator_voltage", "pivot_angle",
-                "elevator_position", "state", "climb_state", "shooter_voltage", "shooter_velocity"}) {
+                "elevator_position", "state", "climb_state", "shooter_voltage",
+                "shooter_velocity"}) {
   pivot_encoder_ = std::make_unique<Encoder>(RobotPorts::pivot_encoder_a,
                                              RobotPorts::pivot_encoder_b);
   pivot_hall_ = std::make_unique<DigitalInput>(RobotPorts::pivot_hall);
@@ -56,6 +57,7 @@ void ArmSubsystem::Update(Time dt) {
       elevator_brake = elevator_controller_.IsDone();
       break;
     case ArmState::RETRACTING:
+      finished_ = false;
       pivot_voltage = 0 * V;
       if (elevator_controller_.IsDone()) {
         state_ = ArmState::MOVING_PIVOT;
@@ -63,6 +65,7 @@ void ArmSubsystem::Update(Time dt) {
       }
       break;
     case ArmState::MOVING_PIVOT:
+      finished_ = false;
       elevator_voltage = 0 * V;
       elevator_brake = true;
       if (pivot_controller_.IsDone()) {
@@ -72,6 +75,7 @@ void ArmSubsystem::Update(Time dt) {
       }
       break;
     case ArmState::EXTENDING:
+      finished_ = false;
       pivot_voltage = 0 * V;
       if (elevator_controller_.IsDone()) {
         state_ = ArmState::FINISHED;
@@ -83,6 +87,7 @@ void ArmSubsystem::Update(Time dt) {
         pivot_brake = true;
         elevator_brake = true;
       }
+      finished_ = true;
       elevator_voltage = 0 * V;
       break;
     case ArmState::CLIMBING:
@@ -133,7 +138,6 @@ void ArmSubsystem::Update(Time dt) {
     intake_front_->Set(0);
     intake_side_->Set(0);
   }
-  std::cout << "Elevator brake" << static_cast<int>(elevator_brake) << std::endl;
 
   csv_log_["time"] = std::to_string(t.to(s));
   csv_log_["pivot_voltage"] = std::to_string(pivot_voltage.to(V));
@@ -145,7 +149,8 @@ void ArmSubsystem::Update(Time dt) {
   csv_log_["state"] = std::to_string(static_cast<int>(state_));
   csv_log_["climb_state"] = std::to_string(static_cast<int>(climb_state_));
   csv_log_["shooter_voltage"] = std::to_string(shooter_voltage.to(V));
-  csv_log_["shooter_velocity"] = std::to_string((shooter_controller_.GetVelocity()).to(rev/(60*s)));
+  csv_log_["shooter_velocity"] =
+      std::to_string((shooter_controller_.GetVelocity()).to(rev / (60 * s)));
   csv_log_.EndLine();
   t += dt;
 }
@@ -153,6 +158,7 @@ void ArmSubsystem::Update(Time dt) {
 std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
   Voltage elevator_voltage, pivot_voltage;
   bool elevator_brake, pivot_brake;
+  climbing_done_ = false;
   elevator_voltage = elevator_controller_.UpdateClimb(
       dt, elevator_encoder_->Get() * .0003191764 * m,
       pivot_encoder_->Get() * deg / 5.0, enabled_);
@@ -185,7 +191,7 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
       }
       break;
     case ClimbState::DONE:
-      pivot_brake = elevator_brake = true;
+      pivot_brake = elevator_brake = climbing_done_ = true;
       break;
   }
   return std::make_tuple(pivot_voltage, pivot_brake, elevator_voltage,
@@ -267,6 +273,6 @@ void ArmSubsystem::Shoot() {
   should_shoot_ = true;
 }
 
-bool ArmSubsystem::AllIsDone() {
-  return false;
-}
+bool ArmSubsystem::AllIsDone() { return finished_; }
+
+bool ArmSubsystem::ClimbIsDone() { return climbing_done_; }

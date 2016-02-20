@@ -8,7 +8,7 @@
 
 // class LemonScriptRunner { };
 
-enum class ColorLight { RED = 0, YELLOW, GREEN};
+enum class ColorLight { RED = 0, YELLOW, GREEN };
 
 class CitrusRobot : public IterativeRobot {
  private:
@@ -31,10 +31,12 @@ class CitrusRobot : public IterativeRobot {
   std::unique_ptr<CitrusAxis> run_intake_, reverse_intake_;
 
   ColorLight lights_;
-  
+
   bool test_flag_;
   bool in_highgear_;
   bool vision_done_ = false;  // UGLY HACK
+  bool shootable_ = false;    // ALSO UGLY HACK
+  bool start_climb_ = false;  // ANOTHER UGLY HACK
 
   CitrusRobot();
   void RobotInit();

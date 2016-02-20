@@ -11,6 +11,7 @@ class CitrusVision {
   CitrusVision(RobotSubsystems& subsystems);
   void Start();
   bool Update(bool enable);
+  bool IsSeeing();
   void EndTest();
 
  private:
