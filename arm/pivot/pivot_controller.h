@@ -7,7 +7,7 @@ class PivotController {
  public:
   PivotController();
   ~PivotController();
-  void SetGoal(Angle goal);
+  void SetGoal(Angle goal, Angle thresh_);
   Voltage Update(Time dt, Angle encoder_angle, bool min_hall_triggered,
                  bool enabled);
   Voltage UpdateClimb(Time dt, Angle encoder_angle, bool min_hall_triggered,
@@ -31,6 +31,8 @@ class PivotController {
   bool calibrated_ = false;
   bool should_fire_brake_ = false;
   Time brake_timer_;
+  
+  Angle thresh_;
 };
 
 #endif /* ARM_PIVOT_PIVOT_CONTROLLER_H_ */

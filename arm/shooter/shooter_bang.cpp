@@ -5,14 +5,15 @@
 ShooterBang::ShooterBang() {
   previous_displacement_ = 0 * deg;
   goal_ = 0 * (deg / s);
+  velocity_ = 0 * (deg / s);
 }
 
 ShooterBang::~ShooterBang() {}
 
 Voltage ShooterBang::Update(Time dt, Angle displacement) {
   Voltage out_voltage = 0 * V;
-  AngularVelocity velocity = -(displacement - previous_displacement_) / dt;
-  if (velocity < goal_) {
+  velocity_ = -(displacement - previous_displacement_) / dt;
+  if (velocity_ < goal_) {
     out_voltage = 12 * V;
   }
   previous_displacement_ = displacement;
@@ -23,3 +24,5 @@ Voltage ShooterBang::Update(Time dt, Angle displacement) {
 }
 
 void ShooterBang::SetGoal(AngularVelocity goal) { goal_ = goal; }
+
+AngularVelocity ShooterBang::GetVelocity() { return velocity_; }
