@@ -92,9 +92,6 @@ void ArmSubsystem::Update(Time dt) {
       break;
   }
 
-  /* std::cout << "Elevator Dist: " << elevator_encoder_->Get() * .0003191764 */
-  /*           << std::endl; */
-
   pivot_motor_a_->Set(pivot_voltage.to(12 * V));
   pivot_motor_b_->Set(pivot_voltage.to(12 * V));
   pivot_disk_brake_->Set(pivot_brake ? DoubleSolenoid::Value::kReverse
@@ -193,7 +190,6 @@ void ArmSubsystem::GoToLong() {
   ArmGoal goal{45 * deg, .38 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
-  /* std::cout << "Opening hood" << std::endl; */
 }
 
 void ArmSubsystem::GoToTuck() {
