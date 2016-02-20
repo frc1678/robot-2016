@@ -97,6 +97,8 @@ class ArmSubsystem : public muan::Updateable {
   Time t = 0 * s;
 
   IntakeGoal intake_target_ = IntakeGoal::OFF;
+
+  Angle thresh_;
 };
 
 #endif /* ARM_ARM_SUBSYSTEM_H_ */
