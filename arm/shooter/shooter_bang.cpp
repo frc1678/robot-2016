@@ -5,6 +5,7 @@
 ShooterBang::ShooterBang() {
   previous_displacement_ = 0 * deg;
   goal_ = 0 * (deg / s);
+  last_ = 0 * (deg / s);
 }
 
 ShooterBang::~ShooterBang() {}
@@ -29,3 +30,4 @@ void ShooterBang::SetGoal(AngularVelocity goal) { goal_ = goal; }
 bool ShooterBang::IsDone() {
   return muan::abs(goal_ - last_) < 20.0 * rad / s;
 }
+AngularVelocity ShooterBang::GetVelocity() { return last_; }

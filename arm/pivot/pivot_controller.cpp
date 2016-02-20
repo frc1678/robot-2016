@@ -4,23 +4,26 @@
 #include <cmath>
 
 PivotController::PivotController()
-    : controller_(40 * V / rad, 0 * V / (rad * s), 1 * V / (rad / s)),
-      climb_controller_(60 * V / rad, 40 * V / (rad * s), 0 * V / (rad / s)) {
+    : controller_(40 * V / rad, 15 * V / (rad * s), 1 * V / (rad / s)),
+      climb_controller_(100 * V / rad, 40 * V / (rad * s), 0 * V / (rad / s)) {
   goal_ = offset_ = 0 * deg;
+  thresh_ = .5 * deg;
 }
 
 PivotController::~PivotController() {}
 
-void PivotController::SetGoal(Angle goal) {
+void PivotController::SetGoal(Angle goal, Angle thresh) {
   if (calibrated_) state_ = PivotState::MOVING;
   goal_ = goal;
   controller_.Reset();
+  thresh_ = thresh;
 }
 
 Voltage PivotController::Update(Time dt, Angle encoder_angle,
                                 bool min_hall_triggered, bool enabled) {
   Voltage out_voltage_;
   Angle angle = encoder_angle - offset_;
+  std::cout << angle.to(deg) << std::endl;
   if (!enabled) {
     state_ = PivotState::DISABLED;
   }
@@ -35,7 +38,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       break;
     case PivotState::MOVING:
       out_voltage_ = controller_.Calculate(dt, goal_ - angle);
-      if (muan::abs(goal_ - angle) < .5 * deg) {
+      if (muan::abs(goal_ - angle) < thresh_) {
         should_fire_brake_ = true;
       }
       if (ShouldFireBrake()) {
@@ -62,7 +65,6 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       break;
   }
   last_ = angle;
-  std::cout << (angle).to(deg) << std::endl;
   out_voltage_ =
       muan::Cap(out_voltage_, (calibrated_ ? -4 * V : -12 * V), 12 * V);
   return out_voltage_;
@@ -99,7 +101,6 @@ Voltage PivotController::UpdateClimb(Time dt, Angle encoder_angle,
       break;
   }
   last_ = angle;
-  /* std::cout << (goal_ - angle).to(deg) << std::endl; */
   out_voltage_ =
       muan::Cap(out_voltage_, (calibrated_ ? -4 * V : -12 * V), 12 * V);
   printf("Angle: %f\n", angle.to(deg));

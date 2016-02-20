@@ -4,6 +4,7 @@
 #include <memory>
 #include <WPILib.h>
 
+#include "unitscpp/unitscpp.h"
 #include "muan/multithreading/updateable.h"
 #include "muan/control/motion_profile.h"
 #include "muan/control/trapezoidal_motion_profile.h"
@@ -41,7 +42,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   void PointTurn(Angle angle, bool highgear = false);
   void AbsolutePointTurn(Angle angle, bool highgear = false);
   void DriveDistance(Length distance, bool highgear = false);
-  void DriveDistanceAtAngle(Length distance, Angle angle, bool highgear = false);
+  void DriveDistanceAtAngle(Length distance, Angle angle,
+                            bool highgear = false);
 
   void SetEnabled(bool enabled);
 

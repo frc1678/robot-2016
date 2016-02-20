@@ -7,7 +7,7 @@ ArmSubsystem::ArmSubsystem()
       elevator_controller_(.005 * s),
       csv_log_("arm_subsystem",
                {"time", "pivot_voltage", "elevator_voltage", "pivot_angle",
-                "elevator_position", "state", "climb_state"}) {
+                "elevator_position", "state", "climb_state", "shooter_voltage", "shooter_velocity"}) {
   pivot_encoder_ = std::make_unique<Encoder>(RobotPorts::pivot_encoder_a,
                                              RobotPorts::pivot_encoder_b);
   pivot_hall_ = std::make_unique<DigitalInput>(RobotPorts::pivot_hall);
@@ -33,6 +33,8 @@ ArmSubsystem::ArmSubsystem()
   intake_side_ = std::make_unique<VictorSP>(RobotPorts::intake_side);
 
   shot_timer_.Start();
+
+  thresh_ = 0.5 * deg;
 }
 
 ArmSubsystem::~ArmSubsystem() {}
@@ -54,18 +56,19 @@ void ArmSubsystem::Update(Time dt) {
     case ArmState::DISABLED:
       if (enabled_) state_ = ArmState::FINISHED;
       pivot_voltage = elevator_voltage = 0 * V;
-      break;
       pivot_brake = pivot_controller_.ShouldFireBrake();
       elevator_brake = elevator_controller_.IsDone();
+      break;
     case ArmState::RETRACTING:
       pivot_voltage = 0 * V;
       if (elevator_controller_.IsDone()) {
         state_ = ArmState::MOVING_PIVOT;
-        pivot_controller_.SetGoal(current_goal_.pivot_goal);
+        pivot_controller_.SetGoal(current_goal_.pivot_goal, thresh_);
       }
       break;
     case ArmState::MOVING_PIVOT:
       elevator_voltage = 0 * V;
+      elevator_brake = true;
       if (pivot_controller_.IsDone()) {
         state_ = ArmState::EXTENDING;
         elevator_controller_.SetGoal(current_goal_.elevator_goal);
@@ -95,9 +98,6 @@ void ArmSubsystem::Update(Time dt) {
       pivot_brake = elevator_brake = false;
       break;
   }
-
-  /* std::cout << "Elevator Dist: " << elevator_encoder_->Get() * .0003191764 */
-  /*           << std::endl; */
 
   pivot_motor_a_->Set(pivot_voltage.to(12 * V));
   pivot_motor_b_->Set(pivot_voltage.to(12 * V));
@@ -147,6 +147,8 @@ void ArmSubsystem::Update(Time dt) {
       std::to_string(elevator_controller_.GetPosition().to(m));
   csv_log_["state"] = std::to_string(static_cast<int>(state_));
   csv_log_["climb_state"] = std::to_string(static_cast<int>(climb_state_));
+  csv_log_["shooter_voltage"] = std::to_string(shooter_voltage.to(V));
+  csv_log_["shooter_velocity"] = std::to_string((shooter_controller_.GetVelocity()).to(rev/(60*s)));
   csv_log_.EndLine();
   t += dt;
 }
@@ -164,7 +166,7 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
       pivot_brake = true;
       elevator_brake = elevator_controller_.IsDone();
       if (elevator_controller_.IsDone()) {
-        pivot_controller_.SetGoal(80 * deg);
+        pivot_controller_.SetGoal(80 * deg, thresh_);
         climb_state_ = ClimbState::PIVOTING_ROBOT;
       }
       break;
@@ -199,10 +201,9 @@ bool ArmSubsystem::IsDone() {
 
 // Sets targets for the arm subsystem
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{45 * deg, .38 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{43 * deg, .38 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
-  /* std::cout << "Opening hood" << std::endl; */
 }
 
 void ArmSubsystem::GoToTuck() {
@@ -230,27 +231,27 @@ void ArmSubsystem::GoToDefensive() {
 }
 
 void ArmSubsystem::StartClimb() {
-  ArmGoal goal{80 * deg, 0.585 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{85 * deg, 0.58 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::ContinueClimb() {
-  ArmGoal goal{95 * deg, 0.585 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{97 * deg, 0.58 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   // I'm sorry, future self. I know you're disappointed in me, but I'm too
   // lazy
   // to do this correctly. :'(
   // Don't retract the arm
   state_ = ArmState::MOVING_PIVOT;
-  pivot_controller_.SetGoal(current_goal_.pivot_goal);
+  pivot_controller_.SetGoal(current_goal_.pivot_goal, 1.0 * deg);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::CompleteClimb() {
   state_ = ArmState::CLIMBING;
   climb_state_ = ClimbState::PULLING_UP;
-  elevator_controller_.SetGoal(.3 * m);
+  elevator_controller_.SetGoal(0 * m);
 }
 
 void ArmSubsystem::SetHoodOpen(bool open) { shooter_hood_->Set(open); }

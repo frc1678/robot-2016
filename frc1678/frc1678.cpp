@@ -90,11 +90,12 @@ void CitrusRobot::TeleopPeriodic() {
 
   SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   SmartDashboard::PutNumber("Stick", j_stick_->GetY());
-  
+
   if (shoot_->ButtonClicked()) {
     subsystems_.arm.Shoot();
   }
   if (align_->ButtonClicked()) {
+    vision_.Start();
   }
   if (shift_high_->ButtonClicked()) {
     in_highgear_ = true;
@@ -169,25 +170,25 @@ void CitrusRobot::UpdateButtons() {
 }
 
 void CitrusRobot::UpdateLights() {
-// if(subsystems_.arm.AllIsDone()) {
-   lights_ = ColorLight::RED;
-// }
-// if(armistolock) {
-   lights_ = ColorLight::YELLOW;
-// }
-// if(armisreadyfire) {
-   lights_ = ColorLight::GREEN;
-// }
-// if(armisclimbready) {
-   lights_ = ColorLight::RED;
-// }
-// if(armisclimbhalf) {
-   lights_ = ColorLight::YELLOW;
-// }
-// if(armisclimbdone) {
-   lights_ = ColorLight::GREEN;
-// }
- SmartDashboard::PutString("Color", "UNFINNISHED");//lights_.tostring());
+  // if(subsystems_.arm.AllIsDone()) {
+  lights_ = ColorLight::RED;
+  // }
+  // if(armistolock) {
+  lights_ = ColorLight::YELLOW;
+  // }
+  // if(armisreadyfire) {
+  lights_ = ColorLight::GREEN;
+  // }
+  // if(armisclimbready) {
+  lights_ = ColorLight::RED;
+  // }
+  // if(armisclimbhalf) {
+  lights_ = ColorLight::YELLOW;
+  // }
+  // if(armisclimbdone) {
+  lights_ = ColorLight::GREEN;
+  // }
+  SmartDashboard::PutString("Color", "UNFINNISHED");  // lights_.tostring());
 }
 
 CitrusRobot::~CitrusRobot() {}
