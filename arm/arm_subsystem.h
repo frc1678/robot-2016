@@ -14,7 +14,7 @@ struct ArmGoal {
   Length elevator_goal;
   AngularVelocity shooter_goal;
 };
-enum class IntakeGoal { OFF = 0, REVERSE, FORWARD };
+enum class IntakeGoal { OFF = 0, REVERSE, FORWARD_UNTIL, FORWARD_FOREVER };
 
 class ArmSubsystem : public muan::Updateable {
  public:
@@ -80,6 +80,8 @@ class ArmSubsystem : public muan::Updateable {
 
   std::unique_ptr<VictorSP> intake_front_;
   std::unique_ptr<VictorSP> intake_side_;
+
+  std::unique_ptr<DigitalInput> ball_sensor_;
 
   PivotController pivot_controller_;
   ElevatorController elevator_controller_;

@@ -33,6 +33,8 @@ ArmSubsystem::ArmSubsystem()
   intake_front_ = std::make_unique<VictorSP>(RobotPorts::intake_front);
   intake_side_ = std::make_unique<VictorSP>(RobotPorts::intake_side);
 
+  ball_sensor_ = std::make_unique<DigitalInput>(RobotPorts::ball_sensor);
+
   shot_timer_.Start();
 
   thresh_ = 0.5 * deg;
@@ -41,6 +43,7 @@ ArmSubsystem::ArmSubsystem()
 ArmSubsystem::~ArmSubsystem() {}
 
 void ArmSubsystem::Update(Time dt) {
+  std::cout << ball_sensor_->Get() << std::endl;
   Voltage elevator_voltage = elevator_controller_.Update(
       dt, elevator_encoder_->Get() * .0003191764 * m,
       pivot_encoder_->Get() * deg / 5.0, enabled_);
@@ -127,7 +130,14 @@ void ArmSubsystem::Update(Time dt) {
       shooter_controller_.SetGoal(0 * rad / s);
       SetHoodOpen(false);
     }
-  } else if (intake_target_ == IntakeGoal::FORWARD) {
+  } else if (intake_target_ == IntakeGoal::FORWARD_UNTIL) {
+    intake_front_->Set(-1);
+    intake_side_->Set(1);
+    std::cout << "I HATE EVERYTHING" << std::endl;
+    if (ball_sensor_->Get()) {
+      intake_target_ = IntakeGoal::OFF;
+    }
+  } else if (intake_target_ == IntakeGoal::FORWARD_FOREVER) {
     intake_front_->Set(-1);
     intake_side_->Set(1);
   } else if (intake_target_ == IntakeGoal::REVERSE) {

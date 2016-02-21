@@ -21,6 +21,8 @@ constexpr unsigned int shooter_encoder_a = 16,
 constexpr unsigned int elevator_encoder_a = 18,
                        elevator_encoder_b = 19;  // Unknown
 
+constexpr unsigned int ball_sensor = 1;
+
 // Hall effect sensors for the pivot, none onthe elevator
 constexpr unsigned int pivot_hall = 0;
 constexpr unsigned int intake_proxy_port = 22;
