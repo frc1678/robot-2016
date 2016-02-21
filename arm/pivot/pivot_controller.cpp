@@ -31,7 +31,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
     case PivotState::CALIBRATING:
       out_voltage = -1 * V;
       if (min_hall_triggered) {
-        offset_ = encoder_angle - 23.4 * deg;
+        offset_ = encoder_angle - 22.4 * deg;
         state_ = PivotState::FINISHED;
         calibrated_ = true;
       }
@@ -72,7 +72,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       break;
   }
   last_ = angle;
-  out_voltage = muan::Cap(out_voltage, -12 * V, 12 * V);
+  out_voltage = muan::Cap(out_voltage, -6 * V, 12 * V);
   return out_voltage;
 }
 
