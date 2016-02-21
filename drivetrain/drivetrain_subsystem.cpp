@@ -6,7 +6,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(80 * V / rad, 90 * V / rad / s, 8 * V / rad * s),
+      angle_controller_(77 * V / rad, 90 * V / rad / s, 9.5 * V / rad * s),
       distance_controller_(100 * V / m, 370 * V / m / s, 17 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",

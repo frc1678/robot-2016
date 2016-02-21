@@ -33,6 +33,8 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::SOUTH);
   long_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::NORTH);
+  short_pos_ =
+      std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::EAST);
 
   run_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
@@ -58,6 +60,7 @@ void CitrusRobot::TeleopInit() {
   // subsystems_.drive.DriveDistance(2 * m);
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
+  subsystems_.arm.GoToAutoShot();
 }
 
 void CitrusRobot::DisabledInit() {
@@ -118,6 +121,9 @@ void CitrusRobot::TeleopPeriodic() {
   if (long_pos_->ButtonClicked()) {
     subsystems_.arm.GoToLong();
   }
+  if (short_pos_->ButtonClicked()) {
+    subsystems_.arm.GoToAutoShot();
+  }
   if (run_intake_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::FORWARD);
   } else if (reverse_intake_->ButtonPressed()) {
@@ -165,6 +171,7 @@ void CitrusRobot::UpdateButtons() {
   intake_pos_->Update();
   fender_pos_->Update();
   long_pos_->Update();
+  short_pos_->Update();
   run_intake_->Update();
   reverse_intake_->Update();
 }

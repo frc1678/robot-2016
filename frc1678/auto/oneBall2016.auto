@@ -1,15 +1,10 @@
-// Crossing low bar
-// In high gear because the robot will slow down because
-// the drive straight at angle is split.
 check arm calibration
 set arm position: TUCK = 1
 
 drive straight at angle: distance = 16.5, angle = 0.0
 
-// drive straight at angle: distance = 10.5, angle = 0.0
-
-point turn: angle = -45.0
-set arm position: LONG = 0
+set arm position: AUTO = 3
+point turn: angle = -55.0
 align
-wait: seconds = 2.0
+wait: seconds = 0.5
 shoot

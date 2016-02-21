@@ -11,7 +11,8 @@
 enum Position { 
   LONG = 0,
   TUCK,
-  INTAKE
+  INTAKE,
+  AUTO_SHOT
 };
 
 namespace AutoFunction {

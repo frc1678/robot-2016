@@ -27,7 +27,7 @@ class CitrusRobot : public IterativeRobot {
   // Kelly's buttons
   std::unique_ptr<CitrusButton> tuck_pos_, defensive_pos_, climb_pos_,
       climb_pos_continue_, climb_end_, intake_pos_;
-  std::unique_ptr<CitrusPOV> fender_pos_, long_pos_;
+  std::unique_ptr<CitrusPOV> fender_pos_, long_pos_, short_pos_;
   std::unique_ptr<CitrusAxis> run_intake_, reverse_intake_;
 
   ColorLight lights_;

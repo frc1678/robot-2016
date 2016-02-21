@@ -206,6 +206,12 @@ void ArmSubsystem::GoToLong() {
   SetHoodOpen(true);
 }
 
+void ArmSubsystem::GoToAutoShot() {
+  ArmGoal goal{35 * deg, 0 * m, 5500 * rev / (60 * s)};
+  SetGoal(goal);
+  SetHoodOpen(true);
+}
+
 void ArmSubsystem::GoToTuck() {
   ArmGoal goal{0 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
