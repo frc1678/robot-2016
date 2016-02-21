@@ -13,12 +13,8 @@ enum class ColorLight { RED = 0, YELLOW, GREEN };
 class CitrusRobot : public IterativeRobot {
  private:
   LemonScriptRunner* auto_runner;
-
- public:
-  std::unique_ptr<Joystick> j_wheel_, j_stick_, j_manip_;
-
-  RobotSubsystems subsystems_;
-  CitrusVision vision_;
+  std::unique_ptr<Solenoid> wedge_;
+  bool is_wedge_deployed_ = false;
 
   // Avery's buttons
   std::unique_ptr<CitrusButton> shoot_, align_, shift_high_, shift_low_,
@@ -26,9 +22,15 @@ class CitrusRobot : public IterativeRobot {
 
   // Kelly's buttons
   std::unique_ptr<CitrusButton> tuck_pos_, defensive_pos_, climb_pos_,
-      climb_pos_continue_, climb_end_, intake_pos_;
+      climb_pos_continue_, climb_end_, intake_pos_, wedge_toggle_;
   std::unique_ptr<CitrusPOV> fender_pos_, long_pos_;
   std::unique_ptr<CitrusAxis> run_intake_, reverse_intake_;
+
+ public:
+  std::unique_ptr<Joystick> j_wheel_, j_stick_, j_manip_;
+
+  RobotSubsystems subsystems_;
+  CitrusVision vision_;
 
   ColorLight lights_;
 

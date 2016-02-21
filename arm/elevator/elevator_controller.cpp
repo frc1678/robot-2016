@@ -25,10 +25,25 @@ Voltage ElevatorController::Update(Time dt, Length displacement,
         state_ = ElevatorState::FINISHED;
       }
       break;
+    case ElevatorState::PREP_MOVING:
+      out_voltage = 0 * V;
+      brake_timer_ += dt;
+      if (brake_timer_ > disk_brake_time) {
+        state_ = ElevatorState::MOVING;
+      }
+      break;
     case ElevatorState::MOVING:
-      out_voltage = controller_.Calculate(dt, (current_goal_ - displacement));
-      out_voltage = muan::Cap(out_voltage, -12 * V, 12 * V);
+      out_voltage = controller_.Calculate(dt, (current_goal_ - displacement)) +
+                    1.2 * std::sin(arm_angle.to(rad)) * V;
       if (muan::abs(current_goal_ - displacement) < .5 * cm) {
+        brake_timer_ = 0 * s;
+        state_ = ElevatorState::PREP_STOP;
+      }
+      break;
+    case ElevatorState::PREP_STOP:
+      out_voltage = 1.2 * std::sin(arm_angle.to(rad)) * V;
+      brake_timer_ += dt;
+      if (brake_timer_ > disk_brake_time) {
         state_ = ElevatorState::FINISHED;
       }
       break;
@@ -40,7 +55,7 @@ Voltage ElevatorController::Update(Time dt, Length displacement,
       break;
   }
   current_displacement_ = displacement;
-  return out_voltage + 1.2 * std::sin(arm_angle.to(rad)) * V;
+  return out_voltage;
 }
 
 Voltage ElevatorController::UpdateClimb(Time dt, Length displacement,
@@ -65,10 +80,7 @@ Voltage ElevatorController::UpdateClimb(Time dt, Length displacement,
         state_ = ElevatorState::FINISHED;
       }
       break;
-    case ElevatorState::FINISHED:
-      out_voltage = 0 * V;
-      break;
-    case ElevatorState::ESTOP:
+    default:
       out_voltage = 0 * V;
       break;
   }
@@ -78,8 +90,14 @@ Voltage ElevatorController::UpdateClimb(Time dt, Length displacement,
 
 void ElevatorController::SetGoal(Length goal) {
   current_goal_ = goal;
-  state_ = ElevatorState::MOVING;
+  state_ = ElevatorState::PREP_MOVING;
+  brake_timer_ = 0 * s;
   controller_.Reset();
 }
 
 bool ElevatorController::IsDone() { return state_ == ElevatorState::FINISHED; }
+
+bool ElevatorController::ShouldFireBrake() {
+  return state_ == ElevatorState::FINISHED ||
+         state_ == ElevatorState::PREP_STOP;
+}

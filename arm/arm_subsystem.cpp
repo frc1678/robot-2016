@@ -46,7 +46,7 @@ void ArmSubsystem::Update(Time dt) {
       pivot_encoder_->Get() * deg / 5.0, enabled_);
   Voltage pivot_voltage = pivot_controller_.Update(
       dt, pivot_encoder_->Get() * deg / 5.0, !pivot_hall_->Get(), enabled_);
-  bool elevator_brake = elevator_controller_.IsDone(),
+  bool elevator_brake = elevator_controller_.ShouldFireBrake(),
        pivot_brake = pivot_controller_.ShouldFireBrake();
   if (!enabled_) state_ = ArmState::DISABLED;
   switch (state_) {
@@ -118,7 +118,6 @@ void ArmSubsystem::Update(Time dt) {
       state_ != ArmState::DISABLED ? shooter_voltage.to(12 * V) : 0.0);
 
   // Yes, this code is structured weirdly. Yes, it is necessary because of
-  // weird
   // possible multithreading races
   if (should_shoot_) {
     intake_front_->Set(-1);
@@ -199,7 +198,7 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
 }
 
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{45 * deg, .38 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{45 * deg, .38 * m, 6500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
@@ -211,13 +210,13 @@ void ArmSubsystem::GoToTuck() {
 }
 
 void ArmSubsystem::GoToFender() {
-  ArmGoal goal{10 * deg, 0 * m, 2500 * rev / (60 * s)};
+  ArmGoal goal{10 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{5 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{3 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }

@@ -95,7 +95,7 @@ class ArmSubsystem : public muan::Updateable {
 
   muan::Timer shot_timer_;
   bool should_shoot_ = false;
-  const Time shot_time = 1 * s;
+  const Time shot_time = 2 * s;
 
   Time t = 0 * s;
 

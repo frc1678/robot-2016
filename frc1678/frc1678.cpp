@@ -28,6 +28,7 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   climb_pos_ = std::make_unique<CitrusButton>(j_manip_.get(), 4);
   climb_pos_continue_ = std::make_unique<CitrusButton>(j_manip_.get(), 7);
   climb_end_ = std::make_unique<CitrusButton>(j_manip_.get(), 8);
+  wedge_toggle_ = std::make_unique<CitrusButton>(j_manip_.get(), 5);
 
   fender_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::SOUTH);
@@ -39,6 +40,8 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
 
   // Auto
   auto_runner = new LemonScriptRunner("twoBall2016.auto", this);
+
+  wedge_ = std::make_unique<Solenoid>(5);
 }
 
 void CitrusRobot::RobotInit() {
@@ -149,6 +152,12 @@ void CitrusRobot::TeleopPeriodic() {
     start_climb_ = false;
   }
 
+  // Toggle the wedge when the button is deployed
+  is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
+  if (wedge_toggle_->ButtonClicked()) {
+    wedge_->Set(is_wedge_deployed_);
+  }
+
   SetDriveGoal(&drivetrain_goal);
   subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
@@ -180,6 +189,7 @@ void CitrusRobot::UpdateButtons() {
   long_pos_->Update();
   run_intake_->Update();
   reverse_intake_->Update();
+  wedge_toggle_->Update();
 }
 
 void CitrusRobot::UpdateLights() {
