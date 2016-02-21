@@ -7,7 +7,8 @@ ArmSubsystem::ArmSubsystem()
       elevator_controller_(.005 * s),
       csv_log_("arm_subsystem",
                {"time", "pivot_voltage", "elevator_voltage", "pivot_angle",
-                "elevator_position", "state", "climb_state", "shooter_voltage", "shooter_velocity"}) {
+                "elevator_position", "state", "climb_state", "shooter_voltage",
+                "shooter_velocity"}) {
   pivot_encoder_ = std::make_unique<Encoder>(RobotPorts::pivot_encoder_a,
                                              RobotPorts::pivot_encoder_b);
   pivot_hall_ = std::make_unique<DigitalInput>(RobotPorts::pivot_hall);
@@ -49,7 +50,7 @@ void ArmSubsystem::Update(Time dt) {
       pivot_encoder_->Get() * deg / 5.0, enabled_);
   Voltage pivot_voltage = pivot_controller_.Update(
       dt, pivot_encoder_->Get() * deg / 5.0, !pivot_hall_->Get(), enabled_);
-  bool elevator_brake = elevator_controller_.IsDone(),
+  bool elevator_brake = elevator_controller_.ShouldFireBrake(),
        pivot_brake = pivot_controller_.ShouldFireBrake();
   if (!enabled_) state_ = ArmState::DISABLED;
   switch (state_) {
@@ -60,6 +61,7 @@ void ArmSubsystem::Update(Time dt) {
       elevator_brake = elevator_controller_.IsDone();
       break;
     case ArmState::RETRACTING:
+      finished_ = false;
       pivot_voltage = 0 * V;
       if (elevator_controller_.IsDone()) {
         state_ = ArmState::MOVING_PIVOT;
@@ -67,6 +69,7 @@ void ArmSubsystem::Update(Time dt) {
       }
       break;
     case ArmState::MOVING_PIVOT:
+      finished_ = false;
       elevator_voltage = 0 * V;
       elevator_brake = true;
       if (pivot_controller_.IsDone()) {
@@ -76,6 +79,7 @@ void ArmSubsystem::Update(Time dt) {
       }
       break;
     case ArmState::EXTENDING:
+      finished_ = false;
       pivot_voltage = 0 * V;
       if (elevator_controller_.IsDone()) {
         state_ = ArmState::FINISHED;
@@ -87,6 +91,7 @@ void ArmSubsystem::Update(Time dt) {
         pivot_brake = true;
         elevator_brake = true;
       }
+      finished_ = true;
       elevator_voltage = 0 * V;
       break;
     case ArmState::CLIMBING:
@@ -117,7 +122,6 @@ void ArmSubsystem::Update(Time dt) {
       state_ != ArmState::DISABLED ? shooter_voltage.to(12 * V) : 0.0);
 
   // Yes, this code is structured weirdly. Yes, it is necessary because of
-  // weird
   // possible multithreading races
   if (should_shoot_) {
     intake_front_->Set(-1);
@@ -148,7 +152,8 @@ void ArmSubsystem::Update(Time dt) {
   csv_log_["state"] = std::to_string(static_cast<int>(state_));
   csv_log_["climb_state"] = std::to_string(static_cast<int>(climb_state_));
   csv_log_["shooter_voltage"] = std::to_string(shooter_voltage.to(V));
-  csv_log_["shooter_velocity"] = std::to_string((shooter_controller_.GetVelocity()).to(rev/(60*s)));
+  csv_log_["shooter_velocity"] =
+      std::to_string((shooter_controller_.GetVelocity()).to(rev / (60 * s)));
   csv_log_.EndLine();
   t += dt;
 }
@@ -156,6 +161,7 @@ void ArmSubsystem::Update(Time dt) {
 std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
   Voltage elevator_voltage, pivot_voltage;
   bool elevator_brake, pivot_brake;
+  climbing_done_ = false;
   elevator_voltage = elevator_controller_.UpdateClimb(
       dt, elevator_encoder_->Get() * .0003191764 * m,
       pivot_encoder_->Get() * deg / 5.0, enabled_);
@@ -188,7 +194,7 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
       }
       break;
     case ClimbState::DONE:
-      pivot_brake = elevator_brake = true;
+      pivot_brake = elevator_brake = climbing_done_ = true;
       break;
   }
   return std::make_tuple(pivot_voltage, pivot_brake, elevator_voltage,
@@ -219,13 +225,13 @@ void ArmSubsystem::GoToTuck() {
 }
 
 void ArmSubsystem::GoToFender() {
-  ArmGoal goal{10 * deg, 0 * m, 2500 * rev / (60 * s)};
+  ArmGoal goal{10 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{5 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{3 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }
@@ -281,6 +287,6 @@ void ArmSubsystem::Shoot() {
   should_shoot_ = true;
 }
 
-bool ArmSubsystem::AllIsDone() {
-  return false;
-}
+bool ArmSubsystem::AllIsDone() { return finished_; }
+
+bool ArmSubsystem::ClimbIsDone() { return climbing_done_; }

@@ -46,6 +46,7 @@ class ArmSubsystem : public muan::Updateable {
   void Shoot();
 
   bool AllIsDone();
+  bool ClimbIsDone();
 
  private:
   std::tuple<Voltage, bool, Voltage, bool> UpdateClimb(Time dt);
@@ -93,12 +94,14 @@ class ArmSubsystem : public muan::Updateable {
   muan::CSVLog csv_log_;
 
   bool enabled_ = false;
+  bool finished_ = true;
+  bool climbing_done_ = false;
 
   ArmGoal current_goal_;
 
   muan::Timer shot_timer_;
   bool should_shoot_ = false;
-  const Time shot_time = 1 * s;
+  const Time shot_time = 2 * s;
 
   Time t = 0 * s;
 

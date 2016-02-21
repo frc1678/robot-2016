@@ -20,6 +20,10 @@ void CitrusVision::Start() {
   //}
 }
 
+bool CitrusVision::IsSeeing() {
+  return table_->GetBoolean("targetFound", false);
+}
+
 bool CitrusVision::Update(bool enabled) {
   /* Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * deg; */
   /* /1* Time latency = table_->GetNumber("captureTime", -100) * s; *1/ */
@@ -51,7 +55,13 @@ bool CitrusVision::Update(bool enabled) {
   /* } */
   /* gyro_history_.Update(subsystems_.drive.gyro_reader_->GetAngle()); */
   /* return false; */
-  return subsystems_.drive.IsProfileComplete();
+  // This is a hacky solution, but works!! Woo woot woort woo!
+  if (IsSeeing() &&
+      (muan::abs(table_->GetNumber("angleToTarget", 0) * deg) < 1 * deg)) {
+    return subsystems_.drive.IsProfileComplete();
+  } else {
+    return false;
+  }
 }
 
 void CitrusVision::EndTest() {
