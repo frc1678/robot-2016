@@ -89,10 +89,13 @@ Voltage ElevatorController::UpdateClimb(Time dt, Length displacement,
 }
 
 void ElevatorController::SetGoal(Length goal) {
-  current_goal_ = goal;
-  state_ = ElevatorState::PREP_MOVING;
-  brake_timer_ = 0 * s;
-  controller_.Reset();
+  if (muan::abs(goal - current_goal_) > .2 * cm &&
+      state_ != ElevatorState::DISABLED && state_ != ElevatorState::ESTOP) {
+    current_goal_ = goal;
+    state_ = ElevatorState::PREP_MOVING;
+    brake_timer_ = 0 * s;
+    controller_.Reset();
+  }
 }
 
 bool ElevatorController::IsDone() { return state_ == ElevatorState::FINISHED; }
