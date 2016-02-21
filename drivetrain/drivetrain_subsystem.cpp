@@ -124,12 +124,6 @@ void DrivetrainSubsystem::Update(Time dt) {
       bool profile_finished_angle =
           muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
 
-      /* printf("%f\t%f\t%f\t%f\t%f\t%f\t%f      \n", t.to(s), out.left_voltage,
-       */
-      /*        out.right_voltage, angle_from_start.to(deg), */
-      /*        angle_profile_->Calculate(t).to(deg), distance_from_start, */
-      /*        distance_profile_->Calculate(t)); */
-
       if (profiles_finished_time && profile_finished_angle &&
           profile_finished_distance) {
         angle_profile_.reset();
@@ -251,8 +245,8 @@ bool DrivetrainSubsystem::IsProfileComplete() {
 
 void DrivetrainSubsystem::CancelMotionProfile() {
   mutex_lock lock(mu_);
-  distance_profile_.release();
-  angle_profile_.release();
+  distance_profile_.reset();
+  angle_profile_.reset();
   is_operator_controlled_ = true;
 }
 
