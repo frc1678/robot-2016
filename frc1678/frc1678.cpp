@@ -29,6 +29,7 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   climb_pos_continue_ = std::make_unique<CitrusButton>(j_manip_.get(), 7);
   climb_end_ = std::make_unique<CitrusButton>(j_manip_.get(), 8);
   wedge_toggle_ = std::make_unique<CitrusButton>(j_manip_.get(), 5);
+  run_intake_until_ = std::make_unique<CitrusButton>(j_manip_.get(), 6);
 
   fender_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::SOUTH);
@@ -37,7 +38,7 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   short_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::EAST);
 
-  run_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
+  run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
   // Auto
@@ -134,14 +135,14 @@ void CitrusRobot::TeleopPeriodic() {
     shootable_ = true;
     start_climb_ = false;
   }
-  if (short_pos_->ButtonClicked()) {
-    subsystems_.arm.GoToAutoShot();
-  }
-  if (run_intake_->ButtonPressed()) {
-    subsystems_.arm.SetIntake(IntakeGoal::FORWARD);
+  if (run_intake_until_->ButtonPressed()) {
+    subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
+  } else if (run_intake_forever_->ButtonClicked()) {
+    subsystems_.arm.SetIntake(IntakeGoal::FORWARD_FOREVER);
   } else if (reverse_intake_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::REVERSE);
-  } else {
+  } else if (run_intake_forever_->ButtonReleased() ||
+             reverse_intake_->ButtonReleased()) {
     subsystems_.arm.SetIntake(IntakeGoal::OFF);
   }
 
@@ -197,7 +198,8 @@ void CitrusRobot::UpdateButtons() {
   fender_pos_->Update();
   long_pos_->Update();
   short_pos_->Update();
-  run_intake_->Update();
+  run_intake_forever_->Update();
+  run_intake_until_->Update();
   reverse_intake_->Update();
   wedge_toggle_->Update();
 }
@@ -223,7 +225,6 @@ void CitrusRobot::UpdateLights() {
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //    lights_ = ColorLight::YELLOW;
   //  }
-  std::cout << "lights" << static_cast<int>(lights_) << std::endl;
 }
 
 CitrusRobot::~CitrusRobot() {}

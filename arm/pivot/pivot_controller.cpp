@@ -31,7 +31,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
     case PivotState::CALIBRATING:
       out_voltage = -1 * V;
       if (min_hall_triggered) {
-        offset_ = encoder_angle - 22.4 * deg;
+        offset_ = encoder_angle - 21.6 * deg;
         state_ = PivotState::FINISHED;
         calibrated_ = true;
       }
