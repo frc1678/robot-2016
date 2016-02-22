@@ -8,7 +8,7 @@
 
 // class LemonScriptRunner { };
 
-enum class ColorLight { RED = 0, YELLOW, GREEN, BLUE };
+enum class ColorLight { RED = 0, YELLOW, GREEN, BLUE, WHITE, PINK };
 
 class CitrusRobot : public IterativeRobot {
  private:
@@ -38,6 +38,7 @@ class CitrusRobot : public IterativeRobot {
   bool vision_done_ = false;  // UGLY HACK
   bool shootable_ = false;    // ALSO UGLY HACK
   bool start_climb_ = false;  // ANOTHER UGLY HACK
+  bool disabled_;
 
   CitrusRobot();
   void RobotInit();

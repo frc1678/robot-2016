@@ -40,15 +40,17 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   // Auto
   auto_runner = new LemonScriptRunner("twoBall2016.auto", this);
 
-  l_pow_ = std::make_unique<DigitalOutput>(6);
+  l_pow_ = std::make_unique<DigitalOutput>(25);
   l_red_ = std::make_unique<DigitalOutput>(7);
   l_green_ = std::make_unique<DigitalOutput>(8);
   l_blue_ = std::make_unique<DigitalOutput>(9);
+
+  disabled_ = true;
 }
 
 void CitrusRobot::RobotInit() {
-  subsystems_.drive.Start();
-  subsystems_.arm.Start();
+  // subsystems_.drive.Start();
+  // subsystems_.arm.Start();
 }
 
 void CitrusRobot::AutonomousInit() {}
@@ -60,11 +62,13 @@ void CitrusRobot::TeleopInit() {
   // subsystems_.drive.DriveDistance(2 * m);
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
+  disabled_ = false;
 }
 
 void CitrusRobot::DisabledInit() {
   subsystems_.arm.SetEnabled(false);
   subsystems_.drive.SetEnabled(false);
+  disabled_ = true;
 }
 
 void CitrusRobot::DisabledPeriodic() {
@@ -83,6 +87,8 @@ void CitrusRobot::DisabledPeriodic() {
   //  vision_done_ = vision_.Update(false);
 
   //  subsystems_.drive.SetDriveGoal(drivetrain_goal);
+  UpdateLights();
+  ColorLights();
 }
 
 void CitrusRobot::TeleopPeriodic() {
@@ -189,34 +195,36 @@ void CitrusRobot::UpdateButtons() {
 }
 
 void CitrusRobot::UpdateLights() {
-  //  if (subsystems_.arm.ClimbIsDone()) {
-  //    lights_ = ColorLight::GREEN;
-  //  }
-  if (subsystems_.arm.AllIsDone() &&
-      !vision_.IsSeeing()) {  // if arm is at position, not seeing
-                              // vision
-    lights_ = ColorLight::RED;
-  }
-  if (vision_.IsSeeing() &&
-      subsystems_.arm
-          .AllIsDone()) {  // if vision sees target + arm is done, yellow!
-    lights_ = ColorLight::YELLOW;
-  }
-  if (vision_.Update(true) && shootable_ &&
-      subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
-    lights_ = ColorLight::GREEN;
-  }
   if (!subsystems_.drive.gyro_reader_->IsCalibrated()) {
     lights_ = ColorLight::BLUE;
+  } else if (disabled_) {
+    lights_ = ColorLight::WHITE;
+  } else if (subsystems_.arm.AllIsDone() &&
+             !vision_.IsSeeing()) {  // if arm is at position, not seeing
+    // vision
+    lights_ = ColorLight::RED;
+  } else if (vision_.IsSeeing() &&
+             subsystems_.arm.AllIsDone()) {  // if vision sees target + arm is
+                                             // done, yellow!
+    lights_ = ColorLight::YELLOW;
+  } else if (vision_.Update(true) && shootable_ &&
+             subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
+    lights_ = ColorLight::GREEN;
+  } else {
+    lights_ = ColorLight::PINK;
   }
-  //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
-  //    lights_ = ColorLight::YELLOW;
-  //  }
+
+  // if (start_climb_ && subsystems_.arm.AllIsDone()) {
+  //  lights_ = ColorLight::YELLOW;
+  //}
+  // if (subsystems_.arm.ClimbIsDone()) {
+  //  lights_ = ColorLight::GREEN;
+  //}
 }
 
 void CitrusRobot::ColorLights() {
-  switch(lights_) {
-    case ColorLight::RED: 
+  switch (lights_) {
+    case ColorLight::RED:
       l_red_->Set(1);
       l_green_->Set(0);
       l_blue_->Set(0);
@@ -236,8 +244,18 @@ void CitrusRobot::ColorLights() {
       l_green_->Set(0);
       l_blue_->Set(1);
       break;
+    case ColorLight::WHITE:
+      l_red_->Set(1);
+      l_green_->Set(1);
+      l_blue_->Set(1);
+      break;
+    case ColorLight::PINK:
+      l_red_->Set(1);
+      l_green_->Set(0);
+      l_blue_->Set(1);
+      break;
   }
-  l_pow_->Set(1);
+  l_pow_->Set(0);
   std::cout << "lights" << static_cast<int>(lights_) << std::endl;
 }
 

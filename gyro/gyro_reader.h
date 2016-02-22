@@ -47,8 +47,6 @@ class GyroReader : public muan::Updateable {
 
   Angle angle = 0 * rad;
 
-  DigitalOutput *dio;
-
   int trial = 1;
 
  public:
