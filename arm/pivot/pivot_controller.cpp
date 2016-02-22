@@ -4,7 +4,7 @@
 #include <cmath>
 
 PivotController::PivotController()
-    : controller_(40 * V / rad, 15 * V / (rad * s), 1 * V / (rad / s)),
+    : controller_(35 * V / rad, 15 * V / (rad * s), 1 * V / (rad / s)),
       climb_controller_(100 * V / rad, 40 * V / (rad * s), 0 * V / (rad / s)) {
   goal_ = offset_ = 0 * deg;
   thresh_ = .5 * deg;
