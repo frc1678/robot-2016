@@ -8,7 +8,7 @@
 
 // class LemonScriptRunner { };
 
-enum class ColorLight { RED = 0, YELLOW, GREEN };
+enum class ColorLight { RED = 0, YELLOW, GREEN, BLUE };
 
 class CitrusRobot : public IterativeRobot {
  private:
@@ -31,6 +31,7 @@ class CitrusRobot : public IterativeRobot {
   std::unique_ptr<CitrusAxis> run_intake_, reverse_intake_;
 
   ColorLight lights_;
+  std::unique_ptr<DigitalOutput> l_pow_, l_red_, l_green_, l_blue_;
 
   bool test_flag_;
   bool in_highgear_;
@@ -48,6 +49,7 @@ class CitrusRobot : public IterativeRobot {
   void TeleopPeriodic();
   void SetDriveGoal(DrivetrainGoal* drivetrain_goal);
   void UpdateLights();
+  void ColorLights();
   void UpdateButtons();
   ~CitrusRobot();
 };

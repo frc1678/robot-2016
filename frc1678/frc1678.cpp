@@ -39,6 +39,11 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
 
   // Auto
   auto_runner = new LemonScriptRunner("twoBall2016.auto", this);
+
+  l_pow_ = std::make_unique<DigitalOutput>(6);
+  l_red_ = std::make_unique<DigitalOutput>(7);
+  l_green_ = std::make_unique<DigitalOutput>(8);
+  l_blue_ = std::make_unique<DigitalOutput>(9);
 }
 
 void CitrusRobot::RobotInit() {
@@ -153,6 +158,7 @@ void CitrusRobot::TeleopPeriodic() {
   subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
   UpdateLights();
+  ColorLights();
   UpdateButtons();
 }
 
@@ -200,9 +206,38 @@ void CitrusRobot::UpdateLights() {
       subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
   }
+  if (!subsystems_.drive.gyro_reader_->IsCalibrated()) {
+    lights_ = ColorLight::BLUE;
+  }
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //    lights_ = ColorLight::YELLOW;
   //  }
+}
+
+void CitrusRobot::ColorLights() {
+  switch(lights_) {
+    case ColorLight::RED: 
+      l_red_->Set(1);
+      l_green_->Set(0);
+      l_blue_->Set(0);
+      break;
+    case ColorLight::YELLOW:
+      l_red_->Set(1);
+      l_green_->Set(1);
+      l_blue_->Set(0);
+      break;
+    case ColorLight::GREEN:
+      l_red_->Set(0);
+      l_green_->Set(1);
+      l_blue_->Set(0);
+      break;
+    case ColorLight::BLUE:
+      l_red_->Set(0);
+      l_green_->Set(0);
+      l_blue_->Set(1);
+      break;
+  }
+  l_pow_->Set(1);
   std::cout << "lights" << static_cast<int>(lights_) << std::endl;
 }
 
