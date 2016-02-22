@@ -3,11 +3,12 @@
 #include <iostream>
 #include <cmath>
 
-PivotController::PivotController()
-    : controller_(35 * V / rad, 15 * V / (rad * s), 1 * V / (rad / s)),
+PivotController::PivotController(RobotConstants constants)
+    : controller_(40 * V / rad, 15 * V / (rad * s), 1 * V / (rad / s)),
       climb_controller_(100 * V / rad, 40 * V / (rad * s), 0 * V / (rad / s)) {
   goal_ = offset_ = 0 * deg;
   thresh_ = .5 * deg;
+  SetConstants(constants);
 }
 
 PivotController::~PivotController() {}
@@ -23,7 +24,6 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
                                 bool min_hall_triggered, bool enabled) {
   Voltage out_voltage;
   Angle angle = encoder_angle - offset_;
-  std::cout << angle.to(deg) << std::endl;
   if (!enabled) {
     state_ = PivotState::DISABLED;
   }
@@ -31,7 +31,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
     case PivotState::CALIBRATING:
       out_voltage = -1 * V;
       if (min_hall_triggered) {
-        offset_ = encoder_angle - 21.6 * deg;
+        offset_ = encoder_angle - calibration_offset_;
         state_ = PivotState::FINISHED;
         calibrated_ = true;
       }
@@ -72,7 +72,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       break;
   }
   last_ = angle;
-  out_voltage = muan::Cap(out_voltage, -6 * V, 12 * V);
+  out_voltage = muan::Cap(out_voltage, -4 * V, 12 * V);
   return out_voltage;
 }
 
@@ -153,3 +153,8 @@ bool PivotController::ShouldFireBrake() {
 }
 
 bool PivotController::IsCalibrated() { return calibrated_; }
+
+void PivotController::SetConstants(RobotConstants constants) {
+  calibrated_ = false;
+  calibration_offset_ = constants.pivot_calibration_offset;
+}

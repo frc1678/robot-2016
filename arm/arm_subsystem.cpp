@@ -1,10 +1,12 @@
 #include "arm_subsystem.h"
 #include "frc1678/robot_ports.h"
 #include "muan/utils/math_utils.h"
+#include "robot_constants/robot_constants.h"
 
 ArmSubsystem::ArmSubsystem()
     : muan::Updateable(200 * hz),
       elevator_controller_(.005 * s),
+      pivot_controller_(RobotConstants::GetInstance()),
       csv_log_("arm_subsystem",
                {"time", "pivot_voltage", "elevator_voltage", "pivot_angle",
                 "elevator_position", "state", "climb_state", "shooter_voltage",
@@ -42,12 +44,9 @@ ArmSubsystem::ArmSubsystem()
 
 ArmSubsystem::~ArmSubsystem() {}
 
-bool ArmSubsystem::IsCalibrated() {
-  return pivot_controller_.IsCalibrated();
-}
+bool ArmSubsystem::IsCalibrated() { return pivot_controller_.IsCalibrated(); }
 
 void ArmSubsystem::Update(Time dt) {
-  std::cout << ball_sensor_->Get() << std::endl;
   Voltage elevator_voltage = elevator_controller_.Update(
       dt, elevator_encoder_->Get() * .0003191764 * m,
       pivot_encoder_->Get() * deg / 5.0, enabled_);
@@ -137,7 +136,6 @@ void ArmSubsystem::Update(Time dt) {
   } else if (intake_target_ == IntakeGoal::FORWARD_UNTIL) {
     intake_front_->Set(-1);
     intake_side_->Set(1);
-    std::cout << "I HATE EVERYTHING" << std::endl;
     if (ball_sensor_->Get()) {
       intake_target_ = IntakeGoal::OFF;
     }
@@ -211,9 +209,7 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
                          elevator_brake);
 }
 
-bool ArmSubsystem::IsDone() {
-  return state_ == ArmState::FINISHED;
-}
+bool ArmSubsystem::IsDone() { return state_ == ArmState::FINISHED; }
 
 // Sets targets for the arm subsystem
 void ArmSubsystem::GoToLong() {
