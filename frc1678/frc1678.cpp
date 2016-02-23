@@ -150,6 +150,11 @@ void CitrusRobot::TeleopPeriodic() {
     start_climb_ = false;
     intaking_ = false;
   }
+  if (short_pos_->ButtonClicked()) {
+    subsystems_.arm.GoToAutoShot();
+    shootable_ = true;
+    start_climb_ = false;
+  }
   if (run_intake_until_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
   } else if (run_intake_forever_->ButtonClicked()) {
