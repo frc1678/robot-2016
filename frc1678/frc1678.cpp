@@ -124,26 +124,31 @@ void CitrusRobot::TeleopPeriodic() {
     subsystems_.arm.GoToTuck();
     shootable_ = false;
     start_climb_ = false;
+    intaking_ = false;
   }
   if (defensive_pos_->ButtonClicked()) {
     subsystems_.arm.GoToDefensive();
     shootable_ = false;
     start_climb_ = false;
+    intaking_ = false;
   }
   if (intake_pos_->ButtonClicked()) {
     subsystems_.arm.GoToIntake();
     shootable_ = false;
     start_climb_ = false;
+    intaking_ = true;
   }
   if (fender_pos_->ButtonClicked()) {
     subsystems_.arm.GoToFender();
     shootable_ = false;
     start_climb_ = false;
+    intaking_ = false;
   }
   if (long_pos_->ButtonClicked()) {
     subsystems_.arm.GoToLong();
     shootable_ = true;
     start_climb_ = false;
+    intaking_ = false;
   }
   if (run_intake_until_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
@@ -160,16 +165,19 @@ void CitrusRobot::TeleopPeriodic() {
     subsystems_.arm.StartClimb();
     shootable_ = false;
     start_climb_ = true;
+    intaking_ = false;
   }
   if (climb_pos_continue_->ButtonClicked()) {
     subsystems_.arm.ContinueClimb();
     shootable_ = false;
     start_climb_ = false;
+    intaking_ = false;
   }
   if (climb_end_->ButtonClicked()) {
     subsystems_.arm.CompleteClimb();
     shootable_ = false;
     start_climb_ = false;
+    intaking_ = false;
   }
 
   // Toggle the wedge when the button is deployed
@@ -232,11 +240,13 @@ void CitrusRobot::UpdateLights() {
              subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
   }
-  if (!subsystems_.arm.BallIntaked()) {  // && subsystems_.arm.Intaking()) {
-    lights_ = ColorLight::BLUE;
-  } else if (subsystems_.arm
-                 .BallIntaked()) {  // && subsystems_.arm.Intaking()) {
+  if (!subsystems_.arm.BallIntaked() && intaking_) {
+    lights_ = ColorLight::RED;
+  } else if (subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::GREEN;
+  }
+  if (disabled_) {
+    lights_ = ColorLight::WHITE;
   }
 
   // if (start_climb_ && subsystems_.arm.AllIsDone()) {

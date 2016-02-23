@@ -167,13 +167,6 @@ void ArmSubsystem::Update(Time dt) {
   t += dt;
 }
 
-bool ArmSubsystem::Intaking() {
-  if (intake_target_ == IntakeGoal::FORWARD_UNTIL) {
-    return true;
-  }
-  return false;
-}
-
 bool ArmSubsystem::BallIntaked() { return ball_sensor_->Get(); }
 
 std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
