@@ -76,3 +76,5 @@ void GyroReader::Update(Time dt) {
     }
   }
 }
+
+bool GyroReader::IsCalibrated() { return is_calibrated; }

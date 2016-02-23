@@ -8,6 +8,7 @@ CitrusVision::CitrusVision(RobotSubsystems& subs)
       gyro_history_(.02 * s),
       angle_log_("angles", {"cameraAngle", "gyroHistory"}) {
   table_ = NetworkTable::GetTable("vision");
+  table_->PutBoolean("targetFound", false);
 }
 
 void CitrusVision::Start() {
@@ -61,7 +62,6 @@ bool CitrusVision::Update(bool enabled) {
   /* } */
   /* gyro_history_.Update(subsystems_.drive.gyro_reader_->GetAngle()); */
   /* return false; */
-  // This is a hacky solution, but works!! Woo woot woort woo!
   if (IsSeeing() &&
       (muan::abs(table_->GetNumber("angleToTarget", 0) * deg) < 1 * deg)) {
     return subsystems_.drive.IsProfileComplete();

@@ -49,8 +49,8 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
 }
 
 void CitrusRobot::RobotInit() {
-  // subsystems_.drive.Start();
-  // subsystems_.arm.Start();
+  subsystems_.drive.Start();
+  subsystems_.arm.Start();
 }
 
 void CitrusRobot::AutonomousInit() {}
@@ -255,7 +255,7 @@ void CitrusRobot::ColorLights() {
       l_blue_->Set(1);
       break;
   }
-  l_pow_->Set(0);
+  l_pow_->Set(1);
   std::cout << "lights" << static_cast<int>(lights_) << std::endl;
 }
 
