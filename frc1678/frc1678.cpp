@@ -28,13 +28,17 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   climb_pos_ = std::make_unique<CitrusButton>(j_manip_.get(), 4);
   climb_pos_continue_ = std::make_unique<CitrusButton>(j_manip_.get(), 7);
   climb_end_ = std::make_unique<CitrusButton>(j_manip_.get(), 8);
+  wedge_toggle_ = std::make_unique<CitrusButton>(j_manip_.get(), 5);
+  run_intake_until_ = std::make_unique<CitrusButton>(j_manip_.get(), 6);
 
   fender_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::SOUTH);
   long_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::NORTH);
+  short_pos_ =
+      std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::EAST);
 
-  run_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
+  run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
   // Auto
@@ -46,6 +50,8 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   l_blue_ = std::make_unique<DigitalOutput>(9);
 
   disabled_ = true;
+
+  wedge_ = std::make_unique<Solenoid>(5);
 }
 
 void CitrusRobot::RobotInit() {
@@ -53,7 +59,10 @@ void CitrusRobot::RobotInit() {
   subsystems_.arm.Start();
 }
 
-void CitrusRobot::AutonomousInit() {}
+void CitrusRobot::AutonomousInit() {
+  subsystems_.drive.SetEnabled(true);
+  subsystems_.arm.SetEnabled(true);
+}
 
 void CitrusRobot::AutonomousPeriodic() { auto_runner->Update(); }
 
@@ -136,11 +145,14 @@ void CitrusRobot::TeleopPeriodic() {
     shootable_ = true;
     start_climb_ = false;
   }
-  if (run_intake_->ButtonPressed()) {
-    subsystems_.arm.SetIntake(IntakeGoal::FORWARD);
+  if (run_intake_until_->ButtonPressed()) {
+    subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
+  } else if (run_intake_forever_->ButtonClicked()) {
+    subsystems_.arm.SetIntake(IntakeGoal::FORWARD_FOREVER);
   } else if (reverse_intake_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::REVERSE);
-  } else {
+  } else if (run_intake_forever_->ButtonReleased() ||
+             reverse_intake_->ButtonReleased()) {
     subsystems_.arm.SetIntake(IntakeGoal::OFF);
   }
 
@@ -158,6 +170,12 @@ void CitrusRobot::TeleopPeriodic() {
     subsystems_.arm.CompleteClimb();
     shootable_ = false;
     start_climb_ = false;
+  }
+
+  // Toggle the wedge when the button is deployed
+  is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
+  if (wedge_toggle_->ButtonClicked()) {
+    wedge_->Set(is_wedge_deployed_);
   }
 
   SetDriveGoal(&drivetrain_goal);
@@ -190,8 +208,11 @@ void CitrusRobot::UpdateButtons() {
   intake_pos_->Update();
   fender_pos_->Update();
   long_pos_->Update();
-  run_intake_->Update();
+  short_pos_->Update();
+  run_intake_forever_->Update();
+  run_intake_until_->Update();
   reverse_intake_->Update();
+  wedge_toggle_->Update();
 }
 
 void CitrusRobot::UpdateLights() {
@@ -210,13 +231,16 @@ void CitrusRobot::UpdateLights() {
   } else if (vision_.Update(true) && shootable_ &&
              subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
-  } else {
-    lights_ = ColorLight::PINK;
+  }
+  if (!subsystems_.arm.BallIntaked()) {  // && subsystems_.arm.Intaking()) {
+    lights_ = ColorLight::BLUE;
+  } else if (subsystems_.arm
+                 .BallIntaked()) {  // && subsystems_.arm.Intaking()) {
+    lights_ = ColorLight::GREEN;
   }
 
   // if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //  lights_ = ColorLight::YELLOW;
-  //}
   // if (subsystems_.arm.ClimbIsDone()) {
   //  lights_ = ColorLight::GREEN;
   //}
@@ -257,6 +281,9 @@ void CitrusRobot::ColorLights() {
   }
   l_pow_->Set(1);
   std::cout << "lights" << static_cast<int>(lights_) << std::endl;
+  //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
+  //    lights_ = ColorLight::YELLOW;
+  //  }
 }
 
 CitrusRobot::~CitrusRobot() {}

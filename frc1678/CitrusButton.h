@@ -63,12 +63,4 @@ class CitrusPOV : public CitrusButton {
   POVPosition position;
 };
 
-// Use the following like: input = TurnOn(myButton); input = Toggle(myButton,
-// input);
-bool TurnOn(CitrusButton* button);
-
-bool TurnOff(CitrusButton* button);
-
-bool Toggle(CitrusButton* button, bool input);
-
 #endif  // CITRUSBUTTON_H

@@ -4,7 +4,7 @@
 #include <cmath>
 
 PivotController::PivotController()
-    : controller_(40 * V / rad, 15 * V / (rad * s), 1 * V / (rad / s)),
+    : controller_(35 * V / rad, 15 * V / (rad * s), 1 * V / (rad / s)),
       climb_controller_(100 * V / rad, 40 * V / (rad * s), 0 * V / (rad / s)) {
   goal_ = offset_ = 0 * deg;
   thresh_ = .5 * deg;
@@ -21,88 +21,95 @@ void PivotController::SetGoal(Angle goal, Angle thresh) {
 
 Voltage PivotController::Update(Time dt, Angle encoder_angle,
                                 bool min_hall_triggered, bool enabled) {
-  Voltage out_voltage_;
+  Voltage out_voltage;
   Angle angle = encoder_angle - offset_;
+  std::cout << angle.to(deg) << std::endl;
   if (!enabled) {
     state_ = PivotState::DISABLED;
   }
   switch (state_) {
     case PivotState::CALIBRATING:
-      out_voltage_ = -1 * V;
+      out_voltage = -1 * V;
       if (min_hall_triggered) {
-        offset_ = encoder_angle - 23.4 * deg;
+        offset_ = encoder_angle - 21.6 * deg;
         state_ = PivotState::FINISHED;
         calibrated_ = true;
       }
       break;
+    case PivotState::PREP_MOVING:
+      out_voltage = 0 * V;
+      brake_timer_ += dt;
+      if (brake_timer_ > disk_brake_time) {
+        state_ = PivotState::MOVING;
+      }
+      break;
     case PivotState::MOVING:
-      out_voltage_ = controller_.Calculate(dt, goal_ - angle);
+      out_voltage =
+          controller_.Calculate(dt, goal_ - angle) + GetFFVoltage(angle);
       if (muan::abs(goal_ - angle) < thresh_) {
-        should_fire_brake_ = true;
+        state_ = PivotState::PREP_STOP;
+        brake_timer_ = 0 * s;
       }
-      if (ShouldFireBrake()) {
-        brake_timer_ += dt;
-        if (brake_timer_ > 50 * ms) {
-          state_ = PivotState::FINISHED;
-          brake_timer_ = 0 * s;
-          should_fire_brake_ = false;
-        }
+      break;
+    case PivotState::PREP_STOP:
+      out_voltage = GetFFVoltage(angle);
+      brake_timer_ += dt;
+      if (brake_timer_ > disk_brake_time) {
+        state_ = PivotState::FINISHED;
       }
-      out_voltage_ += GetFFVoltage(angle);
       break;
     case PivotState::DISABLED:
       if (enabled) {
         state_ = (calibrated_ ? PivotState::FINISHED : PivotState::CALIBRATING);
       }
-      out_voltage_ = 0 * V;
+      out_voltage = 0 * V;
       break;
     case PivotState::FINISHED:
-      out_voltage_ = 0 * V;
+      out_voltage = 0 * V;
       break;
     case PivotState::ESTOP:
-      out_voltage_ = 0 * V;
+      out_voltage = 0 * V;
       break;
   }
   last_ = angle;
-  out_voltage_ =
-      muan::Cap(out_voltage_, (calibrated_ ? -4 * V : -12 * V), 12 * V);
-  return out_voltage_;
+  out_voltage = muan::Cap(out_voltage, -6 * V, 12 * V);
+  return out_voltage;
 }
 
 Voltage PivotController::UpdateClimb(Time dt, Angle encoder_angle,
                                      bool min_hall_triggered, bool enabled) {
-  Voltage out_voltage_;
+  Voltage out_voltage;
   Angle angle = encoder_angle - offset_;
   if (!enabled) {
     state_ = PivotState::DISABLED;
   }
   switch (state_) {
+    case PivotState::PREP_MOVING:
+      state_ = PivotState::MOVING;
+      out_voltage = 0 * V;
+      break;
     case PivotState::MOVING:
-      out_voltage_ = climb_controller_.Calculate(dt, goal_ - angle);
-      if (muan::abs(goal_ - angle) < .5 * deg) {
-        should_fire_brake_ = true;
+      out_voltage = climb_controller_.Calculate(dt, goal_ - angle) +
+                    GetClimbFFVoltage(angle);
+      if (muan::abs(goal_ - angle) < thresh_) {
+        state_ = PivotState::PREP_STOP;
+        brake_timer_ = 0 * s;
       }
-      if (ShouldFireBrake()) {
-        brake_timer_ += dt;
-        if (brake_timer_ > 50 * ms) {
-          state_ = PivotState::FINISHED;
-          brake_timer_ = 0 * s;
-          should_fire_brake_ = false;
-        }
+      break;
+    case PivotState::PREP_STOP:
+      out_voltage = GetClimbFFVoltage(angle);
+      brake_timer_ += dt;
+      if (brake_timer_ > disk_brake_time) {
+        state_ = PivotState::FINISHED;
       }
-      out_voltage_ += GetClimbFFVoltage(angle);
       break;
-    case PivotState::FINISHED:
-      out_voltage_ = 0 * V;
-      break;
-    case PivotState::ESTOP:
-      out_voltage_ = 0 * V;
+    default:
+      out_voltage = 0 * V;
       break;
   }
   last_ = angle;
-  out_voltage_ =
-      muan::Cap(out_voltage_, (calibrated_ ? -4 * V : -12 * V), 12 * V);
-  return out_voltage_;
+  out_voltage = muan::Cap(out_voltage, -12 * V, 12 * V);
+  return out_voltage;
 }
 
 bool PivotController::IsDone() { return state_ == PivotState::FINISHED; }
@@ -142,7 +149,7 @@ Voltage PivotController::GetClimbFFVoltage(Angle a) {
 }
 
 bool PivotController::ShouldFireBrake() {
-  return (IsDone() || should_fire_brake_) && calibrated_;
+  return (IsDone() || state_ == PivotState::PREP_STOP) && calibrated_;
 }
 
 bool PivotController::IsCalibrated() { return calibrated_; }

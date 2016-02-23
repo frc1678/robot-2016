@@ -6,7 +6,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(80 * V / rad, 90 * V / rad / s, 8 * V / rad * s),
+      angle_controller_(77 * V / rad, 90 * V / rad / s, 9.5 * V / rad * s),
       distance_controller_(100 * V / m, 370 * V / m / s, 17 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
@@ -64,7 +64,6 @@ void DrivetrainSubsystem::Update(Time dt) {
       out.right_voltage = -out.right_voltage;
       // TODO(Wesley) Find out why this is giving 12V and 0V as output
     } else {
-      current_goal_.highgear = false;
       // TODO(Wesley) Reset the PID controller if we went from tele to auto
       // TODO(Wesley) Add operator control to exit auto mode
       t += dt;
@@ -124,12 +123,6 @@ void DrivetrainSubsystem::Update(Time dt) {
       bool profile_finished_angle =
           muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
 
-      /* printf("%f\t%f\t%f\t%f\t%f\t%f\t%f      \n", t.to(s), out.left_voltage,
-       */
-      /*        out.right_voltage, angle_from_start.to(deg), */
-      /*        angle_profile_->Calculate(t).to(deg), distance_from_start, */
-      /*        distance_profile_->Calculate(t)); */
-
       if (profiles_finished_time && profile_finished_angle &&
           profile_finished_distance) {
         angle_profile_.reset();
@@ -158,7 +151,7 @@ void DrivetrainSubsystem::Update(Time dt) {
   csv_log_.EndLine();  // Flush the current row of the log
 }
 
-void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal& goal) {
+void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal &goal) {
   mutex_lock lock(mu_);
   current_goal_ = goal;
 }
@@ -166,7 +159,7 @@ void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal& goal) {
 void DrivetrainSubsystem::Shift(bool high) { current_goal_.highgear = high; }
 
 void DrivetrainSubsystem::SetDrivePosition(
-    DrivetrainPosition* drivetrain_position) {
+    DrivetrainPosition *drivetrain_position) {
   double click =
       3.14159 * .1524 / 360.0;  // Translating encoders into ground distances.
   drivetrain_position->left_encoder =
@@ -251,8 +244,8 @@ bool DrivetrainSubsystem::IsProfileComplete() {
 
 void DrivetrainSubsystem::CancelMotionProfile() {
   mutex_lock lock(mu_);
-  distance_profile_.release();
-  angle_profile_.release();
+  distance_profile_.reset();
+  angle_profile_.reset();
   is_operator_controlled_ = true;
 }
 

@@ -10,11 +10,14 @@ class ShooterBang {
   ~ShooterBang();
   Voltage Update(Time dt, Angle displacement);
   void SetGoal(AngularVelocity goal);
+  bool IsDone();
   AngularVelocity GetVelocity();
 
  private:
-  AngularVelocity goal_, velocity_;
+  AngularVelocity goal_, last_;
+
   Angle previous_displacement_;
+  Time time; 
 };
 
 #endif

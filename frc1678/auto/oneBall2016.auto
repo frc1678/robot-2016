@@ -1,0 +1,10 @@
+check arm calibration
+set arm position: TUCK = 1
+
+drive straight at angle: distance = 16.5, angle = 0.0
+
+set arm position: AUTO = 3
+point turn: angle = -55.0
+align
+wait: seconds = 0.5
+shoot

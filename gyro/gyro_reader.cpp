@@ -12,8 +12,8 @@ GyroReader::GyroReader() : muan::Updateable(100 * hz) {
 
 bool GyroReader::Init() {
   if (!gyro->InitializeGyro()) {
-    return false;
     printf("Gyro init returned false");
+    return false;
   }
   return true;
 }

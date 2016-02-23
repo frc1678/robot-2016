@@ -18,8 +18,17 @@ class PivotController {
   Angle GetAngle() { return last_; }
 
  private:
-  enum class PivotState { DISABLED = 0, CALIBRATING, MOVING, FINISHED, ESTOP };
-  muan::AverageFilterPidController<Angle, Voltage> controller_, climb_controller_;
+  enum class PivotState {
+    DISABLED = 0,
+    CALIBRATING,
+    PREP_MOVING,
+    MOVING,
+    PREP_STOP,
+    FINISHED,
+    ESTOP
+  };
+  muan::AverageFilterPidController<Angle, Voltage> controller_,
+      climb_controller_;
   Angle goal_;
   Angle last_;
   Angle offset_;
@@ -29,9 +38,9 @@ class PivotController {
   Voltage GetClimbFFVoltage(Angle a);
 
   bool calibrated_ = false;
-  bool should_fire_brake_ = false;
+  const Time disk_brake_time = .15 * s;
   Time brake_timer_;
-  
+
   Angle thresh_;
 };
 

@@ -33,20 +33,27 @@ ArmSubsystem::ArmSubsystem()
   intake_front_ = std::make_unique<VictorSP>(RobotPorts::intake_front);
   intake_side_ = std::make_unique<VictorSP>(RobotPorts::intake_side);
 
+  ball_sensor_ = std::make_unique<DigitalInput>(RobotPorts::ball_sensor);
+
   shot_timer_.Start();
 
   thresh_ = 0.5 * deg;
+
+  intake_target_ = IntakeGoal::OFF;
 }
 
 ArmSubsystem::~ArmSubsystem() {}
 
+bool ArmSubsystem::IsCalibrated() { return pivot_controller_.IsCalibrated(); }
+
 void ArmSubsystem::Update(Time dt) {
+  std::cout << ball_sensor_->Get() << std::endl;
   Voltage elevator_voltage = elevator_controller_.Update(
       dt, elevator_encoder_->Get() * .0003191764 * m,
       pivot_encoder_->Get() * deg / 5.0, enabled_);
   Voltage pivot_voltage = pivot_controller_.Update(
       dt, pivot_encoder_->Get() * deg / 5.0, !pivot_hall_->Get(), enabled_);
-  bool elevator_brake = elevator_controller_.IsDone(),
+  bool elevator_brake = elevator_controller_.ShouldFireBrake(),
        pivot_brake = pivot_controller_.ShouldFireBrake();
   if (!enabled_) state_ = ArmState::DISABLED;
   switch (state_) {
@@ -118,7 +125,6 @@ void ArmSubsystem::Update(Time dt) {
       state_ != ArmState::DISABLED ? shooter_voltage.to(12 * V) : 0.0);
 
   // Yes, this code is structured weirdly. Yes, it is necessary because of
-  // weird
   // possible multithreading races
   if (should_shoot_) {
     intake_front_->Set(-1);
@@ -128,7 +134,13 @@ void ArmSubsystem::Update(Time dt) {
       shooter_controller_.SetGoal(0 * rad / s);
       SetHoodOpen(false);
     }
-  } else if (intake_target_ == IntakeGoal::FORWARD) {
+  } else if (intake_target_ == IntakeGoal::FORWARD_UNTIL) {
+    intake_front_->Set(-1);
+    intake_side_->Set(1);
+    if (ball_sensor_->Get()) {
+      intake_target_ = IntakeGoal::OFF;
+    }
+  } else if (intake_target_ == IntakeGoal::FORWARD_FOREVER) {
     intake_front_->Set(-1);
     intake_side_->Set(1);
   } else if (intake_target_ == IntakeGoal::REVERSE) {
@@ -154,6 +166,15 @@ void ArmSubsystem::Update(Time dt) {
   csv_log_.EndLine();
   t += dt;
 }
+
+bool ArmSubsystem::Intaking() {
+  if (intake_target_ == IntakeGoal::FORWARD_UNTIL) {
+    return true;
+  }
+  return false;
+}
+
+bool ArmSubsystem::BallIntaked() { return ball_sensor_->Get(); }
 
 std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
   Voltage elevator_voltage, pivot_voltage;
@@ -198,8 +219,17 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
                          elevator_brake);
 }
 
+bool ArmSubsystem::IsDone() { return state_ == ArmState::FINISHED; }
+
+// Sets targets for the arm subsystem
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{45 * deg, .38 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{43 * deg, .38 * m, 5500 * rev / (60 * s)};
+  SetGoal(goal);
+  SetHoodOpen(true);
+}
+
+void ArmSubsystem::GoToAutoShot() {
+  ArmGoal goal{35 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
@@ -211,13 +241,13 @@ void ArmSubsystem::GoToTuck() {
 }
 
 void ArmSubsystem::GoToFender() {
-  ArmGoal goal{10 * deg, 0 * m, 2500 * rev / (60 * s)};
+  ArmGoal goal{10 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{5 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{3 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }

@@ -14,15 +14,21 @@ struct ArmGoal {
   Length elevator_goal;
   AngularVelocity shooter_goal;
 };
-enum class IntakeGoal { OFF = 0, REVERSE, FORWARD };
+enum class IntakeGoal { OFF = 0, REVERSE, FORWARD_UNTIL, FORWARD_FOREVER };
 
 class ArmSubsystem : public muan::Updateable {
  public:
   ArmSubsystem();
   ~ArmSubsystem();
 
+  bool IsCalibrated();
+
   void Update(Time dt) override;
+
+  bool IsDone();
+
   void GoToLong();
+  void GoToAutoShot();
   void GoToTuck();
   void GoToFender();
   void GoToIntake();
@@ -41,6 +47,8 @@ class ArmSubsystem : public muan::Updateable {
 
   bool AllIsDone();
   bool ClimbIsDone();
+  bool BallIntaked();
+  bool Intaking();
 
  private:
   std::tuple<Voltage, bool, Voltage, bool> UpdateClimb(Time dt);
@@ -81,6 +89,8 @@ class ArmSubsystem : public muan::Updateable {
   std::unique_ptr<VictorSP> intake_front_;
   std::unique_ptr<VictorSP> intake_side_;
 
+  std::unique_ptr<DigitalInput> ball_sensor_;
+
   PivotController pivot_controller_;
   ElevatorController elevator_controller_;
   ShooterBang shooter_controller_;
@@ -95,11 +105,11 @@ class ArmSubsystem : public muan::Updateable {
 
   muan::Timer shot_timer_;
   bool should_shoot_ = false;
-  const Time shot_time = 1 * s;
+  const Time shot_time = 2 * s;
 
   Time t = 0 * s;
 
-  IntakeGoal intake_target_ = IntakeGoal::OFF;
+  IntakeGoal intake_target_;
 
   Angle thresh_;
 };

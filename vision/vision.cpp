@@ -16,15 +16,9 @@ void CitrusVision::Start() {
   bool is_found = table_->GetBoolean("targetFound", false);
   std::cout << "FOUND: " << is_found << ", moving to " << camera_diff.to(rad)
             << std::endl;
-  if (is_found) {
-    using muan::TrapezoidalMotionProfile;
-    auto distance_profile = std::make_unique<TrapezoidalMotionProfile<Length>>(
-        0 * m, 10 * m / s, 10 * m / s / s);
-    auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-        camera_diff, 240 * deg / s, 500 * deg / s / s);
-    subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
-                                          std::move(angle_profile));
-  }
+  //if (is_found) {
+  subsystems_.drive.PointTurn(camera_diff, false);
+  //}
 }
 
 bool CitrusVision::IsSeeing() {

@@ -55,7 +55,7 @@ class GyroReader : public muan::Updateable {
   void Calibrate(Time dt);
   Angle GetAngle();
   virtual void Update(Time dt);
-  bool IsCalibrated() { return is_calibrated; }
+  bool IsCalibrated();
 };
 
 #endif

@@ -16,14 +16,25 @@ class ElevatorController {
                       bool enabled);
   void SetGoal(Length goal);
   bool IsDone();
+  bool ShouldFireBrake();
 
   Length GetPosition() { return current_displacement_; }
 
  private:
-  enum class ElevatorState { DISABLED = 0, MOVING, FINISHED, ESTOP };
+  enum class ElevatorState {
+    DISABLED = 0,
+    PREP_MOVING,
+    MOVING,
+    PREP_STOP,
+    FINISHED,
+    ESTOP
+  };
   ElevatorState state_ = ElevatorState::DISABLED;
   muan::PidController<Length, Voltage> controller_;
   muan::PidController<Length, Voltage> climb_controller_;
+
+  const Time disk_brake_time = .15 * s;
+  Time brake_timer_ = 0 * s;
 
   Length current_goal_;
   Length current_displacement_;
