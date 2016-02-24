@@ -26,7 +26,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   } else if (id == RobotIdentifier::COMPETITION_ROBOT) {
     ret.pivot_calibration_offset = 21.6 * deg;
 
-    ret.pivot_gains = {40 * V / rad, 0 * V / (rad * s), 1 * V / (rad / s)};
+    ret.pivot_gains = {50 * V / rad, 0 * V / (rad * s), 2 * V / (rad / s)};
     ret.pivot_climb_gains = {100 * V / rad, 40 * V / (rad * s),
                              0 * V / (rad / s)};
 
