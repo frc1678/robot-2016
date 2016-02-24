@@ -14,7 +14,6 @@ class CitrusRobot : public IterativeRobot {
  private:
   LemonScriptRunner* auto_runner;
   std::unique_ptr<Solenoid> wedge_;
-  bool is_wedge_deployed_ = false;
 
   // Avery's buttons
   std::unique_ptr<CitrusButton> shoot_, align_, shift_high_, shift_low_,
@@ -36,6 +35,7 @@ class CitrusRobot : public IterativeRobot {
   ColorLight lights_;
   std::unique_ptr<DigitalOutput> l_pow_, l_red_, l_green_, l_blue_;
 
+  bool is_wedge_deployed_ = false;
   bool test_flag_;
   bool in_highgear_;
   bool vision_done_ = false;  // UGLY HACK

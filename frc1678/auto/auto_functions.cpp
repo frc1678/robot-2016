@@ -30,6 +30,11 @@ bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist) {
 
 }
 
+bool AutoFunction::SetWedge(CitrusRobot* robot, bool up) {
+  robot->is_wedge_deployed_ = !up;
+  return true;
+}
+
 bool newDriveAtAngleState = true;
 bool AutoFunction::DriveStraightAtAngle(CitrusRobot* robot, float angle, float dist) {
   if(newDriveState) {
