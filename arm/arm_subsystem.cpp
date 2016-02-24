@@ -5,8 +5,8 @@
 
 ArmSubsystem::ArmSubsystem()
     : muan::Updateable(200 * hz),
-      elevator_controller_(.005 * s),
       pivot_controller_(RobotConstants::GetInstance()),
+      elevator_controller_(RobotConstants::GetInstance(), .005 * s),
       csv_log_("arm_subsystem",
                {"time", "pivot_voltage", "elevator_voltage", "pivot_angle",
                 "elevator_position", "state", "climb_state", "shooter_voltage",

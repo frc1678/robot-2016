@@ -8,6 +8,8 @@ RobotIdentifier FindRobotIdentifier() {
   std::string mac;
   std::getline(file, mac);
   RobotIdentifier id;
+  // TODO(Kyle) Put the MAC address for PBOT-1 in here when we get the robot
+  // back
   if (mac == "00:80:2f:17:fa:f4") {
     id = RobotIdentifier::PRACTICE_ROBOT_2;
   } else if (mac == "00:80:2f:21:a9:33") {

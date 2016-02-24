@@ -4,8 +4,11 @@
 #include <cmath>
 
 PivotController::PivotController(RobotConstants constants)
-    : controller_(40 * V / rad, 15 * V / (rad * s), 1 * V / (rad / s)),
-      climb_controller_(100 * V / rad, 40 * V / (rad * s), 0 * V / (rad / s)) {
+    : controller_(constants.pivot_gains),
+      climb_controller_(constants.pivot_climb_gains) {
+  std::cout << "Pivot gains: " << constants.pivot_gains.kP << ", "
+            << constants.pivot_gains.kI << ", " << constants.pivot_gains.kD
+            << std::endl;
   goal_ = offset_ = 0 * deg;
   thresh_ = .5 * deg;
   SetConstants(constants);
