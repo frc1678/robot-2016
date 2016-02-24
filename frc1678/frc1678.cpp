@@ -125,35 +125,42 @@ void CitrusRobot::TeleopPeriodic() {
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = true;
   }
   if (defensive_pos_->ButtonClicked()) {
     subsystems_.arm.GoToDefensive();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = true;
   }
   if (intake_pos_->ButtonClicked()) {
     subsystems_.arm.GoToIntake();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = true;
+    tuck_def_ = false;
   }
   if (fender_pos_->ButtonClicked()) {
     subsystems_.arm.GoToFender();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = false;
   }
   if (long_pos_->ButtonClicked()) {
     subsystems_.arm.GoToLong();
     shootable_ = true;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = false;
   }
   if (short_pos_->ButtonClicked()) {
     subsystems_.arm.GoToAutoShot();
     shootable_ = true;
     start_climb_ = false;
+    intaking_ = false;
+    tuck_def_ = false;
   }
   if (run_intake_until_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
@@ -171,18 +178,21 @@ void CitrusRobot::TeleopPeriodic() {
     shootable_ = false;
     start_climb_ = true;
     intaking_ = false;
+    tuck_def_ = false;
   }
   if (climb_pos_continue_->ButtonClicked()) {
     subsystems_.arm.ContinueClimb();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = false;
   }
   if (climb_end_->ButtonClicked()) {
     subsystems_.arm.CompleteClimb();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = false;
   }
 
   // Toggle the wedge when the button is deployed
@@ -229,28 +239,41 @@ void CitrusRobot::UpdateButtons() {
 }
 
 void CitrusRobot::UpdateLights() {
-  if (!subsystems_.drive.gyro_reader_->IsCalibrated()) {
-    lights_ = ColorLight::BLUE;
-  } else if (disabled_) {
-    lights_ = ColorLight::WHITE;
-  } else if (subsystems_.arm.AllIsDone() &&
-             !vision_.IsSeeing()) {  // if arm is at position, not seeing
+  // for enabled
+  if (subsystems_.arm.AllIsDone() && !tuck_def_ &&
+      !vision_.IsSeeing()) {  // if arm is at position, not seeing
     // vision
     lights_ = ColorLight::RED;
-  } else if (vision_.IsSeeing() &&
+  } else if (vision_.IsSeeing() && !tuck_def_ &&
              subsystems_.arm.AllIsDone()) {  // if vision sees target + arm is
                                              // done, yellow!
     lights_ = ColorLight::YELLOW;
-  } else if (vision_.Update(true) && shootable_ &&
-             subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
+  }
+
+  if (vision_.Update(true) && shootable_ && !tuck_def_ &&
+      subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
   }
-  if (!subsystems_.arm.BallIntaked() && intaking_) {
+
+  if (!subsystems_.arm.AllIsDone()) {
     lights_ = ColorLight::RED;
+  }
+
+  if (subsystems_.arm.AllIsDone() && tuck_def_) {
+    lights_ = ColorLight::GREEN;
+  }
+
+  // for intaking
+  if (!subsystems_.arm.BallIntaked() && intaking_) {
+    lights_ = ColorLight::BLUE;
   } else if (subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::GREEN;
   }
-  if (disabled_) {
+
+  // for disabled
+  if (disabled_ && !subsystems_.drive.gyro_reader_->IsCalibrated()) {
+    lights_ = ColorLight::BLUE;
+  } else if (disabled_) {
     lights_ = ColorLight::WHITE;
   }
 
