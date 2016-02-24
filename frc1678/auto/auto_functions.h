@@ -18,6 +18,7 @@ enum Position {
 namespace AutoFunction {
 void SetUpAutoFunction();
 void DeleteAutoFunction();
+bool SetWedge(CitrusRobot* robot, bool up);
 bool DriveStraight(CitrusRobot* robot, float dist); //TODO(Wesley) Change name to be the same as elsewhere
 bool DriveStraightAtAngle(CitrusRobot* robot, float dist, float angle);
 bool PointTurn(CitrusRobot *robot, float angle);

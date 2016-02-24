@@ -43,10 +43,13 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
 
   AvailableCppCommandDeclaration *align =
       new AvailableCppCommandDeclaration((void *)AutoFunction::Align, "Align", {});
+
+  AvailableCppCommandDeclaration *setWedge =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::SetWedge, "SetWedge", {BOOLEAN});
   
 
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift};
+      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge};
   
   std::ifstream ifs(auto_routine_file);  // Take in auto_routine_file
   

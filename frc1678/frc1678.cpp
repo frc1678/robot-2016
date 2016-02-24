@@ -64,7 +64,11 @@ void CitrusRobot::AutonomousInit() {
   subsystems_.arm.SetEnabled(true);
 }
 
-void CitrusRobot::AutonomousPeriodic() { auto_runner->Update(); }
+void CitrusRobot::AutonomousPeriodic() {
+  auto_runner->Update();
+  printf("wedgetf? %d\n", is_wedge_deployed_);
+  wedge_->Set(is_wedge_deployed_);
+}
 
 void CitrusRobot::TeleopInit() {
   // using muan::TrapezoidalMotionProfile;
@@ -187,9 +191,9 @@ void CitrusRobot::TeleopPeriodic() {
 
   // Toggle the wedge when the button is deployed
   is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
-  if (wedge_toggle_->ButtonClicked()) {
+  //if (wedge_toggle_->ButtonClicked()) {
     wedge_->Set(is_wedge_deployed_);
-  }
+  //}
 
   SetDriveGoal(&drivetrain_goal);
   subsystems_.drive.SetDriveGoal(drivetrain_goal);
