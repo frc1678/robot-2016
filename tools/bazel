@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Bazel looks for a tools/bazel script, and if it finds it, executes it instead
+# of the installed bazel.  Use this hook to download a specified bazel version.
+
+set -e
+set -o pipefail
+
+readonly REPOSITORY_ROOT="$(dirname "${BASH_SOURCE[0]}")/.."
+
+readonly BAZEL_VERSION="0.2.0"
+readonly PACKAGE_NAME="bazel_${BAZEL_VERSION}-linux-x86_64.deb"
+readonly PACKAGE_URL="https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/${PACKAGE_NAME}"
+readonly EXTRACTED_BAZEL_LOCATIONS="${REPOSITORY_ROOT}/bazel-downloads"
+readonly EXTRACTED_BAZEL_LOCATION="${EXTRACTED_BAZEL_LOCATIONS}/${BAZEL_VERSION}"
+
+# Make sure the download directory exists.
+# If someone decides to race this script against it's self, the script needs to
+# do something sane.
+
+mkdir -p "${EXTRACTED_BAZEL_LOCATIONS}" || true
+if [[ ! -d "${EXTRACTED_BAZEL_LOCATIONS}" ]]
+then
+  echo "Failed to create bazel download directory."
+  exit 1
+fi
+
+# Check to see if the folder which will have bazel exists
+# If not, fetch bazel and put it in.
+
+if [[ ! -d "${EXTRACTED_BAZEL_LOCATION}" ]]
+then
+  TMP_DOWNLOAD_DIR=$(mktemp -d -p "${EXTRACTED_BAZEL_LOCATIONS}" new_bazel.XXXXXXXXXX)
+  echo "Fetching ${PACKAGE_NAME} from ${PACKAGE_URL}"
+  wget --no-verbose --show-progress "${PACKAGE_URL}" -O "${TMP_DOWNLOAD_DIR}/${PACKAGE_NAME}"
+  echo "Extracting Bazel ${BAZEL_VERSION}"
+  dpkg-deb -x "${TMP_DOWNLOAD_DIR}/${PACKAGE_NAME}" "${TMP_DOWNLOAD_DIR}/contents"
+
+  # Force bazel to not have any defaults.  We'll provide them all in the repo bazelrc.
+  touch "${TMP_DOWNLOAD_DIR}/contents/usr/bin/bazel.bazelrc"
+
+  # Now that everythign is set up, move the directory into place.
+  # If someone races at this step, we might end up with bazel from the old
+  # extracted directory running and bazel from the new one.  The bazels will be
+  # identical, so that isn't a huge issue.  It'll also sort its self out
+  # shortly when bazel finishes executing.  The actual move step is atomic.
+  mv "${TMP_DOWNLOAD_DIR}/contents" "${EXTRACTED_BAZEL_LOCATION}"
+  rm -rf "${TMP_DOWNLOAD_DIR}"
+  echo "Now starting our new Bazel."
+fi
+
+# Look for bazel-real
+# Otherwise return an error.
+if [[ -e "${EXTRACTED_BAZEL_LOCATION}/usr/bin/bazel-real" ]]
+then
+  exec "${EXTRACTED_BAZEL_LOCATION}/usr/bin/bazel-real" "$@"
+fi
+
+echo "Failed to find Bazel."
+exit 1
