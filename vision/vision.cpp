@@ -56,12 +56,12 @@ bool CitrusVision::Update(bool enabled) {
   /* } */
   /* gyro_history_.Update(subsystems_.drive.gyro_reader_->GetAngle()); */
   /* return false; */
-  if (IsSeeing() &&
-      (muan::abs(table_->GetNumber("angleToTarget", 0) * deg) < 1 * deg)) {
-    return subsystems_.drive.IsProfileComplete();
-  } else {
-    return false;
-  }
+  //if (IsSeeing() &&
+  //    (muan::abs(table_->GetNumber("angleToTarget", 0) * deg) < 1 * deg)) {
+  return subsystems_.drive.IsProfileComplete();
+  //} else {
+  //  return false;
+  //}
 }
 
 void CitrusVision::EndTest() {
