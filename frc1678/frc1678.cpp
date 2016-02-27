@@ -66,7 +66,6 @@ void CitrusRobot::AutonomousInit() {
 
 void CitrusRobot::AutonomousPeriodic() {
   auto_runner->Update();
-  printf("wedgetf? %d\n", is_wedge_deployed_);
   wedge_->Set(is_wedge_deployed_);
 }
 

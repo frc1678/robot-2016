@@ -15,6 +15,7 @@ void AutoFunction::DeleteAutoFunction() {
 // Test for LemonScript
 bool newDriveState = true;
 bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist) {
+  std::cout << "Driving Straight" << std::endl; 
   if(newDriveState) {
     robot->subsystems_.drive.DriveDistance(dist * ft);
     newDriveState = false;
@@ -56,6 +57,7 @@ bool AutoFunction::DriveStraightAtAngle(CitrusRobot* robot, float angle, float d
 
 bool newTurnState = true;
 bool AutoFunction::PointTurn(CitrusRobot* robot, float angle) {
+  std::cout << "Point Turning" << std::endl;
   if(newTurnState) {
     robot->subsystems_.drive.PointTurn(angle * deg);
     newTurnState = false;
@@ -108,6 +110,7 @@ bool AutoFunction::Wait(CitrusRobot* robot, float time) {
 bool AutoFunction::Shoot(CitrusRobot* robot) { 
   // Need to set arm position to LONG before calling this shoot
   // Wait for shooter to reach shooting speed
+  std::cout << "Shooting" << std::endl;
   if (robot->subsystems_.arm.IsDone()) {
     robot->subsystems_.arm.Shoot();
     return true;  // shooter->finished();
@@ -130,6 +133,7 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
          break;
       case TUCK:
         robot->subsystems_.arm.GoToTuck();
+        std::cout << "Going to tuck" << std::endl;
         break;
       case INTAKE:
         robot->subsystems_.arm.GoToIntake();
