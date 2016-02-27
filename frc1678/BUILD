@@ -21,7 +21,8 @@ cc_binary(
     "//unitscpp",
     "//muan:multithreading",
     "//frc1678/auto",
-    "//vision"
+    "//vision",
+    "//robot_constants"
   ],
   srcs=glob(["*.cpp"]) #TODO (jasmine): Add button interface as separate target?
 )

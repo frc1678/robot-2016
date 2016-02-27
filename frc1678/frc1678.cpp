@@ -8,6 +8,7 @@
 #include "vision/vision.h"
 #include "robot_subsystems.h"
 #include "frc1678/frc1678.h"
+#include "robot_constants/robot_constants.h"
 
 CitrusRobot::CitrusRobot() : vision_(subsystems_) {
   // Joysticks
@@ -57,6 +58,8 @@ CitrusRobot::CitrusRobot() : vision_(subsystems_) {
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
+  std::cout << RobotConstants::GetInstance().pivot_calibration_offset.to(deg)
+            << std::endl;
 }
 
 void CitrusRobot::AutonomousInit() {
