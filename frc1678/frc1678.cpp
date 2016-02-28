@@ -66,7 +66,7 @@ void CitrusRobot::AutonomousInit() {
 
 void CitrusRobot::AutonomousPeriodic() {
   auto_runner->Update();
-  printf("wedgetf? %d\n", is_wedge_deployed_);
+  //printf("wedgetf? %d\n", is_wedge_deployed_);
   wedge_->Set(is_wedge_deployed_);
 }
 
@@ -245,7 +245,7 @@ void CitrusRobot::UpdateLights() {
              subsystems_.arm.AllIsDone()) {  // if vision sees target + arm is
                                              // done, yellow!
     lights_ = ColorLight::YELLOW;
-  } else if (vision_.Update(true) && shootable_ &&
+  } else if (vision_.Aligned() && shootable_ &&
              subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
   }
@@ -299,7 +299,7 @@ void CitrusRobot::ColorLights() {
       break;
   }
   l_pow_->Set(1);
-  std::cout << "lights" << static_cast<int>(lights_) << std::endl;
+  //std::cout << "lights" << static_cast<int>(lights_) << std::endl;
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //    lights_ = ColorLight::YELLOW;
   //  }

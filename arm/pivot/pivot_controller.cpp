@@ -23,7 +23,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
                                 bool min_hall_triggered, bool enabled) {
   Voltage out_voltage;
   Angle angle = encoder_angle - offset_;
-  std::cout << angle.to(deg) << std::endl;
+  //std::cout << angle.to(deg) << std::endl;
   if (!enabled) {
     state_ = PivotState::DISABLED;
   }

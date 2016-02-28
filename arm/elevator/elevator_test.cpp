@@ -5,7 +5,7 @@
 #include <fstream>
 
 TEST(ElevatorPlant, isSane) {
-  std::cout << ElevatorConstants::A_c << std::endl << ElevatorConstants::B_c << std::endl << ElevatorConstants::C_c << std::endl;
+  //std::cout << ElevatorConstants::A_c << std::endl << ElevatorConstants::B_c << std::endl << ElevatorConstants::C_c << std::endl;
   auto plant = muan::c2d(ElevatorConstants::A_c, ElevatorConstants::B_c, ElevatorConstants::C_c, .01*s);
   for (Time t = 0; t < 1; t += .01 * s) {
     plant.Update(muan::as_matrix<1, 1>({{1}}));

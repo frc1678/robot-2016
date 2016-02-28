@@ -14,8 +14,8 @@ CitrusVision::CitrusVision(RobotSubsystems& subs)
 void CitrusVision::Start() {
   Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * deg;
   bool is_found = table_->GetBoolean("targetFound", false);
-  std::cout << "FOUND: " << is_found << ", moving to " << camera_diff.to(rad)
-            << std::endl;
+//  std::cout << "FOUND: " << is_found << ", moving to " << camera_diff.to(rad)
+//            << std::endl;
   //if (is_found) {
   subsystems_.drive.PointTurn(camera_diff, false);
   //}
@@ -62,6 +62,15 @@ bool CitrusVision::Update(bool enabled) {
   //} else {
   //  return false;
   //}
+}
+
+bool CitrusVision::Aligned() {
+  if (IsSeeing() &&
+     (muan::abs(table_->GetNumber("angleToTarget", 0) * deg) < 1 * deg)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void CitrusVision::EndTest() {
