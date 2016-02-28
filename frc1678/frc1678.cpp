@@ -43,22 +43,10 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
-  // Auto
   auto_map_[0b00000011] = "one_ball.auto";
   auto_map_[0b00000000] = "one_ball.auto";
   auto_map_[0b00000001] = "class_d_left.auto";
   auto_map_[0b00000010] = "class_d_right.auto";
-
-  int8_t auto_number = 0b00000000;
-  DigitalInput *switch_one = new DigitalInput(23);
-  DigitalInput *switch_two = new DigitalInput(24);
-
-  auto_number |= (switch_one->Get() ? 0 : 1) << 0;
-  auto_number |= (switch_two->Get() ? 0 : 1) << 1;
-
-  std::cout << "Auto " << unsigned(auto_number) << ", " << auto_map_[auto_number] << "\n";
-
-  auto_runner = new LemonScriptRunner(auto_map_[auto_number], this);
 
   l_pow_ = std::make_unique<DigitalOutput>(25);
   l_red_ = std::make_unique<DigitalOutput>(7);
@@ -81,11 +69,21 @@ void CitrusRobot::AutonomousInit() {
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
   subsystems_.drive.gyro_reader_->SetOffset(subsystems_.drive.gyro_reader_->GetAngle());
+
+  int8_t auto_number = 0b00000000;
+  DigitalInput *switch_one = new DigitalInput(23);
+  DigitalInput *switch_two = new DigitalInput(24);
+
+  auto_number |= (switch_one->Get() ? 0 : 1) << 0;
+  auto_number |= (switch_two->Get() ? 0 : 1) << 1;
+
+  std::cout << "Auto " << unsigned(auto_number) << ", " << auto_map_[auto_number] << "\n";
+
+  auto_runner = new LemonScriptRunner(auto_map_[auto_number], this);
 }
 
 void CitrusRobot::AutonomousPeriodic() {
   auto_runner->Update();
-  printf("wedgetf? %d\n", is_wedge_deployed_);
   wedge_->Set(is_wedge_deployed_);
 }
 
