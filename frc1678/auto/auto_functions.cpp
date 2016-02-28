@@ -57,7 +57,7 @@ bool AutoFunction::DriveStraightAtAngle(CitrusRobot* robot, float dist, float an
 
 bool newTurnState = true;
 bool AutoFunction::PointTurn(CitrusRobot* robot, float angle) {
-  std::cout << "Point Turning" << std::endl;
+  std::cout << "Point Turning: " << angle << std::endl;
   if(newTurnState) {
     robot->subsystems_.drive.PointTurn(angle * deg);
     newTurnState = false;

@@ -7,6 +7,8 @@ set arm position: AUTO = 3
 point turn: angle = -15.0
 wait: seconds = 1.5
 align
+wait: 0.3
+align
 shoot
 
 wait: 0.6
