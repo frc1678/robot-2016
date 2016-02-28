@@ -20,6 +20,13 @@ new_http_archive(
   url = 'https://bitbucket.org/eigen/eigen/get/4111270ba6e1.zip'
 )
 
+new_http_archive(
+  name = 'opencv',
+  build_file = 'opencv.BUILD',
+  sha256 = '5d6d80c0d1052cfbbb074df774b721f482b6cd63566151ad09ca0f8f459a6aaa',
+  url = 'https://www.dropbox.com/s/t00zz2wtqmabum9/opencv.zip?dl=0&raw=1'
+)
+
 new_git_repository(
   name = 'cddlib',
   build_file = 'cddlib.BUILD',
