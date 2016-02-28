@@ -38,9 +38,9 @@ bool AutoFunction::SetWedge(CitrusRobot* robot, bool up) {
 
 bool newDriveAtAngleState = true;
 bool AutoFunction::DriveStraightAtAngle(CitrusRobot* robot, float dist, float angle) {
-  if(newDriveState) {
+  if(newDriveAtAngleState) {
     robot->subsystems_.drive.DriveDistanceAtAngle(dist * ft, angle * deg);
-    newDriveState = false;
+    newDriveAtAngleState = false;
   }
 
 
@@ -137,8 +137,12 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
         break;
       case INTAKE:
         robot->subsystems_.arm.GoToIntake();
+        break;
       case AUTO_SHOT:
         robot->subsystems_.arm.GoToAutoShot();
+        break;
+      case DEFENSE:
+        robot->subsystems_.arm.GoToDefensive();
         break;
     }
   
