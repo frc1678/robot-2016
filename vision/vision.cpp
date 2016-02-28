@@ -29,6 +29,15 @@ bool CitrusVision::Update(bool enabled) {
   return subsystems_.drive.IsProfileComplete();
 }
 
+bool CitrusVision::Aligned() {
+  if (IsSeeing() &&
+     (muan::abs(table_->GetNumber("angleToTarget", 0) * deg) < 1 * deg)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 void CitrusVision::EndTest() {
   // test_log_["end"] = std::to_string(table_->GetNumber("angleToTarget", 0));
   // test_log_.EndTest();

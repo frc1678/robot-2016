@@ -13,6 +13,7 @@ class CitrusVision {
   void Start();
   bool Update(bool enable);
   bool IsSeeing();
+  bool Aligned();
   void EndTest();
 
  private:

@@ -27,6 +27,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
                                 bool min_hall_triggered, bool enabled) {
   Voltage out_voltage;
   Angle angle = encoder_angle - offset_;
+  //std::cout << angle.to(deg) << std::endl;
   if (!enabled) {
     state_ = PivotState::DISABLED;
   }
@@ -131,7 +132,7 @@ Voltage PivotController::GetFFVoltage(Angle a) {
   auto mass = 12 * kg;
   decltype(Force(0) * m) gravity_torque =
       C_g * mass * grav * std::cos(a.to(rad));
-  return gravity_torque * gear_ratio * motor_resistance / (Q * K_t);
+  return gravity_torque * gear_ratio * motor_resistance / (pivot_efficiency * K_t);
 }
 
 Voltage PivotController::GetClimbFFVoltage(Angle a) {
@@ -160,4 +161,5 @@ bool PivotController::IsCalibrated() { return calibrated_; }
 void PivotController::SetConstants(RobotConstants constants) {
   calibrated_ = false;
   calibration_offset_ = constants.pivot_calibration_offset;
+  pivot_efficiency = constants.pivot_efficiency;
 }

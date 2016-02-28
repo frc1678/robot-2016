@@ -12,7 +12,7 @@ GyroReader::GyroReader() : muan::Updateable(100 * hz) {
 
 bool GyroReader::Init() {
   if (!gyro->InitializeGyro()) {
-    printf("Gyro init returned false");
+    //printf("Gyro init returned false");
     return false;
   }
   return true;
@@ -35,7 +35,7 @@ void GyroReader::Calibrate(Time dt) {
         calibration_drift = calibration_drift_angle / calibration_time_counter;
         // printf("[gyro] Final calib val: %f\n", calibration_drift.to(deg/s));
         // printf("#--- START TRIAL %d ---\n", trial);
-        printf("[gyro] finished calibrating :)\n");
+        //printf("[gyro] finished calibrating :)\n");
         is_calibrated = true;
         need_led_switch = true;
       }
@@ -49,7 +49,7 @@ Angle GyroReader::GetAngle() {
 
 void GyroReader::Update(Time dt) {
   if (!is_initalized) {
-    printf("Gyro not initalized :'(\n");
+    //printf("Gyro not initalized :'(\n");
   } else {
     if (!is_calibrated) {
       Calibrate(dt);

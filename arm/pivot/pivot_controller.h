@@ -44,6 +44,8 @@ class PivotController {
   Time brake_timer_;
   Angle calibration_offset_ = 0 * deg;
 
+  double pivot_efficiency;
+
   Angle thresh_;
 };
 

@@ -129,11 +129,11 @@ void DrivetrainSubsystem::Update(Time dt) {
         distance_profile_.reset();
         is_operator_controlled_ = true;
         angle_controller_.Reset();
-        printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
-               angle_from_start.to(deg), t.to(s));
+        //printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
+        //       angle_from_start.to(deg), t.to(s));
       }
 
-      printf("%f motion profile gyro Angle\n", angle_from_start.to(deg));
+      //printf("%f motion profile gyro Angle\n", angle_from_start.to(deg));
     }
   }
 
