@@ -66,7 +66,8 @@ void CitrusRobot::RobotInit() {
 void CitrusRobot::AutonomousInit() {
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
-  subsystems_.drive.gyro_reader_->SetOffset(subsystems_.drive.gyro_reader_->GetAngle());
+  subsystems_.drive.gyro_reader_->SetOffset(
+      subsystems_.drive.gyro_reader_->GetAngle());
 }
 
 void CitrusRobot::AutonomousPeriodic() {
@@ -149,6 +150,7 @@ void CitrusRobot::TeleopPeriodic() {
     start_climb_ = false;
     intaking_ = true;
     tuck_def_ = false;
+    time = 0 * s;
   }
   if (fender_pos_->ButtonClicked()) {
     subsystems_.arm.GoToFender();
