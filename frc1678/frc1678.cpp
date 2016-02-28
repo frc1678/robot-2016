@@ -44,7 +44,7 @@ CitrusRobot::CitrusRobot()
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
   // Auto
-  auto_runner = new LemonScriptRunner("classD.auto", this);
+  auto_runner = new LemonScriptRunner("oneBall2016.auto", this);
 
   l_pow_ = std::make_unique<DigitalOutput>(25);
   l_red_ = std::make_unique<DigitalOutput>(7);
