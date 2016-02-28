@@ -334,6 +334,7 @@ void CitrusRobot::ColorLights() {
       l_blue_->Set(1);
       break;
   }
+
   l_pow_->Set(1);
   std::cout << "lights" << static_cast<int>(lights_) << std::endl;
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
