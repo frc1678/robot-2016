@@ -42,7 +42,9 @@ class CitrusRobot : public IterativeRobot {
   bool shootable_ = false;    // ALSO UGLY HACK
   bool start_climb_ = false;  // ANOTHER UGLY HACK
   bool intaking_ = false;
+  bool tuck_def_ = false;
   bool disabled_;
+  Time time = 0 * s;
 
   CitrusRobot();
   void RobotInit();

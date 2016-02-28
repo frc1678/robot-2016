@@ -11,13 +11,17 @@ class ShooterBang {
   Voltage Update(Time dt, Angle displacement);
   void SetGoal(AngularVelocity goal);
   bool IsDone();
+  bool IsAtVelocity();
   AngularVelocity GetVelocity();
 
  private:
   AngularVelocity goal_, last_;
 
   Angle previous_displacement_;
-  Time time; 
+  Time time;
+
+  bool up_to_speed;
+  bool has_up_to_speed;
 };
 
 #endif

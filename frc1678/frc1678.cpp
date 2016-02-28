@@ -10,7 +10,8 @@
 #include "frc1678/frc1678.h"
 #include "robot_constants/robot_constants.h"
 
-CitrusRobot::CitrusRobot() : vision_(subsystems_, RobotConstants::GetInstance()) {
+CitrusRobot::CitrusRobot()
+    : vision_(subsystems_, RobotConstants::GetInstance()) {
   // Joysticks
   j_wheel_ = std::make_unique<Joystick>(0);
   j_stick_ = std::make_unique<Joystick>(1);
@@ -70,6 +71,7 @@ void CitrusRobot::AutonomousInit() {
 
 void CitrusRobot::AutonomousPeriodic() {
   auto_runner->Update();
+  printf("wedgetf? %d\n", is_wedge_deployed_);
   wedge_->Set(is_wedge_deployed_);
 }
 
@@ -132,35 +134,42 @@ void CitrusRobot::TeleopPeriodic() {
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = true;
   }
   if (defensive_pos_->ButtonClicked()) {
     subsystems_.arm.GoToDefensive();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = true;
   }
   if (intake_pos_->ButtonClicked()) {
     subsystems_.arm.GoToIntake();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = true;
+    tuck_def_ = false;
   }
   if (fender_pos_->ButtonClicked()) {
     subsystems_.arm.GoToFender();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = false;
   }
   if (long_pos_->ButtonClicked()) {
     subsystems_.arm.GoToLong();
     shootable_ = true;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = false;
   }
   if (short_pos_->ButtonClicked()) {
     subsystems_.arm.GoToAutoShot();
     shootable_ = true;
     start_climb_ = false;
+    intaking_ = false;
+    tuck_def_ = false;
   }
   if (run_intake_until_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
@@ -178,24 +187,27 @@ void CitrusRobot::TeleopPeriodic() {
     shootable_ = false;
     start_climb_ = true;
     intaking_ = false;
+    tuck_def_ = false;
   }
   if (climb_pos_continue_->ButtonClicked()) {
     subsystems_.arm.ContinueClimb();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = false;
   }
   if (climb_end_->ButtonClicked()) {
     subsystems_.arm.CompleteClimb();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
+    tuck_def_ = false;
   }
 
   // Toggle the wedge when the button is deployed
   is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
-  //if (wedge_toggle_->ButtonClicked()) {
-    wedge_->Set(is_wedge_deployed_);
+  // if (wedge_toggle_->ButtonClicked()) {
+  wedge_->Set(is_wedge_deployed_);
   //}
 
   SetDriveGoal(&drivetrain_goal);
@@ -236,28 +248,50 @@ void CitrusRobot::UpdateButtons() {
 }
 
 void CitrusRobot::UpdateLights() {
-  if (!subsystems_.drive.gyro_reader_->IsCalibrated()) {
-    lights_ = ColorLight::BLUE;
-  } else if (disabled_) {
-    lights_ = ColorLight::WHITE;
-  } else if (subsystems_.arm.AllIsDone() &&
-             !vision_.IsSeeing()) {  // if arm is at position, not seeing
+  // for enabled
+  if (subsystems_.arm.AllIsDone() && !tuck_def_ &&
+      !vision_.IsSeeing()) {  // if arm is at position, not seeing
     // vision
     lights_ = ColorLight::RED;
-  } else if (vision_.IsSeeing() &&
+  } else if (vision_.IsSeeing() && !tuck_def_ &&
              subsystems_.arm.AllIsDone()) {  // if vision sees target + arm is
                                              // done, yellow!
     lights_ = ColorLight::YELLOW;
-  } else if (vision_.Aligned() && shootable_ &&
-             subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
+  }
+
+  if (vision_.Update(true) && shootable_ && !tuck_def_ &&
+      subsystems_.arm.AllIsDone() &&
+      subsystems_.arm.ShooterSpeeded()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
   }
-  if (!subsystems_.arm.BallIntaked() && intaking_) {
+
+  if (!subsystems_.arm.AllIsDone()) {
     lights_ = ColorLight::RED;
+  }
+
+  if (subsystems_.arm.AllIsDone() && tuck_def_) {
+    lights_ = ColorLight::GREEN;
+  }
+  // for intaking
+  if (!subsystems_.arm.BallIntaked() && intaking_) {
+    lights_ = ColorLight::BLUE;
+    time = 0 * s;
   } else if (subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::GREEN;
+    time += 0.02 * s;
+    if (time < 1.5 * s) {
+      j_manip_->SetRumble(Joystick::kLeftRumble, 1);
+      j_manip_->SetRumble(Joystick::kRightRumble, 1);
+    } else {
+      j_manip_->SetRumble(Joystick::kLeftRumble, 0);
+      j_manip_->SetRumble(Joystick::kRightRumble, 0);
+    }
   }
-  if (disabled_) {
+
+  // for disabled
+  if (disabled_ && !subsystems_.drive.gyro_reader_->IsCalibrated()) {
+    lights_ = ColorLight::BLUE;
+  } else if (disabled_) {
     lights_ = ColorLight::WHITE;
   }
 
@@ -301,8 +335,9 @@ void CitrusRobot::ColorLights() {
       l_blue_->Set(1);
       break;
   }
+
   l_pow_->Set(1);
-  //std::cout << "lights" << static_cast<int>(lights_) << std::endl;
+  std::cout << "lights" << static_cast<int>(lights_) << std::endl;
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //    lights_ = ColorLight::YELLOW;
   //  }
