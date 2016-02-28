@@ -204,8 +204,8 @@ void CitrusRobot::TeleopPeriodic() {
 
   // Toggle the wedge when the button is deployed
   is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
-  //if (wedge_toggle_->ButtonClicked()) {
-    wedge_->Set(is_wedge_deployed_);
+  // if (wedge_toggle_->ButtonClicked()) {
+  wedge_->Set(is_wedge_deployed_);
   //}
 
   SetDriveGoal(&drivetrain_goal);
@@ -258,7 +258,8 @@ void CitrusRobot::UpdateLights() {
   }
 
   if (vision_.Update(true) && shootable_ && !tuck_def_ &&
-      subsystems_.arm.AllIsDone()) {  // if aligned and ready to shoot
+      subsystems_.arm.AllIsDone() &&
+      subsystems_.arm.ShooterSpeeded()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
   }
 

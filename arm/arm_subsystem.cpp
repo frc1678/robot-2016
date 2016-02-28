@@ -112,7 +112,7 @@ void ArmSubsystem::Update(Time dt) {
   pivot_motor_b_->Set(pivot_voltage.to(12 * V));
   pivot_disk_brake_->Set(pivot_brake ? DoubleSolenoid::Value::kReverse
                                      : DoubleSolenoid::Value::kForward);
-  std::cout << "Shooter Encoder: " << shooter_encoder_->Get() << std::endl;
+  // std::cout << "Shooter Encoder: " << shooter_encoder_->Get() << std::endl;
 
   elevator_motor_a_->Set(-elevator_voltage.to(12 * V));
   elevator_motor_b_->Set(-elevator_voltage.to(12 * V));
@@ -296,6 +296,10 @@ void ArmSubsystem::SetGoal(ArmGoal goal) {
 void ArmSubsystem::Shoot() {
   shot_timer_.Reset();
   should_shoot_ = true;
+}
+
+bool ArmSubsystem::ShooterSpeeded() {
+  return shooter_controller_.IsAtVelocity();
 }
 
 bool ArmSubsystem::AllIsDone() { return finished_; }

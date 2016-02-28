@@ -44,6 +44,7 @@ class ArmSubsystem : public muan::Updateable {
   void SetShooter(bool on);
 
   void Shoot();
+  bool ShooterSpeeded();
 
   bool AllIsDone();
   bool ClimbIsDone();
