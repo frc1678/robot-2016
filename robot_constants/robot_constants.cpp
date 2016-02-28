@@ -8,9 +8,9 @@ const RobotConstants& RobotConstants::GetInstance() {
 RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   RobotConstants ret;
   if (id == RobotIdentifier::SSBB) {
-    ret.pivot_calibration_offset = 20.2 * deg;
+    ret.pivot_calibration_offset = 22.6 * deg;
 
-    ret.pivot_gains = {10 * V / rad, 0 * V / (rad * s), 0 * V / (rad / s)};
+    ret.pivot_gains = {70 * V / rad, 0 * V / (rad * s), 2 * V / (rad / s)};
     ret.pivot_climb_gains = {100 * V / rad, 40 * V / (rad * s),
                              0 * V / (rad / s)};
 

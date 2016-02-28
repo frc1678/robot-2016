@@ -14,6 +14,8 @@ RobotIdentifier FindRobotIdentifier() {
     id = RobotIdentifier::APPA;
   } else if (mac == "00:80:2f:21:a9:33") {
     id = RobotIdentifier::COMP;
+  } else if (mac == "00:80:2f:21:b1:54") {
+    id = RobotIdentifier::SSBB;       
   } else {
     id = RobotIdentifier::UNSURE;
   }
