@@ -68,6 +68,8 @@ class DrivetrainSubsystem : public muan::Updateable {
 
   bool is_enabled_ = false;
 
+  Angle gyro_zero_offset_ = 0 * deg;
+
   DrivetrainGoal current_goal_;
   std::unique_ptr<muan::MotionProfile<Length>> distance_profile_;
   std::unique_ptr<muan::MotionProfile<Angle>> angle_profile_;

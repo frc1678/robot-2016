@@ -1,3 +1,4 @@
+set wedge: true
 check arm calibration
 set arm position: TUCK = 1
 
