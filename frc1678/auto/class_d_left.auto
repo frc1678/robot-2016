@@ -1,17 +1,17 @@
-check arm calibration
-set arm position: 4
+CheckArmCalibration
+SetArmPosition: 4
 
-drive straight: 12.0
+DriveStraight: 12.0
 
-set arm position: AUTO = 3
-point turn: angle = -15.0
-wait: seconds = 1.5
-align
-wait: 0.3
-align
-shoot
+SetArmPosition: AUTO: 3
+PointTurn: angle: -15.0
+Wait: seconds = 1.5
+Align
+Wait: 0.3
+Align
+Shoot
 
-wait: 0.6
+Wait: 0.6
 
-absolute point turn: 0.0
-drive straight at angle: -9.5, 0.0
+AbsolutePointTurn: 0.0
+DriveStraightAtAngle: -9.5, 0.0

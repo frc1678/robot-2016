@@ -56,6 +56,8 @@ CitrusRobot::CitrusRobot()
   disabled_ = true;
 
   wedge_ = std::make_unique<Solenoid>(5);
+  
+  auto_runner = nullptr;
 }
 
 void CitrusRobot::RobotInit() {
@@ -68,7 +70,7 @@ void CitrusRobot::RobotInit() {
 void CitrusRobot::AutonomousInit() {
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
-  subsystems_.drive.gyro_reader_->SetOffset(subsystems_.drive.gyro_reader_->GetAngle());
+  subsystems_.drive.gyro_reader_->SetOffset();
 
   int8_t auto_number = 0b00000000;
   DigitalInput *switch_one = new DigitalInput(23);
@@ -79,6 +81,9 @@ void CitrusRobot::AutonomousInit() {
 
   std::cout << "Auto " << unsigned(auto_number) << ", " << auto_map_[auto_number] << "\n";
 
+  if(auto_runner != nullptr) {
+    delete auto_runner;
+  }
   auto_runner = new LemonScriptRunner(auto_map_[auto_number], this);
 }
 
