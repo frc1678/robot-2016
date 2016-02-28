@@ -3,19 +3,20 @@
 #include <iostream>
 #include <memory>
 
-CitrusVision::CitrusVision(RobotSubsystems& subs)
+CitrusVision::CitrusVision(RobotSubsystems& subs, RobotConstants constants)
     : subsystems_(subs),
       gyro_history_(.02 * s),
       angle_log_("angles", {"cameraAngle", "gyroHistory"}) {
   table_ = NetworkTable::GetTable("vision");
   table_->PutBoolean("targetFound", false);
+  constants_ = constants;
 }
 
 void CitrusVision::Start() {
   const Angle camera_angle = 1.136 * deg;
 
   float raw_table_angle = -table_->GetNumber("angleToTarget", 0);
-  Angle camera_diff = (-table_->GetNumber("angleToTarget", 0) - 2.1) * camera_angle;
+  Angle camera_diff = (-table_->GetNumber("angleToTarget", 0) + constants_.camera_offset) * camera_angle;
   printf("cam: got %f from camera, turning %f\n", raw_table_angle, camera_diff.to(deg));
   subsystems_.drive.PointTurn(camera_diff, false);
 }

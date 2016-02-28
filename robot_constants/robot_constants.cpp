@@ -15,6 +15,8 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
                              0 * V / (rad / s)};
 
     ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
+
+    ret.camera_offset = -6.6; //TODO(Wesley) convert to unit?
   } else if (id == RobotIdentifier::PRACTICE_ROBOT_2) {
     ret.pivot_calibration_offset = 23.4 * deg;
 
@@ -23,6 +25,8 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
                              0 * V / (rad / s)};
 
     ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
+
+    ret.camera_offset = -2.1; //TODO(Wesley) convert to unit?
   } else if (id == RobotIdentifier::COMPETITION_ROBOT) {
     ret.pivot_calibration_offset = 21.6 * deg;
 
@@ -31,6 +35,8 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
                              0 * V / (rad / s)};
 
     ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
+
+    ret.camera_offset = -0; //TODO(Wesley) convert to unit? Also get real value
   }
   return ret;
 }
