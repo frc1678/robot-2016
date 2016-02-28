@@ -44,7 +44,21 @@ CitrusRobot::CitrusRobot()
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
   // Auto
-  auto_runner = new LemonScriptRunner("class_d_right.auto", this);
+  auto_map_[0b00000011] = "one_ball.auto";
+  auto_map_[0b00000000] = "one_ball.auto";
+  auto_map_[0b00000001] = "class_d_left.auto";
+  auto_map_[0b00000010] = "class_d_right.auto";
+
+  int8_t auto_number = 0b00000000;
+  DigitalInput *switch_one = new DigitalInput(23);
+  DigitalInput *switch_two = new DigitalInput(24);
+
+  auto_number |= (switch_one->Get() ? 0 : 1) << 0;
+  auto_number |= (switch_two->Get() ? 0 : 1) << 1;
+
+  std::cout << "Auto " << unsigned(auto_number) << ", " << auto_map_[auto_number] << "\n";
+
+  auto_runner = new LemonScriptRunner(auto_map_[auto_number], this);
 
   l_pow_ = std::make_unique<DigitalOutput>(25);
   l_red_ = std::make_unique<DigitalOutput>(7);
