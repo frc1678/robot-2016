@@ -66,6 +66,7 @@ void CitrusRobot::RobotInit() {
 void CitrusRobot::AutonomousInit() {
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
+  subsystems_.drive.gyro_reader_->SetOffset(subsystems_.drive.gyro_reader_->GetAngle());
 }
 
 void CitrusRobot::AutonomousPeriodic() {

@@ -192,7 +192,7 @@ void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
       0 * m, 10 * ft / s, 10 * ft / s / s);
   auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-      angle - gyro_reader_->GetAngle(), speed, accel);
+      angle - gyro_reader_->GetAngle() - gyro_zero_offset_, speed, accel);
   FollowMotionProfile(std::move(dp), std::move(ap), highgear);
 }
 

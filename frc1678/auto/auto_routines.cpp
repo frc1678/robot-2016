@@ -15,7 +15,7 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
       new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight, "DriveStraight", {FLOAT});
   
   AvailableCppCommandDeclaration *driveStraightAtAngle =
-      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight, "DriveStraightAtAngle", {FLOAT, FLOAT});
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraightAtAngle, "DriveStraightAtAngle", {FLOAT, FLOAT});
 
   AvailableCppCommandDeclaration *pointTurn =
       new AvailableCppCommandDeclaration((void *)AutoFunction::PointTurn, "PointTurn", {FLOAT});

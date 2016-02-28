@@ -46,6 +46,7 @@ class GyroReader : public muan::Updateable {
   Angle calibration_drift_angle = 0 * rad;
 
   Angle angle = 0 * rad;
+  Angle offset_ = 0 * deg;
 
   int trial = 1;
 
@@ -54,6 +55,7 @@ class GyroReader : public muan::Updateable {
   bool Init();
   void Calibrate(Time dt);
   Angle GetAngle();
+  void SetOffset(Angle offset);
   virtual void Update(Time dt);
   bool IsCalibrated();
 };
