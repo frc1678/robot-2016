@@ -44,6 +44,7 @@ class CitrusRobot : public IterativeRobot {
   bool intaking_ = false;
   bool tuck_def_ = false;
   bool disabled_;
+  Time time = 0 * s;
 
   CitrusRobot();
   void RobotInit();

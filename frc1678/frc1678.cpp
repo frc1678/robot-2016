@@ -10,7 +10,8 @@
 #include "frc1678/frc1678.h"
 #include "robot_constants/robot_constants.h"
 
-CitrusRobot::CitrusRobot() : vision_(subsystems_, ) {
+CitrusRobot::CitrusRobot()
+    : vision_(subsystems_, RobotConstants::GetInstance()) {
   // Joysticks
   j_wheel_ = std::make_unique<Joystick>(0);
   j_stick_ = std::make_unique<Joystick>(1);
@@ -202,9 +203,6 @@ void CitrusRobot::TeleopPeriodic() {
     tuck_def_ = false;
   }
 
-  j_manip_->SetRumble(kLeftRumble, 1);
-  j_manip_->SetRumble(kRightRumble, 1);
-
   // Toggle the wedge when the button is deployed
   is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
   // if (wedge_toggle_->ButtonClicked()) {
@@ -273,12 +271,20 @@ void CitrusRobot::UpdateLights() {
   if (subsystems_.arm.AllIsDone() && tuck_def_) {
     lights_ = ColorLight::GREEN;
   }
-
   // for intaking
   if (!subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::BLUE;
+    time = 0 * s;
   } else if (subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::GREEN;
+    time += 0.02 * s;
+    if (time < 1.5 * s) {
+      j_manip_->SetRumble(Joystick::kLeftRumble, 1);
+      j_manip_->SetRumble(Joystick::kRightRumble, 1);
+    } else {
+      j_manip_->SetRumble(Joystick::kLeftRumble, 0);
+      j_manip_->SetRumble(Joystick::kRightRumble, 0);
+    }
   }
 
   // for disabled
