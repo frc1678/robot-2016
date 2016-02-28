@@ -4,9 +4,9 @@
 #include <string>
 
 enum class RobotIdentifier {
-  COMPETITION_ROBOT = 0,
-  PRACTICE_ROBOT_1,
-  PRACTICE_ROBOT_2,
+  COMP = 0,
+  APPA,
+  SSBB,
   UNSURE
 };
 

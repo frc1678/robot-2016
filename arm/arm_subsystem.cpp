@@ -49,6 +49,7 @@ ArmSubsystem::~ArmSubsystem() {}
 bool ArmSubsystem::IsCalibrated() { return pivot_controller_.IsCalibrated(); }
 
 void ArmSubsystem::Update(Time dt) {
+ // std::cout << ball_sensor_->Get() << std::endl;
   Voltage elevator_voltage = elevator_controller_.Update(
       dt, elevator_encoder_->Get() * .0003191764 * m,
       pivot_encoder_->Get() * deg / 5.0, enabled_);
@@ -224,7 +225,7 @@ void ArmSubsystem::GoToLong() {
 }
 
 void ArmSubsystem::GoToAutoShot() {
-  ArmGoal goal{35 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{37 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }

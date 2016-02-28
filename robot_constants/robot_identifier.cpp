@@ -11,9 +11,9 @@ RobotIdentifier FindRobotIdentifier() {
   // TODO(Kyle) Put the MAC address for PBOT-1 in here when we get the robot
   // back
   if (mac == "00:80:2f:17:fa:f4") {
-    id = RobotIdentifier::PRACTICE_ROBOT_2;
+    id = RobotIdentifier::APPA;
   } else if (mac == "00:80:2f:21:a9:33") {
-    id = RobotIdentifier::COMPETITION_ROBOT;
+    id = RobotIdentifier::COMP;
   } else {
     id = RobotIdentifier::UNSURE;
   }

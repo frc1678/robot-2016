@@ -15,6 +15,9 @@ class RobotConstants {
 
   muan::PidController<Length, Voltage>::PidGains elevator_gains;
 
+  float camera_offset;
+  double pivot_efficiency;
+
  private:
   static RobotConstants instance;
 };

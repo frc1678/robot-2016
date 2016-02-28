@@ -10,7 +10,7 @@
 #include "frc1678/frc1678.h"
 #include "robot_constants/robot_constants.h"
 
-CitrusRobot::CitrusRobot() : vision_(subsystems_) {
+CitrusRobot::CitrusRobot() : vision_(subsystems_, ) {
   // Joysticks
   j_wheel_ = std::make_unique<Joystick>(0);
   j_stick_ = std::make_unique<Joystick>(1);
@@ -201,6 +201,9 @@ void CitrusRobot::TeleopPeriodic() {
     intaking_ = false;
     tuck_def_ = false;
   }
+
+  j_manip_->SetRumble(kLeftRumble, 1);
+  j_manip_->SetRumble(kRightRumble, 1);
 
   // Toggle the wedge when the button is deployed
   is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
