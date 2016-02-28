@@ -6,10 +6,11 @@
 #include "muan/control/state_feedback_controller.h"
 #include "muan/logging/csv_log.h"
 #include "muan/control/pid_controller.h"
+#include "robot_constants/robot_constants.h"
 
 class ElevatorController {
  public:
-  ElevatorController(Time dt);
+  ElevatorController(const RobotConstants& constants, Time dt);
   Eigen::Matrix<double, 2, 1> GetObservedState();
   Voltage Update(Time dt, Length displacement, Angle arm_angle, bool enabled);
   Voltage UpdateClimb(Time dt, Length displacement, Angle arm_angle,

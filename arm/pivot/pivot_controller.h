@@ -2,10 +2,11 @@
 #define ARM_PIVOT_PIVOT_CONTROLLER_H_
 
 #include "muan/control/average_filter_pid.h"
+#include "robot_constants/robot_constants.h"
 
 class PivotController {
  public:
-  PivotController();
+  PivotController(RobotConstants constants);
   ~PivotController();
   void SetGoal(Angle goal, Angle thresh_);
   Voltage Update(Time dt, Angle encoder_angle, bool min_hall_triggered,
@@ -18,6 +19,9 @@ class PivotController {
   Angle GetAngle() { return last_; }
 
  private:
+  muan::AverageFilterPidController<Angle, Voltage> controller_,
+      climb_controller_;
+  void SetConstants(RobotConstants constants);
   enum class PivotState {
     DISABLED = 0,
     CALIBRATING,
@@ -27,8 +31,6 @@ class PivotController {
     FINISHED,
     ESTOP
   };
-  muan::AverageFilterPidController<Angle, Voltage> controller_,
-      climb_controller_;
   Angle goal_;
   Angle last_;
   Angle offset_;
@@ -40,6 +42,9 @@ class PivotController {
   bool calibrated_ = false;
   const Time disk_brake_time = .15 * s;
   Time brake_timer_;
+  Angle calibration_offset_ = 0 * deg;
+
+  double pivot_efficiency;
 
   Angle thresh_;
 };

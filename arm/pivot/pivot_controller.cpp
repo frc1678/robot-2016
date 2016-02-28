@@ -3,11 +3,15 @@
 #include <iostream>
 #include <cmath>
 
-PivotController::PivotController()
-    : controller_(35 * V / rad, 15 * V / (rad * s), 1 * V / (rad / s)),
-      climb_controller_(100 * V / rad, 40 * V / (rad * s), 0 * V / (rad / s)) {
+PivotController::PivotController(RobotConstants constants)
+    : controller_(constants.pivot_gains),
+      climb_controller_(constants.pivot_climb_gains) {
+  std::cout << "Pivot gains: " << constants.pivot_gains.kP << ", "
+            << constants.pivot_gains.kI << ", " << constants.pivot_gains.kD
+            << std::endl;
   goal_ = offset_ = 0 * deg;
   thresh_ = .5 * deg;
+  SetConstants(constants);
 }
 
 PivotController::~PivotController() {}
@@ -31,7 +35,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
     case PivotState::CALIBRATING:
       out_voltage = -1 * V;
       if (min_hall_triggered) {
-        offset_ = encoder_angle - 21.6 * deg;
+        offset_ = encoder_angle - calibration_offset_;
         state_ = PivotState::FINISHED;
         calibrated_ = true;
       }
@@ -72,7 +76,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       break;
   }
   last_ = angle;
-  out_voltage = muan::Cap(out_voltage, -6 * V, 12 * V);
+  out_voltage = muan::Cap(out_voltage, -4 * V, 12 * V);
   return out_voltage;
 }
 
@@ -128,7 +132,7 @@ Voltage PivotController::GetFFVoltage(Angle a) {
   auto mass = 12 * kg;
   decltype(Force(0) * m) gravity_torque =
       C_g * mass * grav * std::cos(a.to(rad));
-  return gravity_torque * gear_ratio * motor_resistance / (Q * K_t);
+  return gravity_torque * gear_ratio * motor_resistance / (pivot_efficiency * K_t);
 }
 
 Voltage PivotController::GetClimbFFVoltage(Angle a) {
@@ -153,3 +157,9 @@ bool PivotController::ShouldFireBrake() {
 }
 
 bool PivotController::IsCalibrated() { return calibrated_; }
+
+void PivotController::SetConstants(RobotConstants constants) {
+  calibrated_ = false;
+  calibration_offset_ = constants.pivot_calibration_offset;
+  pivot_efficiency = constants.pivot_efficiency;
+}
