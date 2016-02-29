@@ -30,6 +30,9 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *wait =
       new AvailableCppCommandDeclaration((void *)AutoFunction::Wait, "Wait", {DataType::FLOAT});
 
+  AvailableCppCommandDeclaration *encoderWait =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::EncoderWait, "EncoderWait", {DataType::FLOAT});
+
   AvailableCppCommandDeclaration *shoot = 
           new AvailableCppCommandDeclaration((void *)AutoFunction::Shoot, "Shoot", {});
 
@@ -50,7 +53,7 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   
 
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge};
+      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, encoderWait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge};
   state.declareAvailableCppCommands(commands);
 
   try {
