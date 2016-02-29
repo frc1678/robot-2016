@@ -30,6 +30,7 @@ class ArmSubsystem : public muan::Updateable {
   void GoToLong();
   void GoToAutoShot();
   void GoToTuck();
+  void GoToTuckSpin();
   void GoToFender();
   void GoToIntake();
   void GoToDefensive();

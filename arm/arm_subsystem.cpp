@@ -236,6 +236,12 @@ void ArmSubsystem::GoToTuck() {
   SetHoodOpen(false);
 }
 
+void ArmSubsystem::GoToTuckSpin() {
+  ArmGoal goal{0 * deg, 0 * m, 5500 * rev / (60 * s)};
+  SetGoal(goal);
+  SetHoodOpen(false);
+}
+
 void ArmSubsystem::GoToFender() {
   ArmGoal goal{10 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);

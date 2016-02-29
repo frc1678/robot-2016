@@ -1,14 +1,13 @@
 SetWedge: false
 CheckArmCalibration
-SetArmPosition: TUCK: 1
 
+SetArmPosition: TUCK_SPIN: 5
 DriveStraight: 16.5
 
 SetArmPosition: AUTO: 3
 PointTurn: angle: -55.0
-Wait: seconds: 1.5
 Align
-Wait: seconds: 0.4
+Wait: seconds: 0.3
 Align
 Shoot
 

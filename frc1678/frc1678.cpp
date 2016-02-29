@@ -44,7 +44,7 @@ CitrusRobot::CitrusRobot()
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
   auto_map_[0b00000011] = "one_ball.auto";
-  auto_map_[0b00000000] = "one_ball.auto";
+  auto_map_[0b00000000] = "two_ball.auto";
   auto_map_[0b00000001] = "class_d_left.auto";
   auto_map_[0b00000010] = "class_d_right.auto";
 

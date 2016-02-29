@@ -133,16 +133,20 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
          break;
       case TUCK:
         robot->subsystems_.arm.GoToTuck();
-        std::cout << "Going to tuck" << std::endl;
+        std::cout << "[auto] Going to tuck" << std::endl;
         break;
       case INTAKE:
         robot->subsystems_.arm.GoToIntake();
         break;
       case AUTO_SHOT:
         robot->subsystems_.arm.GoToAutoShot();
+        std::cout << "[auto] Going to auto shot" << std::endl;
         break;
       case DEFENSE:
         robot->subsystems_.arm.GoToDefensive();
+        break;
+      case TUCK_SPIN:
+        robot->subsystems_.arm.GoToTuckSpin();
         break;
     }
   
@@ -152,6 +156,7 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
   
   if (robot->subsystems_.arm.IsDone()) {
     newArmPosition = true;
+    printf("[auto] arm done\n");
     return true;
   } else {
     return false;

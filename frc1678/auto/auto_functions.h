@@ -13,7 +13,8 @@ enum Position {
   TUCK,
   INTAKE,
   AUTO_SHOT,
-  DEFENSE
+  DEFENSE,
+  TUCK_SPIN
 };
 
 namespace AutoFunction {
