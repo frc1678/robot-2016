@@ -156,6 +156,12 @@ void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal &goal) {
   current_goal_ = goal;
 }
 
+Length DrivetrainSubsystem::GetDistanceDriven() {  
+  DrivetrainPosition pos{0.0, 0.0, 0.0, false, false};
+  SetDrivePosition(&pos);
+  return (pos.left_encoder + pos.right_encoder) / 2 * m;
+}
+
 void DrivetrainSubsystem::Shift(bool high) { current_goal_.highgear = high; }
 
 void DrivetrainSubsystem::SetDrivePosition(

@@ -107,6 +107,24 @@ bool AutoFunction::Wait(CitrusRobot* robot, float time) {
   return false;
 }
 
+Length start_dist;
+bool newEncoderWaitState = true;
+bool AutoFunction::EncoderWait(CitrusRobot* robot, float dist) {
+  if (newEncoderWaitState) {
+    newEncoderWaitState = false;
+    start_dist = robot->subsystems_.drive.GetDistanceDriven();
+    return false;
+  }
+
+  if (dist >= 0 && robot->subsystems_.drive.GetDistanceDriven() - start_dist >= dist * ft) {
+    newEncoderWaitState = true;
+    return true;
+  } else if (dist < 0 && robot->subsystems_.drive.GetDistanceDriven() - start_dist <= dist * ft) {
+    newEncoderWaitState = true;
+    return true;
+  } else return false;
+}
+
 bool AutoFunction::Shoot(CitrusRobot* robot) { 
   // Need to set arm position to LONG before calling this shoot
   // Wait for shooter to reach shooting speed

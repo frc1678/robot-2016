@@ -27,6 +27,7 @@ bool PointTurn(CitrusRobot *robot, float angle);
 bool AbsolutePointTurn(CitrusRobot *robot, float angle);
 bool Shift(CitrusRobot* robot, bool highgear);
 bool Wait(CitrusRobot* robot, float time);
+bool EncoderWait(CitrusRobot* robot, float dist);
 bool Shoot(CitrusRobot* robot);
 bool RunIntake(CitrusRobot* robot);
 bool SetArmPosition(CitrusRobot* robot, Position arm_position);
