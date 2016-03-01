@@ -3,9 +3,12 @@
 
 #include "opencv2/core.hpp"
 #include "unitscpp/unitscpp.h"
+#include "in_range_instructions.h"
+#include "shape_detector.h"
 
 struct TrackerResults {
   Angle angle;
+  Time time_captured;
   bool is_found;
 };
 
@@ -16,7 +19,10 @@ class ObjectTracker {
   TrackerResults Update(cv::Mat& image);
 
  private:
-  InRangeIntructions range;
+  InRangeInstructions range;
+  ShapeDetector detector;
+  const static Angle FOV;
+  const static double minScore;
 };
 
 #endif /* VISION_OBJECT_DETECTOR_H_ */

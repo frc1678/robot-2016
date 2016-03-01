@@ -1,13 +1,14 @@
-#include "in_range_intructions.h"
+#include "in_range_instructions.h"
 #include "opencv2/imgproc.hpp"
-InRangeIntructions::InRangeInstructions(std::string filename) {
-  // TODO read from file
+InRangeInstructions::InRangeInstructions(std::string filename) {
+  // TODO(Lucas) read from file
   low_ = cv::Scalar(0, 140, 140);
   high_ = cv::Scalar(125, 255, 255);
-  colorspace = 4;
+  colorspace_ = 4;
 }
 
-InRangeInstructions(cv::Scalar low, cv::Scalar high, int colorspace) {
+InRangeInstructions::InRangeInstructions(cv::Scalar low, cv::Scalar high,
+                                         int colorspace) {
   low_ = low;
   high_ = high;
   colorspace_ = colorspace;
@@ -19,5 +20,5 @@ void InRangeInstructions::Thresh(cv::Mat image) {
 }
 
 void WriteInstructions(std::string filename) {
-  // TODO: write to file
+  // TODO(Lucas): write to file
 }

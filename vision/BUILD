@@ -14,5 +14,21 @@ cc_library(
 
 cc_library(
   name = "vision_sender",
-  deps = [":object_detector"]
+  srcs = ["data_sender.cpp"],
+  hdrs = ["data_sender.h"],
+  deps = [":object_detector", "//unitscpp", "//muan", "@opencv//:main"]
+)
+
+cc_binary(
+  name = "coprocessor_side",
+  srcs = ["vision_main.cpp"],
+  deps = ["object_detector", "vision_sender", "//unitscpp", "//muan", ":vision_utils", "@opencv//:main"],
+  linkopts = ["-lpthread"]
+)
+
+cc_library(
+  name = "vision_utils",
+  srcs = ["vision_utils.cpp"],
+  hdrs = ["vision_utils.h"],
+  deps = ["@opencv//:main"]
 )
