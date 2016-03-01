@@ -37,7 +37,7 @@ void sendData() {
               << std::endl;
   }
 }
-void visionupdateData(cv::Mat image, TrackerResults position) {
+void vision::updateData(cv::Mat image, TrackerResults position) {
   std::lock_guard<std::mutex> guard(position_mutex);
   position_ = position;
   image_ = image;

@@ -9,6 +9,9 @@ ShapeDetector::ShapeDetector(std::vector<Angle> angles) {
   score_ = 0;
 }
 
+std::vector<cv::Point> ShapeDetector::getPoints() { return points_; }
+double ShapeDetector::getScore() { return score_; }
+
 void ShapeDetector::setData(cv::Mat image) {
   std::vector<std::vector<cv::Point>> contours = getAllContours(image);
 
@@ -51,6 +54,10 @@ std::vector<std::vector<cv::Point>> ShapeDetector::getAllContours(cv::Mat m) {
   return contours;
 }
 
+std::vector<cv::Point> ShapeDetector::convertToPolygon(std::vector<cv::Point> points) {
+  // TODO(Lucas): add actual code
+  return points;
+}
 double ShapeDetector::getTargetCertainty(std::vector<cv::Point> points,
                                          bool isClosestToPrevious) {
   // TODO(Lucas): add actual code

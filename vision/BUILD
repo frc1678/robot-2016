@@ -9,20 +9,20 @@ cc_library(
   name = "object_detector",
   srcs = ["object_detector.cpp", "shape_detector.cpp", "in_range_instructions.cpp"],
   hdrs = ["object_detector.h", "shape_detector.h", "in_range_instructions.h"],
-  deps = ["@opencv//:main", "//unitscpp"]
+  deps = ["//opencv", "//unitscpp"]
 )
 
 cc_library(
   name = "vision_sender",
   srcs = ["data_sender.cpp"],
   hdrs = ["data_sender.h"],
-  deps = [":object_detector", "//unitscpp", "//muan", "@opencv//:main"]
+  deps = [":object_detector", "//unitscpp", "//muan", "//opencv"]
 )
 
 cc_binary(
   name = "coprocessor_side",
   srcs = ["vision_main.cpp"],
-  deps = ["object_detector", "vision_sender", "//unitscpp", "//muan", ":vision_utils", "@opencv//:main"],
+  deps = ["object_detector", "vision_sender", "//unitscpp", "//muan", ":vision_utils", "//opencv"],
   linkopts = ["-lpthread"]
 )
 
@@ -30,5 +30,5 @@ cc_library(
   name = "vision_utils",
   srcs = ["vision_utils.cpp"],
   hdrs = ["vision_utils.h"],
-  deps = ["@opencv//:main"]
+  deps = ["//opencv"]
 )
