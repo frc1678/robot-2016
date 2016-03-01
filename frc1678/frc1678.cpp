@@ -43,11 +43,6 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
-  auto_map_[0b00000011] = "one_ball.auto";
-  auto_map_[0b00000000] = "two_ball.auto";
-  auto_map_[0b00000001] = "class_d_left.auto";
-  auto_map_[0b00000010] = "class_d_right.auto";
-
   l_pow_ = std::make_unique<DigitalOutput>(25);
   l_red_ = std::make_unique<DigitalOutput>(7);
   l_green_ = std::make_unique<DigitalOutput>(8);
@@ -58,6 +53,24 @@ CitrusRobot::CitrusRobot()
   wedge_ = std::make_unique<Solenoid>(5);
   
   auto_runner = nullptr;
+}
+
+std::string CitrusRobot::GetAutoRoutine() {
+  std::map<int8_t, std::string> auto_map;
+
+  auto_map[0b00000011] = "one_ball.auto";
+  auto_map[0b00000000] = "two_ball.auto";
+  auto_map[0b00000001] = "class_d_left.auto";
+  auto_map[0b00000010] = "class_d_right.auto";
+
+  DigitalInput *switch_one = new DigitalInput(23);
+  DigitalInput *switch_two = new DigitalInput(24);
+
+  int8_t auto_number = 0b00000000;
+  auto_number |= (switch_one->Get() ? 0 : 1) << 0;
+  auto_number |= (switch_two->Get() ? 0 : 1) << 1;
+
+  return auto_map[auto_number];
 }
 
 void CitrusRobot::RobotInit() {
@@ -72,19 +85,11 @@ void CitrusRobot::AutonomousInit() {
   subsystems_.arm.SetEnabled(true);
   subsystems_.drive.gyro_reader_->SetOffset();
 
-  int8_t auto_number = 0b00000000;
-  DigitalInput *switch_one = new DigitalInput(23);
-  DigitalInput *switch_two = new DigitalInput(24);
-
-  auto_number |= (switch_one->Get() ? 0 : 1) << 0;
-  auto_number |= (switch_two->Get() ? 0 : 1) << 1;
-
-  std::cout << "Auto " << unsigned(auto_number) << ", " << auto_map_[auto_number] << "\n";
 
   if(auto_runner != nullptr) {
     delete auto_runner;
   }
-  auto_runner = new LemonScriptRunner(auto_map_[auto_number], this);
+  auto_runner = new LemonScriptRunner(GetAutoRoutine(), this);
 }
 
 void CitrusRobot::AutonomousPeriodic() {
