@@ -36,6 +36,9 @@ class CitrusRobot : public IterativeRobot {
   ColorLight lights_;
   std::unique_ptr<DigitalOutput> l_pow_, l_red_, l_green_, l_blue_;
 
+  DigitalInput *switch_one;
+  DigitalInput *switch_two;
+
   bool is_wedge_deployed_ = false;
   bool test_flag_;
   bool in_highgear_;

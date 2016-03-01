@@ -43,6 +43,9 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
+  switch_one = new DigitalInput(23);
+  switch_two = new DigitalInput(24);
+
   l_pow_ = std::make_unique<DigitalOutput>(25);
   l_red_ = std::make_unique<DigitalOutput>(7);
   l_green_ = std::make_unique<DigitalOutput>(8);
@@ -51,7 +54,7 @@ CitrusRobot::CitrusRobot()
   disabled_ = true;
 
   wedge_ = std::make_unique<Solenoid>(5);
-  
+
   auto_runner = nullptr;
 }
 
@@ -62,9 +65,6 @@ std::string CitrusRobot::GetAutoRoutine() {
   auto_map[0b00000000] = "two_ball.auto";
   auto_map[0b00000001] = "class_d_left.auto";
   auto_map[0b00000010] = "class_d_right.auto";
-
-  DigitalInput *switch_one = new DigitalInput(23);
-  DigitalInput *switch_two = new DigitalInput(24);
 
   int8_t auto_number = 0b00000000;
   auto_number |= (switch_one->Get() ? 0 : 1) << 0;
@@ -314,7 +314,18 @@ void CitrusRobot::UpdateLights() {
   if (disabled_ && !subsystems_.drive.gyro_reader_->IsCalibrated()) {
     lights_ = ColorLight::BLUE;
   } else if (disabled_) {
-    lights_ = ColorLight::WHITE;
+    std::string auto_routine = GetAutoRoutine();
+    if (auto_routine == "one_ball.auto") {
+      lights_ = ColorLight::GREEN;
+    } else if (auto_routine == "two_ball.auto") {
+      lights_ = ColorLight::RED;
+    } else if (auto_routine == "class_d_left.auto") {
+      lights_ = ColorLight::YELLOW;
+    } else if (auto_routine == "class_d_right.auto") {
+      lights_ = ColorLight::PINK;
+    } else {
+      lights_ = ColorLight::WHITE;
+    }
   }
 
   // if (start_climb_ && subsystems_.arm.AllIsDone()) {
@@ -359,7 +370,7 @@ void CitrusRobot::ColorLights() {
   }
 
   l_pow_->Set(1);
-  std::cout << "lights" << static_cast<int>(lights_) << std::endl;
+  //std::cout << "lights" << static_cast<int>(lights_) << std::endl;
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //    lights_ = ColorLight::YELLOW;
   //  }
