@@ -2,8 +2,8 @@
 #include "opencv2/imgproc.hpp"
 InRangeInstructions::InRangeInstructions(std::string filename) {
   // TODO(Lucas) read from file
-  low_ = cv::Scalar(0, 140, 140);
-  high_ = cv::Scalar(125, 255, 255);
+  low_ = cv::Scalar(0, 80, 0);
+  high_ = cv::Scalar(80, 255, 255);
   colorspace_ = 4;
 }
 
@@ -14,7 +14,7 @@ InRangeInstructions::InRangeInstructions(cv::Scalar low, cv::Scalar high,
   colorspace_ = colorspace;
 }
 
-void InRangeInstructions::Thresh(cv::Mat image) {
+void InRangeInstructions::Thresh(cv::Mat& image) {
   cv::cvtColor(image, image, colorspace_);
   cv::inRange(image, low_, high_, image);
 }

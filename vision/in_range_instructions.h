@@ -9,7 +9,7 @@ class InRangeInstructions {
  public:
   InRangeInstructions(std::string filename);
   InRangeInstructions(cv::Scalar low, cv::Scalar high, int colorspace);
-  void Thresh(cv::Mat image);
+  void Thresh(cv::Mat& image);
   void WriteInstructions(std::string filename);
 
  private:
