@@ -13,7 +13,7 @@ TrackerResults position_;
 void vision::startSending() {
   cv::namedWindow("detected", cv::WINDOW_AUTOSIZE);
   while (true) {
-    muan::sleep_for(0.1 * s);
+    muan::sleep_for(.1 * s);
     ::sendData();
   }
 }

@@ -49,7 +49,7 @@ void ShapeDetector::setData(cv::Mat image) {
 std::vector<std::vector<cv::Point>> ShapeDetector::getAllContours(cv::Mat m) {
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
-  cv::findContours(m, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,
+  cv::findContours(m.clone(), contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,
                    cv::Point(0, 0));
   return contours;
 }

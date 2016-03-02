@@ -10,7 +10,7 @@ int main() {
   std::thread sender(vision::startSending);
   while (true) {
     Time captureTime = muan::now();
-    cv::Mat image = vision::getImage();
+    cv::Mat image = vision::getImage("");
     TrackerResults position = tracker.Update(image);
     position.time_captured = captureTime;
     vision::updateData(image, position);

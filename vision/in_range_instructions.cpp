@@ -1,10 +1,25 @@
 #include "in_range_instructions.h"
 #include "opencv2/imgproc.hpp"
+#include <fstream>
+#include <regex>
+#include <sstream>
+
 InRangeInstructions::InRangeInstructions(std::string filename) {
-  // TODO(Lucas) read from file
-  low_ = cv::Scalar(0, 80, 0);
-  high_ = cv::Scalar(80, 255, 255);
-  colorspace_ = 4;
+  std::ifstream file(filename);
+  std::string str, buffer;
+  while(file) {
+    std::getline(file, buffer);
+    str+=buffer;
+  }
+  str=std::regex_replace(str, std::regex("[\\D]"), " ");
+  std::stringstream ss;
+  ss<<str;
+  ss>>colorspace_;
+  int num1, num2, num3;
+  ss>>num1>>num2>>num3;
+  low_ = cv::Scalar(num1, num2, num3);
+  ss>>num1>>num2>>num3;
+  high_ = cv::Scalar(num1, num2, num3);
 }
 
 InRangeInstructions::InRangeInstructions(cv::Scalar low, cv::Scalar high,
