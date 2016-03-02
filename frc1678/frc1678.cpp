@@ -59,8 +59,6 @@ CitrusRobot::CitrusRobot()
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
-  std::cout << RobotConstants::GetInstance().pivot_calibration_offset.to(deg)
-            << std::endl;
 }
 
 void CitrusRobot::AutonomousInit() {
@@ -277,6 +275,8 @@ void CitrusRobot::UpdateLights() {
   // for intaking
   if (!subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::BLUE;
+    j_manip_->SetRumble(Joystick::kLeftRumble, 0);
+    j_manip_->SetRumble(Joystick::kRightRumble, 0);
     time = 0 * s;
   } else if (subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::GREEN;
@@ -339,7 +339,6 @@ void CitrusRobot::ColorLights() {
   }
 
   l_pow_->Set(1);
-  std::cout << "lights" << static_cast<int>(lights_) << std::endl;
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //    lights_ = ColorLight::YELLOW;
   //  }
