@@ -47,8 +47,8 @@ Angle GyroReader::GetAngle() {
   return angle - offset_;  // That was easy...
 }
 
-void GyroReader::SetOffset(Angle offset) {
-  offset_ = offset;
+void GyroReader::SetOffset() {
+  offset_ += angle;
 }
 
 void GyroReader::Update(Time dt) {

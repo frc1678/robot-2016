@@ -252,6 +252,7 @@ std::ostream& operator<<(std::ostream& s, const Units<U1, U2, U3, U4>& rhs) {
 
 // Typedefs for fundamental units
 typedef Units<1, 0, 0, 0> Length;
+typedef Units<1, 0, 0, 0> Distance;
 typedef Units<0, 1, 0, 0> Time;
 typedef Units<0, 0, 1, 0> Mass;
 typedef Units<0, 0, 0, 1> Current;

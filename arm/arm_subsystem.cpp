@@ -225,13 +225,19 @@ void ArmSubsystem::GoToLong() {
 }
 
 void ArmSubsystem::GoToAutoShot() {
-  ArmGoal goal{37 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{35 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToTuck() {
   ArmGoal goal{0 * deg, 0 * m, 0 * rev / (60 * s)};
+  SetGoal(goal);
+  SetHoodOpen(false);
+}
+
+void ArmSubsystem::GoToTuckSpin() {
+  ArmGoal goal{0 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }

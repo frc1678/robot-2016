@@ -57,7 +57,7 @@ bool AutoFunction::DriveStraightAtAngle(CitrusRobot* robot, float dist, float an
 
 bool newTurnState = true;
 bool AutoFunction::PointTurn(CitrusRobot* robot, float angle) {
-  std::cout << "Point Turning" << std::endl;
+  std::cout << "Point Turning: " << angle << std::endl;
   if(newTurnState) {
     robot->subsystems_.drive.PointTurn(angle * deg);
     newTurnState = false;
@@ -107,6 +107,24 @@ bool AutoFunction::Wait(CitrusRobot* robot, float time) {
   return false;
 }
 
+Length start_dist;
+bool newEncoderWaitState = true;
+bool AutoFunction::EncoderWait(CitrusRobot* robot, float dist) {
+  if (newEncoderWaitState) {
+    newEncoderWaitState = false;
+    start_dist = robot->subsystems_.drive.GetDistanceDriven();
+    return false;
+  }
+
+  if (dist >= 0 && robot->subsystems_.drive.GetDistanceDriven() - start_dist >= dist * ft) {
+    newEncoderWaitState = true;
+    return true;
+  } else if (dist < 0 && robot->subsystems_.drive.GetDistanceDriven() - start_dist <= dist * ft) {
+    newEncoderWaitState = true;
+    return true;
+  } else return false;
+}
+
 bool AutoFunction::Shoot(CitrusRobot* robot) { 
   // Need to set arm position to LONG before calling this shoot
   // Wait for shooter to reach shooting speed
@@ -133,16 +151,20 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
          break;
       case TUCK:
         robot->subsystems_.arm.GoToTuck();
-        std::cout << "Going to tuck" << std::endl;
+        std::cout << "[auto] Going to tuck" << std::endl;
         break;
       case INTAKE:
         robot->subsystems_.arm.GoToIntake();
         break;
       case AUTO_SHOT:
         robot->subsystems_.arm.GoToAutoShot();
+        std::cout << "[auto] Going to auto shot" << std::endl;
         break;
       case DEFENSE:
         robot->subsystems_.arm.GoToDefensive();
+        break;
+      case TUCK_SPIN:
+        robot->subsystems_.arm.GoToTuckSpin();
         break;
     }
   
@@ -152,6 +174,7 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
   
   if (robot->subsystems_.arm.IsDone()) {
     newArmPosition = true;
+    printf("[auto] arm done\n");
     return true;
   } else {
     return false;

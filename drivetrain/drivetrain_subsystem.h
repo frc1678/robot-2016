@@ -30,6 +30,7 @@ class DrivetrainSubsystem : public muan::Updateable {
   void Update(Time dt) override;
   void Start();
   void SetDriveGoal(const DrivetrainGoal& goal);
+  Length GetDistanceDriven();
   void Shift(bool high);
 
   void FollowMotionProfile(

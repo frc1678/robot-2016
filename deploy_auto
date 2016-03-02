@@ -1,0 +1,1 @@
+sshpass -p '' scp frc1678/auto/*.auto admin@roboRIO-1678-FRC.local:/home/lvuser
