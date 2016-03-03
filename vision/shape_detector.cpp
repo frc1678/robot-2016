@@ -1,5 +1,8 @@
 #include "shape_detector.h"
 #include <cmath>
+#include "muan/utils/math_utils.h"
+#include "vision_utils.h"
+#include <iostream>
 
 ShapeDetector::ShapeDetector(std::vector<Angle> angles) {
   angles_ = angles;
@@ -29,42 +32,65 @@ void ShapeDetector::setData(cv::Mat image) {
             (x - best_x) * (x - best_x) + (y - best_y) * (y - best_y);
       }
     }
-    double bestTarget = 0;
-    for (unsigned int i = 0; i < contours.size(); i++) {
-      std::vector<cv::Point> currentPoints = convertToPolygon(contours[i]);
-      if (getTargetCertainty(currentPoints, i == closestToPrevious) >=
-          bestTarget) {
-        points_ = currentPoints;
-        bestTarget = getTargetCertainty(points_, i == closestToPrevious);
-      }
-    }
-    if (points_.size() >= 2) {
-      cv::Rect bounds = cv::boundingRect(points_);
-      best_x = (bounds.br().x + bounds.tl().x) / 2;
-      best_y = (bounds.br().y + bounds.tl().y) / 2;
+  }
+  double bestTarget = 0;
+  for (unsigned int i = 0; i < contours.size(); i++) {
+    std::vector<cv::Point> currentPoints = convertToPolygon(contours[i]);
+    if (getTargetCertainty(currentPoints, i == closestToPrevious) >=
+        bestTarget) {
+      points_ = currentPoints;
+      bestTarget = getTargetCertainty(points_, i == closestToPrevious);
     }
   }
+  if (points_.size() >= 2) {
+    cv::Rect bounds = cv::boundingRect(points_);
+    best_x = (bounds.br().x + bounds.tl().x) / 2;
+    best_y = (bounds.br().y + bounds.tl().y) / 2;
+  }
+  score_=bestTarget;
 }
 
 std::vector<std::vector<cv::Point>> ShapeDetector::getAllContours(cv::Mat m) {
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
-  cv::findContours(m.clone(), contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE,
+  cv::findContours(m.clone(), contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_NONE,
                    cv::Point(0, 0));
   return contours;
 }
 
 std::vector<cv::Point> ShapeDetector::convertToPolygon(std::vector<cv::Point> points) {
-  // TODO(Lucas): add actual code
-  return points;
+  std::vector<cv::Point> retval;
+  double epsilon=0;
+  do {
+    cv::approxPolyDP(points, retval, epsilon, true);
+    epsilon+=0.5;
+  } while(retval.size()>angles_.size());
+  return retval;
 }
 double ShapeDetector::getTargetCertainty(std::vector<cv::Point> points,
                                          bool isClosestToPrevious) {
-  // TODO(Lucas): add actual code
-  return std::log(cv::boundingRect(points).width);
+  if(points.size()==0) return -1;
+  if(points.size()!=angles_.size()) {
+    return std::log(cv::boundingRect(points).area());
+  }
+  double bestScore=0;
+  for(unsigned int i=0; i<angles_.size(); i++) {
+    double score=getAngleDiff(points, i);
+    if(score>bestScore) bestScore=score;
+  }
+  if(isClosestToPrevious) bestScore+=8;
+  return bestScore;
 }
 
-double getAngleDiff(std::vector<cv::Point> points, int offset) {
-  // TODO(Lucas): add actual code
-  return 0;
+double ShapeDetector::getAngleDiff(std::vector<cv::Point> points, int offset) {
+  double retval=0;
+  for(unsigned int i=0; i<points.size(); i++) {
+    retval-=muan::abs(angles_[(offset+i)%points.size()]-vision::AngleBetweenPoints(
+          points[i%points.size()],
+          points[(i+1)%points.size()],
+          points[(i+2)%points.size()])).to(rad);
+  }
+  retval+=1.571*points.size();
+  retval*=std::log(cv::boundingRect(points).width+1);
+  return retval;
 }

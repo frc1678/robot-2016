@@ -11,11 +11,11 @@ TrackerResults ObjectTracker::Update(cv::Mat& image) {
   TrackerResults retval;
   range.Thresh(image);
   detector.setData(image);
-  if (detector.getScore() > minScore) {
+  if (detector.getScore() > 0) {
     cv::cvtColor(image, image, CV_GRAY2BGR);
     cv::drawContours(
         image, std::vector<std::vector<cv::Point> >({detector.getPoints()}), 0,
-        cv::Scalar(0, 255, 0));
+        cv::Scalar(0, 255, 0), 3);
     cv::Rect boundRect = cv::boundingRect(detector.getPoints());
     retval.angle =
         FOV * ((boundRect.tl().x + boundRect.br().x) / (2 * image.cols) - 0.5);

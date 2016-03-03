@@ -2,10 +2,12 @@
 #define _VISION_UTILS_H_
 
 #include "opencv2/core.hpp"
+#include "unitscpp/unitscpp.h"
 #include <string>
 
 namespace vision {
 cv::Mat getImage(std::string URL);
+Angle AngleBetweenPoints(cv::Point pi, cv::Point center, cv::Point p2);
 // TODO(Lucas): add the other utils files
 }
 
