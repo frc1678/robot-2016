@@ -4,7 +4,7 @@
 #include "robot_constants/robot_identifier.h"
 #include "drivetrain/drivetrain_subsystem.h"
 #include "muan/control/trapezoidal_motion_profile.h"
-#include "CitrusButton.h"
+#include "utils/citrus_button.h"
 #include "frc1678/auto/auto_routines.h"
 #include "vision/vision.h"
 #include "robot_subsystems.h"

@@ -13,7 +13,8 @@ cc_library(
     "//gyro",
     "//frc1678:declarations",
     "//lemonscript",
-    "//arm:arm_subsystem"
+    "//arm:arm_subsystem",
+    "//frc1678:declarations"
   ],
   visibility = ["//visibility:public"]
 )

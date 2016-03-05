@@ -1,4 +1,4 @@
-#include "frc1678/CitrusButton.h"
+#include "citrus_button.h"
 
 CitrusButton::CitrusButton(Joystick* tstick, int tbutton) {
   current = old = false;

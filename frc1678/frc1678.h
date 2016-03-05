@@ -1,7 +1,6 @@
 #ifndef FRC1678_H
 #define FRC1678_H
 
-#include "CitrusButton.h"
 #include "frc1678/auto/auto_routines.h"
 #include "vision/vision.h"
 #include "robot_subsystems.h"
@@ -9,6 +8,10 @@
 // class LemonScriptRunner { };
 
 enum class ColorLight { RED = 0, YELLOW, GREEN, BLUE, WHITE, PINK };
+
+class CitrusButton;
+class CitrusAxis;
+class CitrusPOV;
 
 class CitrusRobot : public IterativeRobot {
  private:
