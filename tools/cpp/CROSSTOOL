@@ -135,6 +135,8 @@ toolchain {
   cxx_builtin_include_directory: "/usr/local/include"
   cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/include/"
   cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/usr/include/"
+  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9/include"
+  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9/include-fixed"
   tool_path { name: "gcov" path: "/usr/bin/arm-frc-linux-gnueabi-gcov" }
 
   # C(++) compiles invoke the compiler (as that is the one knowing where
