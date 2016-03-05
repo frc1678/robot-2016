@@ -90,7 +90,7 @@ void CitrusRobot::AutonomousInit() {
   if(auto_runner != nullptr) {
     delete auto_runner;
   }
-  auto_runner = new LemonScriptRunner(auto_map_[auto_number], this);
+  auto_runner = new LemonScriptRunner("/home/lvuser/two_ball.auto"/*auto_map_[auto_number]*/, this);
 }
 
 void CitrusRobot::AutonomousPeriodic() {
@@ -369,7 +369,6 @@ void CitrusRobot::ColorLights() {
   }
 
   l_pow_->Set(1);
-  std::cout << "lights" << static_cast<int>(lights_) << std::endl;
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //    lights_ = ColorLight::YELLOW;
   //  }

@@ -6,7 +6,7 @@ DriveStraight: 16.5
 
 SetArmPosition: AUTO: 3
 PointTurn: angle: -55.0
-Wait: seconds: 1.5
+Wait: seconds: 3.5
 Align
 Wait: seconds: 0.4
 Align
