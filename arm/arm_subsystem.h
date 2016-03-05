@@ -8,6 +8,7 @@
 #include "elevator/elevator_controller.h"
 #include "shooter/shooter_bang.h"
 #include "muan/utils/timer.h"
+#include "utils/smart_dashboard_helper.h"
 
 struct ArmGoal {
   Angle pivot_goal;
@@ -97,6 +98,7 @@ class ArmSubsystem : public muan::Updateable {
   ShooterBang shooter_controller_;
 
   muan::CSVLog csv_log_;
+  SmartDashboardHelper csv_helper_;
 
   bool enabled_ = false;
   bool finished_ = true;

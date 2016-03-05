@@ -10,7 +10,8 @@ ArmSubsystem::ArmSubsystem()
       csv_log_("arm_subsystem",
                {"time", "pivot_voltage", "elevator_voltage", "pivot_angle",
                 "elevator_position", "state", "climb_state", "shooter_voltage",
-                "shooter_velocity"}) {
+                "shooter_velocity"}),
+      csv_helper_(&csv_log_) {
   pivot_encoder_ = std::make_unique<Encoder>(RobotPorts::pivot_encoder_a,
                                              RobotPorts::pivot_encoder_b);
   pivot_hall_ = std::make_unique<DigitalInput>(RobotPorts::pivot_hall);
@@ -49,7 +50,6 @@ ArmSubsystem::~ArmSubsystem() {}
 bool ArmSubsystem::IsCalibrated() { return pivot_controller_.IsCalibrated(); }
 
 void ArmSubsystem::Update(Time dt) {
- // std::cout << ball_sensor_->Get() << std::endl;
   Voltage elevator_voltage = elevator_controller_.Update(
       dt, elevator_encoder_->Get() * .0003191764 * m,
       pivot_encoder_->Get() * deg / 5.0, enabled_);
@@ -113,7 +113,6 @@ void ArmSubsystem::Update(Time dt) {
   pivot_motor_b_->Set(pivot_voltage.to(12 * V));
   pivot_disk_brake_->Set(pivot_brake ? DoubleSolenoid::Value::kReverse
                                      : DoubleSolenoid::Value::kForward);
-  // std::cout << "Shooter Encoder: " << shooter_encoder_->Get() << std::endl;
 
   elevator_motor_a_->Set(-elevator_voltage.to(12 * V));
   elevator_motor_b_->Set(-elevator_voltage.to(12 * V));
@@ -166,6 +165,7 @@ void ArmSubsystem::Update(Time dt) {
   csv_log_["shooter_voltage"] = std::to_string(shooter_voltage.to(V));
   csv_log_["shooter_velocity"] =
       std::to_string((shooter_controller_.GetVelocity()).to(rev / (60 * s)));
+  csv_helper_.Update();
   csv_log_.EndLine();
   t += dt;
 }

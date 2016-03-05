@@ -10,7 +10,8 @@ DrivetrainSubsystem::DrivetrainSubsystem()
       distance_controller_(90 * V / m, 170 * V / m / s, 18 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
-                                        "pwm_right", "gyro_angle", "gear"}) {
+                                        "pwm_right", "gyro_angle", "gear"}),
+      csv_helper_(&csv_log_) {
   event_log_.Write("Initializing drivetrain subsystem components...", "INIT",
                    CODE_STAMP);
   drive_ = std::make_unique<RobotDrive>(RobotPorts::drive_left,
@@ -129,11 +130,12 @@ void DrivetrainSubsystem::Update(Time dt) {
         distance_profile_.reset();
         is_operator_controlled_ = true;
         angle_controller_.Reset();
-        //printf("[motion] Finished motion profiles: %f deg in %f sec :)\n",
-        //       angle_from_start.to(deg), t.to(s));
+        std::ostringstream ss;
+        ss << "Finished motion profiles: " << angle_from_start.to(deg)
+           << " degrees and " << distance_from_start.to(m) << " meters in "
+           << t.to(s) << " seconds";
+        event_log_.Write(ss.str(), "MOTION", CODE_STAMP);
       }
-
-      //printf("%f motion profile gyro Angle\n", angle_from_start.to(deg));
     }
   }
 
@@ -148,6 +150,7 @@ void DrivetrainSubsystem::Update(Time dt) {
   csv_log_["pwm_right"] = std::to_string(out.right_voltage);
   csv_log_["gyro_angle"] = std::to_string(pos.gyro_angle);
   csv_log_["gear"] = current_goal_.highgear ? "high" : "low";
+  csv_helper_.Update();
   csv_log_.EndLine();  // Flush the current row of the log
 }
 
@@ -156,7 +159,7 @@ void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal &goal) {
   current_goal_ = goal;
 }
 
-Length DrivetrainSubsystem::GetDistanceDriven() {  
+Length DrivetrainSubsystem::GetDistanceDriven() {
   DrivetrainPosition pos{0.0, 0.0, 0.0, false, false};
   SetDrivePosition(&pos);
   return (pos.left_encoder + pos.right_encoder) / 2 * m;

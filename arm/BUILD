@@ -11,7 +11,8 @@ cc_library(
     "//frc1678:robot_ports",
     "//muan:utils",
     "//muan/unitscpp",
-    "//robot_constants"
+    "//robot_constants",
+    "//utils:smart_dashboard_helper"
   ],
   visibility = ["//visibility:public"]
 )

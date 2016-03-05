@@ -15,6 +15,7 @@
 #include "frc1678/robot_ports.h"
 #include "drivetrain/drivetrain.h"
 #include "gyro/gyro_reader.h"
+#include "utils/smart_dashboard_helper.h"
 
 using drivetrain::control_loops::DrivetrainGoal;
 using drivetrain::control_loops::DrivetrainPosition;
@@ -89,6 +90,7 @@ class DrivetrainSubsystem : public muan::Updateable {
 
   muan::TextLog event_log_;
   muan::CSVLog csv_log_;
+  SmartDashboardHelper csv_helper_;
 };
 
 #endif
