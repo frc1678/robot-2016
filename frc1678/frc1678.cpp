@@ -1,6 +1,7 @@
 #include <WPILib.h>
 #include <memory>
 
+#include "robot_constants/robot_identifier.h"
 #include "drivetrain/drivetrain_subsystem.h"
 #include "muan/control/trapezoidal_motion_profile.h"
 #include "CitrusButton.h"
@@ -68,6 +69,8 @@ void CitrusRobot::RobotInit() {
   subsystems_.arm.Start();
   std::cout << RobotConstants::GetInstance().pivot_calibration_offset.to(deg)
             << std::endl;
+  std::vector<std::string> robot_names = {"comp", "appa", "ssbb", "wtf"};
+  SmartDashboard::PutString("Robot", robot_names[(int)GetRobotIdentifier()]);
 }
 
 void CitrusRobot::AutonomousInit() {
@@ -128,6 +131,8 @@ void CitrusRobot::DisabledPeriodic() {
   //  subsystems_.drive.SetDriveGoal(drivetrain_goal);
   UpdateLights();
   ColorLights();
+  j_manip_->SetRumble(Joystick::kRightRumble, 0);
+  j_manip_->SetRumble(Joystick::kLeftRumble, 0);
 }
 
 void CitrusRobot::TeleopPeriodic() {
@@ -280,7 +285,7 @@ void CitrusRobot::UpdateLights() {
     lights_ = ColorLight::YELLOW;
   }
 
-  if (vision_.Update(true) && shootable_ && !tuck_def_ &&
+  if (vision_.Aligned() && shootable_ && !tuck_def_ &&
       subsystems_.arm.AllIsDone() &&
       subsystems_.arm.ShooterSpeeded()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
@@ -299,14 +304,18 @@ void CitrusRobot::UpdateLights() {
     time = 0 * s;
   } else if (subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::GREEN;
-    time += 0.02 * s;
-    if (time < 1.5 * s) {
+    time += 0.05 * s;
+    if (time < 1.5 * s && !disabled_) {
       j_manip_->SetRumble(Joystick::kLeftRumble, 1);
       j_manip_->SetRumble(Joystick::kRightRumble, 1);
     } else {
       j_manip_->SetRumble(Joystick::kLeftRumble, 0);
       j_manip_->SetRumble(Joystick::kRightRumble, 0);
     }
+  } else {
+    time = 0 * s;
+    j_manip_->SetRumble(Joystick::kLeftRumble, 0);
+    j_manip_->SetRumble(Joystick::kRightRumble, 0);
   }
 
   // for disabled
@@ -314,6 +323,8 @@ void CitrusRobot::UpdateLights() {
     lights_ = ColorLight::BLUE;
   } else if (disabled_) {
     lights_ = ColorLight::WHITE;
+    j_manip_->SetRumble(Joystick::kRightRumble, 0);
+    j_manip_->SetRumble(Joystick::kLeftRumble, 0);
   }
 
   // if (start_climb_ && subsystems_.arm.AllIsDone()) {
