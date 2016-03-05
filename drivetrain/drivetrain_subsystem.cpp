@@ -142,9 +142,6 @@ void DrivetrainSubsystem::Update(Time dt) {
   drive_->TankDrive(-out.left_voltage / 12.0, -out.right_voltage / 12.0, false);
   shifting_->Set(!current_goal_.highgear);
 
-  SmartDashboard::PutNumber("L Distance (m)", pos.left_encoder);
-  SmartDashboard::PutNumber("R Distance (m)", pos.right_encoder);
-
   csv_log_["enc_left"] = std::to_string(pos.left_encoder);
   csv_log_["enc_right"] = std::to_string(pos.right_encoder);
   csv_log_["pwm_left"] = std::to_string(out.left_voltage);

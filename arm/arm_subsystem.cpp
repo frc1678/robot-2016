@@ -154,10 +154,6 @@ void ArmSubsystem::Update(Time dt) {
     intake_side_->Set(0);
   }
 
-  SmartDashboard::PutNumber("Pivot Angle (deg)", pivot_controller_.GetAngle().to(deg));
-  SmartDashboard::PutNumber("Eievator Length (m)", elevator_controller_.GetPosition().to(m));
-  SmartDashboard::PutString("Arm State", std::to_string(static_cast<int>(state_)));
-
   csv_log_["time"] = std::to_string(t.to(s));
   csv_log_["pivot_voltage"] = std::to_string(pivot_voltage.to(V));
   csv_log_["elevator_voltage"] = std::to_string(elevator_voltage.to(V));
