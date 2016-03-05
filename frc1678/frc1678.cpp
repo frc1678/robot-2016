@@ -43,10 +43,10 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
-  auto_map_[0b00000011] = "/home/lvuser/one_ball.auto";
-  auto_map_[0b00000000] = "/home/lvuser/two_ball.auto";
-  auto_map_[0b00000001] = "/home/lvuser/class_d_left.auto";
-  auto_map_[0b00000010] = "/home/lvuser/class_d_right.auto";
+  auto_map_[0b00000011] = "one_ball.auto";
+  auto_map_[0b00000000] = "two_ball.auto";
+  auto_map_[0b00000001] = "class_d_left.auto";
+  auto_map_[0b00000010] = "class_d_right.auto";
 
   l_pow_ = std::make_unique<DigitalOutput>(25);
   l_red_ = std::make_unique<DigitalOutput>(7);
@@ -56,13 +56,15 @@ CitrusRobot::CitrusRobot()
   disabled_ = true;
 
   wedge_ = std::make_unique<Solenoid>(5);
-
+  
   auto_runner = nullptr;
 }
 
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
+  std::cout << RobotConstants::GetInstance().pivot_calibration_offset.to(deg)
+            << std::endl;
 }
 
 void CitrusRobot::AutonomousInit() {
@@ -77,10 +79,9 @@ void CitrusRobot::AutonomousInit() {
   auto_number |= (switch_one->Get() ? 0 : 1) << 0;
   auto_number |= (switch_two->Get() ? 0 : 1) << 1;
 
-  std::cout << "Auto " << unsigned(auto_number) << ", "
-            << auto_map_[auto_number] << "\n";
+  std::cout << "Auto " << unsigned(auto_number) << ", " << auto_map_[auto_number] << "\n";
 
-  if (auto_runner != nullptr) {
+  if(auto_runner != nullptr) {
     delete auto_runner;
   }
   auto_runner = new LemonScriptRunner(auto_map_[auto_number], this);
@@ -165,7 +166,6 @@ void CitrusRobot::TeleopPeriodic() {
     start_climb_ = false;
     intaking_ = true;
     tuck_def_ = false;
-    time = 0 * s;
   }
   if (fender_pos_->ButtonClicked()) {
     subsystems_.arm.GoToFender();
@@ -235,7 +235,7 @@ void CitrusRobot::TeleopPeriodic() {
   UpdateButtons();
 }
 
-void CitrusRobot::SetDriveGoal(DrivetrainGoal *drivetrain_goal) {
+void CitrusRobot::SetDriveGoal(DrivetrainGoal* drivetrain_goal) {
   drivetrain_goal->steering = j_wheel_->GetX();
   drivetrain_goal->throttle = j_stick_->GetY();
   drivetrain_goal->highgear = in_highgear_;
@@ -292,8 +292,6 @@ void CitrusRobot::UpdateLights() {
   // for intaking
   if (!subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::BLUE;
-    j_manip_->SetRumble(Joystick::kLeftRumble, 0);
-    j_manip_->SetRumble(Joystick::kRightRumble, 0);
     time = 0 * s;
   } else if (subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::GREEN;
@@ -356,6 +354,7 @@ void CitrusRobot::ColorLights() {
   }
 
   l_pow_->Set(1);
+  std::cout << "lights" << static_cast<int>(lights_) << std::endl;
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //    lights_ = ColorLight::YELLOW;
   //  }
