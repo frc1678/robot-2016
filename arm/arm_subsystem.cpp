@@ -253,7 +253,7 @@ void ArmSubsystem::GoToFender() {
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{3 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{4.5 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }
