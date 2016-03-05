@@ -80,8 +80,8 @@ void ArmSubsystem::Update(Time dt) {
       if (pivot_controller_.IsDone()) {
         state_ = ArmState::EXTENDING;
         elevator_controller_.SetGoal(current_goal_.elevator_goal);
-        shooter_controller_.SetGoal(current_goal_.shooter_goal);
       }
+      shooter_controller_.SetGoal(current_goal_.shooter_goal);
       break;
     case ArmState::EXTENDING:
       finished_ = false;
