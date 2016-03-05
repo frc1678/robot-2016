@@ -7,7 +7,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
       angle_controller_(77 * V / rad, 90 * V / rad / s, 9.5 * V / rad * s),
-      distance_controller_(100 * V / m, 370 * V / m / s, 17 * V / m * s),
+      distance_controller_(90 * V / m, 170 * V / m / s, 18 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}) {
@@ -141,6 +141,9 @@ void DrivetrainSubsystem::Update(Time dt) {
   // from the status.
   drive_->TankDrive(-out.left_voltage / 12.0, -out.right_voltage / 12.0, false);
   shifting_->Set(!current_goal_.highgear);
+
+  SmartDashboard::PutNumber("L Distance (m)", pos.left_encoder);
+  SmartDashboard::PutNumber("R Distance (m)", pos.right_encoder);
 
   csv_log_["enc_left"] = std::to_string(pos.left_encoder);
   csv_log_["enc_right"] = std::to_string(pos.right_encoder);
