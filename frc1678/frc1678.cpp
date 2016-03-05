@@ -43,9 +43,12 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
+  // Right == On
+  // Back switch right: One ball
+  // Back switch left: Class D, use other switch for directio, use other switch for direction
   auto_map_[0b00000011] = "/home/lvuser/two_ball.auto";
-  auto_map_[0b00000000] = "/home/lvuser/two_ball.auto";
-  auto_map_[0b00000001] = "/home/lvuser/class_d_left.auto";
+  auto_map_[0b00000001] = "/home/lvuser/two_ball.auto";
+  auto_map_[0b00000000] = "/home/lvuser/class_d_left.auto";
   auto_map_[0b00000010] = "/home/lvuser/class_d_right.auto";
 
   l_pow_ = std::make_unique<DigitalOutput>(25);
@@ -56,7 +59,7 @@ CitrusRobot::CitrusRobot()
   disabled_ = true;
 
   wedge_ = std::make_unique<Solenoid>(5);
-  
+
   auto_runner = nullptr;
 }
 
