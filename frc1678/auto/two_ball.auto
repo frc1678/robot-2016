@@ -5,7 +5,6 @@ WHILE:
   DriveStraight: 16.5
 ALSO:
   SetArmPosition: TUCK_SPIN: 5
-  Wait: 15.0
 
 SetArmPosition: AUTO: 3
 PointTurn: angle: -55.0

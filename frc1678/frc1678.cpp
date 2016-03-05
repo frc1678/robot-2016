@@ -44,10 +44,10 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
-  auto_map_[0b00000011] = "/home/lvuser/one_ball.auto";
-  auto_map_[0b00000000] = "/home/lvuser/two_ball.auto";
-  auto_map_[0b00000001] = "/home/lvuser/class_d_left.auto";
-  auto_map_[0b00000010] = "/home/lvuser/class_d_right.auto";
+  auto_map_[0b00000011] = "one_ball.auto";
+  auto_map_[0b00000000] = "two_ball.auto";
+  auto_map_[0b00000001] = "class_d_left.auto";
+  auto_map_[0b00000010] = "class_d_right.auto";
 
   l_pow_ = std::make_unique<DigitalOutput>(25);
   l_red_ = std::make_unique<DigitalOutput>(7);
@@ -64,7 +64,6 @@ CitrusRobot::CitrusRobot()
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
-
   std::vector<std::string> robot_names = {"comp", "appa", "ssbb", "wtf"};
   SmartDashboard::PutString("Robot", robot_names[(int)GetRobotIdentifier()]);
 }
@@ -171,7 +170,6 @@ void CitrusRobot::TeleopPeriodic() {
     start_climb_ = false;
     intaking_ = true;
     tuck_def_ = false;
-    time = 0 * s;
   }
   if (fender_pos_->ButtonClicked()) {
     subsystems_.arm.GoToFender();
@@ -298,8 +296,6 @@ void CitrusRobot::UpdateLights() {
   // for intaking
   if (!subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::BLUE;
-    j_manip_->SetRumble(Joystick::kLeftRumble, 0);
-    j_manip_->SetRumble(Joystick::kRightRumble, 0);
     time = 0 * s;
   } else if (subsystems_.arm.BallIntaked() && intaking_) {
     lights_ = ColorLight::GREEN;
@@ -368,6 +364,7 @@ void CitrusRobot::ColorLights() {
   }
 
   l_pow_->Set(1);
+  std::cout << "lights" << static_cast<int>(lights_) << std::endl;
   //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //    lights_ = ColorLight::YELLOW;
   //  }
