@@ -3,7 +3,7 @@
 
 #include <WPILib.h>
 #include "gyro_interface.h"
-#include "unitscpp/unitscpp.h"
+#include "muan/unitscpp/unitscpp.h"
 #include "muan/multithreading/updateable.h"
 
 class GyroReader : public muan::Updateable {

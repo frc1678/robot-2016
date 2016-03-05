@@ -1,4 +1,5 @@
 #include "auto_functions.h"
+#include "muan/unitscpp/unitscpp.h"
 #include "arm/arm_subsystem.h"
 
 #include <stdio.h>
@@ -11,24 +12,21 @@ void AutoFunction::DeleteAutoFunction() {
   // delete wait_timer;
 }
 
-
 // Test for LemonScript
 bool newDriveState = true;
 bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist) {
-  std::cout << "Driving Straight" << std::endl; 
-  if(newDriveState) {
+  std::cout << "Driving Straight" << std::endl;
+  if (newDriveState) {
     robot->subsystems_.drive.DriveDistance(dist * ft);
     newDriveState = false;
   }
 
-
-  if(robot->subsystems_.drive.IsProfileComplete()) { 
-    newDriveState = true; 
+  if (robot->subsystems_.drive.IsProfileComplete()) {
+    newDriveState = true;
     return true;
-  }else{
-    return false; 
+  } else {
+    return false;
   }
-
 }
 
 bool AutoFunction::SetWedge(CitrusRobot* robot, bool up) {
@@ -37,55 +35,50 @@ bool AutoFunction::SetWedge(CitrusRobot* robot, bool up) {
 }
 
 bool newDriveAtAngleState = true;
-bool AutoFunction::DriveStraightAtAngle(CitrusRobot* robot, float dist, float angle) {
-  if(newDriveAtAngleState) {
+bool AutoFunction::DriveStraightAtAngle(CitrusRobot* robot, float dist,
+                                        float angle) {
+  if (newDriveAtAngleState) {
     robot->subsystems_.drive.DriveDistanceAtAngle(dist * ft, angle * deg);
     newDriveAtAngleState = false;
   }
 
-
-  if(robot->subsystems_.drive.IsProfileComplete()) { 
-    newDriveAtAngleState = true; 
+  if (robot->subsystems_.drive.IsProfileComplete()) {
+    newDriveAtAngleState = true;
     return true;
-  }else{
-    return false; 
+  } else {
+    return false;
   }
-
 }
-
-
 
 bool newTurnState = true;
 bool AutoFunction::PointTurn(CitrusRobot* robot, float angle) {
   std::cout << "Point Turning: " << angle << std::endl;
-  if(newTurnState) {
+  if (newTurnState) {
     robot->subsystems_.drive.PointTurn(angle * deg);
     newTurnState = false;
   }
 
-  if(robot->subsystems_.drive.IsProfileComplete()) { 
-    newTurnState = true; 
+  if (robot->subsystems_.drive.IsProfileComplete()) {
+    newTurnState = true;
     return true;
-  }else{
-    return false; 
+  } else {
+    return false;
   }
-
 }
 
 bool newAbsTurnState = true;
 bool AutoFunction::AbsolutePointTurn(CitrusRobot* robot, float angle) {
-  if(newAbsTurnState) {
+  if (newAbsTurnState) {
     robot->subsystems_.drive.AbsolutePointTurn(angle * deg);
     newAbsTurnState = false;
   }
 
-  if(robot->subsystems_.drive.IsProfileComplete()) { 
-    newAbsTurnState = true; 
+  if (robot->subsystems_.drive.IsProfileComplete()) {
+    newAbsTurnState = true;
     return true;
-  }else{
-    return false; 
+  } else {
+    return false;
   }
-
 }
 
 bool AutoFunction::Shift(CitrusRobot* robot, bool highgear) {
@@ -116,16 +109,20 @@ bool AutoFunction::EncoderWait(CitrusRobot* robot, float dist) {
     return false;
   }
 
-  if (dist >= 0 && robot->subsystems_.drive.GetDistanceDriven() - start_dist >= dist * ft) {
+  if (dist >= 0 &&
+      robot->subsystems_.drive.GetDistanceDriven() - start_dist >= dist * ft) {
     newEncoderWaitState = true;
     return true;
-  } else if (dist < 0 && robot->subsystems_.drive.GetDistanceDriven() - start_dist <= dist * ft) {
+  } else if (dist < 0 &&
+             robot->subsystems_.drive.GetDistanceDriven() - start_dist <=
+                 dist * ft) {
     newEncoderWaitState = true;
     return true;
-  } else return false;
+  } else
+    return false;
 }
 
-bool AutoFunction::Shoot(CitrusRobot* robot) { 
+bool AutoFunction::Shoot(CitrusRobot* robot) {
   // Need to set arm position to LONG before calling this shoot
   // Wait for shooter to reach shooting speed
   std::cout << "Shooting" << std::endl;
@@ -148,7 +145,7 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
     switch (arm_position) {
       case LONG:
         robot->subsystems_.arm.GoToLong();
-         break;
+        break;
       case TUCK:
         robot->subsystems_.arm.GoToTuck();
         std::cout << "[auto] Going to tuck" << std::endl;
@@ -167,11 +164,10 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
         robot->subsystems_.arm.GoToTuckSpin();
         break;
     }
-  
+
     newArmPosition = false;
   }
-  
-  
+
   if (robot->subsystems_.arm.IsDone()) {
     newArmPosition = true;
     printf("[auto] arm done\n");
@@ -185,7 +181,9 @@ bool AutoFunction::CheckArmCalibration(CitrusRobot* robot) {
   return robot->subsystems_.arm.IsCalibrated();
 }
 
-bool AutoFunction::DropPinch(CitrusRobot* robot) { return true; } // Why is this needed?
+bool AutoFunction::DropPinch(CitrusRobot* robot) {
+  return true;
+}  // Why is this needed?
 
 bool toStartVision = true;
 bool AutoFunction::Align(CitrusRobot* robot) {
@@ -194,7 +192,8 @@ bool AutoFunction::Align(CitrusRobot* robot) {
     toStartVision = false;
   }
 
-  if (robot->vision_.Update(true)) { // (TODO) Ash: Modify when vision Update() is fixed.
+  if (robot->vision_.Update(
+          true)) {  // (TODO) Ash: Modify when vision Update() is fixed.
     toStartVision = true;
     return true;
   }

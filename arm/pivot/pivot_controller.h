@@ -3,6 +3,7 @@
 
 #include "muan/control/average_filter_pid.h"
 #include "robot_constants/robot_constants.h"
+#include "muan/unitscpp/unitscpp.h"
 
 class PivotController {
  public:

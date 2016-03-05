@@ -10,6 +10,7 @@ cc_library(
     "//arm/elevator:elevator_controller",
     "//frc1678:robot_ports",
     "//muan:utils",
+    "//muan/unitscpp",
     "//robot_constants"
   ],
   visibility = ["//visibility:public"]

@@ -6,6 +6,7 @@
 #include "frc1678/robot_subsystems.h"
 #include "muan/utils/history.h"
 #include "robot_constants/robot_constants.h"
+#include "muan/unitscpp/unitscpp.h"
 
 class CitrusVision {
  public:

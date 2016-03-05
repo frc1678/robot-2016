@@ -8,10 +8,10 @@ cc_library(
   ]),
   deps=[
     "@wpilib//:main",
-    "//unitscpp",
+    "//muan/unitscpp",
     "//muan:utils",
     "//gyro",
-    "//frc1678:robot_subsystems",
+    "//frc1678:declarations",
     "//lemonscript",
     "//arm:arm_subsystem"
   ],

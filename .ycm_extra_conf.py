@@ -25,6 +25,8 @@ flags = [
     'bazel-out/../external/wpilib/include',
     '-isystem',
     'bazel-out/../external/eigen/eigen-eigen-4111270ba6e1',
+    '-isystem',
+    'bazel-out/local_linux-fastbuild/genfiles/muan/unitscpp/unitscpp.h'
 ]
 
 if compilation_database_folder:

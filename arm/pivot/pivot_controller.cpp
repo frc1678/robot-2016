@@ -27,7 +27,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
                                 bool min_hall_triggered, bool enabled) {
   Voltage out_voltage;
   Angle angle = encoder_angle - offset_;
-  //std::cout << angle.to(deg) << std::endl;
+  // std::cout << angle.to(deg) << std::endl;
   if (!enabled) {
     state_ = PivotState::DISABLED;
   }
@@ -122,7 +122,6 @@ Voltage PivotController::GetFFVoltage(Angle a) {
   decltype(Force(0) * m) stall_torque = .71 * Force(1) * m;
   Current stall_current = 134 * A;
   Unitless gear_ratio = 1.0 / 609.52;
-  Unitless Q = .85;
 
   auto motor_resistance = 12.0 * V / stall_current / 2.0;
   auto K_t = stall_torque / stall_current;
@@ -132,7 +131,8 @@ Voltage PivotController::GetFFVoltage(Angle a) {
   auto mass = 12 * kg;
   decltype(Force(0) * m) gravity_torque =
       C_g * mass * grav * std::cos(a.to(rad));
-  return gravity_torque * gear_ratio * motor_resistance / (pivot_efficiency * K_t);
+  return gravity_torque * gear_ratio * motor_resistance /
+         (pivot_efficiency * K_t);
 }
 
 Voltage PivotController::GetClimbFFVoltage(Angle a) {

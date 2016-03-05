@@ -10,5 +10,5 @@ cc_library(
   srcs = ["robot_constants.cpp"],
   hdrs = ["robot_constants.h"],
   visibility = ["//visibility:public"],
-  deps = ["//unitscpp:unitscpp", ":robot_identifier"]
+  deps = ["//muan", ":robot_identifier"]
 )
