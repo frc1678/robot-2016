@@ -6,7 +6,6 @@
 #include <string>
 
 namespace vision {
-cv::Mat getImage(std::string URL);
 Angle AngleBetweenPoints(cv::Point pi, cv::Point center, cv::Point p2);
 // TODO(Lucas): add the other utils files
 }

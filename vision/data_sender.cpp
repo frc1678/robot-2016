@@ -24,7 +24,7 @@ void sendData() {
     cv::imshow("detected", image_);
     cv::waitKey(1);
   }
-  // TODO(Lucas): send data
+  // TODO(Kyle): send data
 
   if (position_.is_found) {
     std::cout << "angle to target: " << position_.angle.to(deg)

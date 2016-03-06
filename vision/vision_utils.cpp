@@ -4,15 +4,6 @@
 #include <iostream>
 #include "network_reader.h"
 
-cv::Mat vision::getImage(std::string URL) {
-  try{
-    std::cout<<getResponseBody(readFromNetwork("10.16.78.11", 80, "/jpg/image.jpg"))<<std::endl;
-  }
-  catch(const std::string e) { std::cout<<e<<std::endl; }
-  // TODO(Lucas): actally read from URL
-  return cv::imread("light_on.jpg");
-}
-
 Angle vision::AngleBetweenPoints(cv::Point p1, cv::Point center, cv::Point p2) {
   return std::acos(
       //dot product

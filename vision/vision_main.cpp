@@ -7,14 +7,17 @@
 
 int main() {
   ObjectTracker tracker = ObjectTracker();
-  //std::thread sender(vision::startSending);
+  cv::VideoCapture camera;
+  camera.open(1);
+  std::thread sender(vision::startSending);
   while (true) {
+    cv::Mat image;
     Time captureTime = muan::now();
-    cv::Mat image = vision::getImage("");
+    camera>>image;
     TrackerResults position = tracker.Update(image);
     position.time_captured = captureTime;
     vision::updateData(image, position);
   }
-  //sender.join();
+  sender.join();
   return 0;
 }

@@ -8,7 +8,9 @@
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <string.h>
 #include <vector>
+#include <sstream>
 
 std::string vision::readFromNetwork(std::string URL, int port, std::string filename) {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -39,58 +41,47 @@ std::string vision::readFromNetwork(std::string URL, int port, std::string filen
     close(sockfd);
     throw(std::string("ERROR writing to socket"));
   }
-  char test[257];
-  std::string str="";
-  int i;
-  for(i=0; str.find("\r\n\r\n")==std::string::npos; i++)
-  {
-      bzero(test, 257);
-      n=read(sockfd, test, 256);
-      if(n==0) break;
-      str += test;
-  }
-  if(i==0) {
-    close(sockfd);
-    throw(std::string("ERROR no data"));
-  }
-  std::string str2="";
-  for(i=0; str2.find("\r\n\r\n")==std::string::npos; i++)
-  {
-      bzero(test, 257);
-      n=read(sockfd, test, 256);
-      if(n==0) break;
-      str2 += test;
-  }
-  str+=str2;
-  if(i==0) {
+  char buffer[1024*1024+1];
+  bzero(buffer, 1024*1024+1);
+  n=read(sockfd, buffer, 1024*1024);
+  if(n==0) {
     close(sockfd);
     throw(std::string("ERROR no data"));
   }
   close(sockfd);
-  return str;
-}
-std::string vision::getResponseBody(std::string reply) {
-  std::string delimiter = "\r\n\r\n";
-  std::vector<std::string> tokens;
   size_t pos = 0;
-  std::string token;
-  while ((pos = reply.find(delimiter)) != std::string::npos) {
-    token = reply.substr(0, pos);
-    if(token != "") tokens.push_back(token);
-    reply.erase(0, pos + delimiter.length());
+  std::string replyAsString(buffer);
+  int content_length=0;
+  int header_length=0;
+  if((pos=replyAsString.find("\r\n\r\n"))!=std::string::npos) {
+    std::string header(replyAsString.substr(0, pos));
+    std::cout<<header;
+    if(header.find("HTTP/1.1 200 OK\r\n")==std::string::npos&&header.find("HTTP/1.0 200 OK\r\n")){
+      throw(std::string("ERROR could not get valid response or not found"));
+    }
+    header_length=header.length();
+    while ((pos = header.find("\r\n\r\n")) != std::string::npos) {
+      std::string token = header.substr(0, pos);
+      if(token.find("Content-Length: ")!=std::string::npos) {
+        token.erase(0, std::string("Content-Length: ").length());
+        std::stringstream ss;
+        ss<<token;
+        ss>>content_length;
+        if(ss.fail()) {
+          throw(std::string("ERROR content length not an integer"));
+        }
+        if(content_length<1) {
+          throw(std::string("ERROR content length < 1"));
+        }
+      }
+      header.erase(0, pos + std::string("\r\n\r\n").length());
+    }
   }
-  std::string header=tokens[0];
-  std::string body=tokens[1];
-  tokens.clear();
-  delimiter = "\r\n";
-  pos = 0;
-  while ((pos = header.find(delimiter)) != std::string::npos) {
-    token = header.substr(0, pos);
-    if(token != "") tokens.push_back(token);
-    header.erase(0, pos + delimiter.length());
+  else {
+    throw(std::string("ERROR could not get valid response or status != 200"));
   }
-  if(tokens[0] != "HTTP/1.1 200 OK" && tokens[0] != "HTTP/1.0 200 OK"){
-    throw("ERROR could not get valid response: "+tokens[0]);
-  }
-  return body;
+  char* body=new char[content_length];
+  memcpy(body, buffer+header_length+4, content_length);
+  std::cout<<body<<std::endl;
+  return "";
 }

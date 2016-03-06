@@ -5,7 +5,6 @@
 
 namespace vision {
 std::string readFromNetwork(std::string URL, int port, std::string filename);
-std::string getResponseBody(std::string reply);
 }
 
 #endif
