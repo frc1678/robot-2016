@@ -6,7 +6,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(77 * V / rad, 90 * V / rad / s, 9.5 * V / rad * s),
+      angle_controller_(60 * V / rad, 30 * V / rad / s, 7.5 * V / rad * s), // Updated 02/06, SSBB
       distance_controller_(90 * V / m, 170 * V / m / s, 18 * V / m * s),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
@@ -120,9 +120,9 @@ void DrivetrainSubsystem::Update(Time dt) {
           angle_profile_->finished(t) && distance_profile_->finished(t);
       bool profile_finished_distance =
           muan::abs(distance_from_start - distance_profile_->Calculate(t)) <
-          1 * cm;
+          2 * cm;
       bool profile_finished_angle =
-          muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
+          muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 0.5 * deg;
 
       if (profiles_finished_time && profile_finished_angle &&
           profile_finished_distance) {
