@@ -92,7 +92,7 @@ void CitrusRobot::AutonomousInit() {
   if(auto_runner != nullptr) {
     delete auto_runner;
   }
-  auto_runner = new LemonScriptRunner(GetAutoRoutine(), this);
+  auto_runner = new LemonScriptRunner("/home/lvuser/" + GetAutoRoutine(), this);
 }
 
 void CitrusRobot::AutonomousPeriodic() {
