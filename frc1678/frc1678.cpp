@@ -351,41 +351,31 @@ void CitrusRobot::UpdateLights() {
 void CitrusRobot::ColorLights() {
   switch (lights_) {
     case ColorLight::RED:
-      l_red_->Set(1);
-      l_green_->Set(0);
-      l_blue_->Set(0);
+      SetLightColor(1,0,0);
       break;
     case ColorLight::YELLOW:
-      l_red_->Set(1);
-      l_green_->Set(1);
-      l_blue_->Set(0);
+      SetLightColor(1,1,0);
       break;
     case ColorLight::GREEN:
-      l_red_->Set(0);
-      l_green_->Set(1);
-      l_blue_->Set(0);
+      SetLightColor(0,1,0);
       break;
     case ColorLight::BLUE:
-      l_red_->Set(0);
-      l_green_->Set(0);
-      l_blue_->Set(1);
+      SetLightColor(0,0,1);
       break;
     case ColorLight::WHITE:
-      l_red_->Set(1);
-      l_green_->Set(1);
-      l_blue_->Set(1);
+      SetLightColor(1,1,1);
       break;
     case ColorLight::PINK:
-      l_red_->Set(1);
-      l_green_->Set(0);
-      l_blue_->Set(1);
+      SetLightColor(1,0,1);
       break;
   }
+}
 
+void CitrusRobot::SetLightColor(int r, int g, int b) {
+  l_red_->Set(r);
+  l_green_->Set(g);
+  l_blue_->Set(b);
   l_pow_->Set(1);
-  //  if (start_climb_ && subsystems_.arm.AllIsDone()) {
-  //    lights_ = ColorLight::YELLOW;
-  //  }
 }
 
 CitrusRobot::~CitrusRobot() {}

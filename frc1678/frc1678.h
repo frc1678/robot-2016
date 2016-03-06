@@ -62,6 +62,7 @@ class CitrusRobot : public IterativeRobot {
   void SetDriveGoal(DrivetrainGoal* drivetrain_goal);
   void UpdateLights();
   void ColorLights();
+  void SetLightColor(int r, int g, int b);
   void UpdateButtons();
   ~CitrusRobot();
 };
