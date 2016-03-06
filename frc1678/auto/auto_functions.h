@@ -32,7 +32,7 @@ bool Shift(CitrusRobot* robot, bool highgear);
 bool Wait(CitrusRobot* robot, float time);
 bool EncoderWait(CitrusRobot* robot, float dist);
 bool Shoot(CitrusRobot* robot);
-bool RunIntake(CitrusRobot* robot);
+bool RunIntake(CitrusRobot* robot, bool run);
 bool SetArmPosition(CitrusRobot* robot, Position arm_position);
 bool CheckArmCalibration(CitrusRobot* robot);
 bool DropPinch(CitrusRobot* robot);

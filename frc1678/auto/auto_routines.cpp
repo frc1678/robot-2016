@@ -37,7 +37,7 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
           new AvailableCppCommandDeclaration((void *)AutoFunction::Shoot, "Shoot", {});
 
   AvailableCppCommandDeclaration *runIntake = 
-          new AvailableCppCommandDeclaration((void *)AutoFunction::RunIntake, "RunIntake", {});
+          new AvailableCppCommandDeclaration((void *)AutoFunction::RunIntake, "RunIntake", {DataType::BOOLEAN});
 
   AvailableCppCommandDeclaration *setArmPosition = 
           new AvailableCppCommandDeclaration((void *)AutoFunction::SetArmPosition, "SetArmPosition", {DataType::INT});

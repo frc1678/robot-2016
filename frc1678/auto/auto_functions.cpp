@@ -131,8 +131,8 @@ bool AutoFunction::Shoot(CitrusRobot* robot) {
   return false;
 }
 
-bool AutoFunction::RunIntake(CitrusRobot* robot) {
-  SetArmPosition(robot, INTAKE);
+bool AutoFunction::RunIntake(CitrusRobot* robot, bool run) {
+  robot->subsystems_.arm.SetIntake(run ? IntakeGoal::FORWARD_UNTIL : IntakeGoal::OFF);
   return true;
 }
 

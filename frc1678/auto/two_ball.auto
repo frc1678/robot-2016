@@ -1,13 +1,17 @@
 SetWedge: false
 CheckArmCalibration
 
-WHILE:
-  DriveStraight: 16.5
-ALSO:
-  SetArmPosition: INTAKE_SPIN: 6
+RunIntake: true
+SetArmPosition: INTAKE: 2
+SetArmPosition: INTAKE: 2
 
+Wait: 0.2
+
+DriveStraight: 11.0
+RunIntake: true
 SetArmPosition: AUTO: 3
-PointTurn: angle: -55.0
+
+PointTurn: angle: -40.0
 
 Wait: 1.5
 
@@ -18,8 +22,24 @@ Shoot
 
 Wait: 0.6
 
-AbsolutePointTurn: 0.0
-WHILE:
-  DriveStraightAtAngle: -14.5, 0.0
-ALSO:
-  SetArmPosition: TUCK: 1
+AbsolutePointTurn: -9.0
+
+SetArmPosition: INTAKE: 2
+SetArmPosition: INTAKE: 2
+RunIntake: true
+DriveStraight: -11.0
+PointTurn: -3.0
+Wait: 0.5
+PointTurn: 3.0
+
+DriveStraight: 9.5
+
+SetArmPosition: AUTO: 3
+PointTurn: angle: -40.0
+
+Wait: 1.5
+
+Align
+Wait: seconds: 0.3
+Align
+Shoot
