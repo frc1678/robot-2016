@@ -7,9 +7,9 @@ cc_library(
 
 cc_library(
   name = "object_detector",
-  srcs = ["object_detector.cpp", "shape_detector.cpp", "in_range_instructions.cpp"],
-  hdrs = ["object_detector.h", "shape_detector.h", "in_range_instructions.h"],
-  deps = ["//opencv", "//unitscpp"]
+  srcs = ["object_detector.cpp", "shape_detector.cpp"],
+  hdrs = ["object_detector.h", "shape_detector.h"],
+  deps = ["//opencv", "//unitscpp", ":vision_utils"]
 )
 
 cc_library(
@@ -28,7 +28,20 @@ cc_binary(
 
 cc_library(
   name = "vision_utils",
-  srcs = ["vision_utils.cpp", "network_reader.cpp"],
-  hdrs = ["vision_utils.h", "network_reader.h"],
+  srcs = ["vision_utils.cpp", "maximization.cpp", "in_range_instructions.cpp"],
+  hdrs = ["vision_utils.h", "maximization.h", "in_range_instructions.h"],
   deps = ["//opencv"]
+)
+
+cc_library(
+  name = "image_calibration",
+  srcs = ["calibration.cpp", "score_range_vals.cpp", "img_score_calculator.cpp", "score_rules.cpp"],
+  hdrs = ["calibration.h", "score_range_vals.h", "img_score_calculator.h", "score_rules.h"],
+  deps = ["//opencv", ":vision_utils"]
+)
+
+cc_binary(
+  name = "calibration_main",
+  srcs = ["calibration_main.cpp"],
+  deps = ["//opencv", ":image_calibration", ":vision_utils"]
 )
