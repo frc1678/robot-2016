@@ -5,10 +5,12 @@ cc_library(
   copts = [
     '-Wno-error',
   ],
-  linkopts = [
-    '-lpthread',
-  ],
-  srcs = [
+  hdrs = glob([
+    'include/**/*.h',
+    'include/**/*.inc',
+    'include/**/*.hpp'
+  ]),
+  srcs = glob([
     'lib/libwpilib_nonshared.a',
     'lib/libntcore.a',
     'lib/libHALAthena.a',
@@ -23,12 +25,9 @@ cc_library(
     'lib/libRoboRIO_FRC_ChipObject.so.16.0.0',
     'lib/libspi.so.1.0.0',
     'lib/libvisa.so',
-  ],
-  hdrs = glob([
-    'include/**/*.h',
-    'include/**/*.hpp',
-    'include/**/*.inc',
   ]),
-  includes = ['include'],
-  linkstatic = 1,
+  linkopts = [
+    '-lpthread'
+  ],
+  includes = ['include']
 )
