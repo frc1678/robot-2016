@@ -29,7 +29,6 @@ class CitrusRobot : public IterativeRobot {
   std::unique_ptr<CitrusPOV> fender_pos_, long_pos_, short_pos_;
   std::unique_ptr<CitrusAxis> run_intake_forever_, reverse_intake_;
 
-  std::map<int8_t, std::string> auto_map_;
 
  public:
   std::unique_ptr<Joystick> j_wheel_, j_stick_, j_manip_;
@@ -39,6 +38,9 @@ class CitrusRobot : public IterativeRobot {
 
   ColorLight lights_;
   std::unique_ptr<DigitalOutput> l_pow_, l_red_, l_green_, l_blue_;
+
+  DigitalInput *switch_one;
+  DigitalInput *switch_two;
 
   bool is_wedge_deployed_ = false;
   bool test_flag_;
@@ -53,6 +55,7 @@ class CitrusRobot : public IterativeRobot {
 
   CitrusRobot();
   void RobotInit();
+  std::string GetAutoRoutine();
   void AutonomousInit();
   void AutonomousPeriodic();
   void TeleopInit();
@@ -62,6 +65,7 @@ class CitrusRobot : public IterativeRobot {
   void SetDriveGoal(DrivetrainGoal* drivetrain_goal);
   void UpdateLights();
   void ColorLights();
+  void SetLightColor(int r, int g, int b);
   void UpdateButtons();
   ~CitrusRobot();
 };

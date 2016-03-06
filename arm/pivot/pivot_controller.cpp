@@ -27,7 +27,6 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
                                 bool min_hall_triggered, bool enabled) {
   Voltage out_voltage;
   Angle angle = encoder_angle - offset_;
-  // std::cout << angle.to(deg) << std::endl;
   if (!enabled) {
     state_ = PivotState::DISABLED;
   }
@@ -50,7 +49,10 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
     case PivotState::MOVING:
       out_voltage =
           controller_.Calculate(dt, goal_ - angle) + GetFFVoltage(angle);
-      if (muan::abs(goal_ - angle) < thresh_) {
+      std::cout << out_voltage.to(V) << ", " << angle.to(deg) << ", "
+                << controller_.GetDerivative() << std::endl;
+      if (muan::abs(goal_ - angle) < thresh_ &&
+          muan::abs(controller_.GetDerivative()) < 5 * deg / s) {
         state_ = PivotState::PREP_STOP;
         brake_timer_ = 0 * s;
       }
@@ -113,6 +115,8 @@ Voltage PivotController::UpdateClimb(Time dt, Angle encoder_angle,
   }
   last_ = angle;
   out_voltage = muan::Cap(out_voltage, -12 * V, 12 * V);
+  std::cout << "pivot voltage: " << out_voltage.to(V) << std::endl;
+
   return out_voltage;
 }
 

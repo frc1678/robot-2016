@@ -34,7 +34,7 @@ class ElevatorController {
   muan::PidController<Length, Voltage> controller_;
   muan::PidController<Length, Voltage> climb_controller_;
 
-  const Time disk_brake_time = .15 * s;
+  const Time disk_brake_time = .25 * s;
   Time brake_timer_ = 0 * s;
 
   Length current_goal_;

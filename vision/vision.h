@@ -12,6 +12,7 @@ class CitrusVision {
  public:
   CitrusVision(RobotSubsystems& subsystems, RobotConstants constants);
   void Start();
+  Angle GetAngleOff();
   bool Update(bool enable);
   bool IsSeeing();
   bool Aligned();

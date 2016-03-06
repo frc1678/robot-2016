@@ -80,8 +80,8 @@ void ArmSubsystem::Update(Time dt) {
       if (pivot_controller_.IsDone()) {
         state_ = ArmState::EXTENDING;
         elevator_controller_.SetGoal(current_goal_.elevator_goal);
-        shooter_controller_.SetGoal(current_goal_.shooter_goal);
       }
+      shooter_controller_.SetGoal(current_goal_.shooter_goal);
       break;
     case ArmState::EXTENDING:
       finished_ = false;
@@ -113,7 +113,6 @@ void ArmSubsystem::Update(Time dt) {
   pivot_motor_b_->Set(pivot_voltage.to(12 * V));
   pivot_disk_brake_->Set(pivot_brake ? DoubleSolenoid::Value::kReverse
                                      : DoubleSolenoid::Value::kForward);
-
   elevator_motor_a_->Set(-elevator_voltage.to(12 * V));
   elevator_motor_b_->Set(-elevator_voltage.to(12 * V));
   elevator_disk_brake_->Set(elevator_brake ? DoubleSolenoid::Value::kReverse
@@ -153,6 +152,9 @@ void ArmSubsystem::Update(Time dt) {
     intake_side_->Set(0);
   }
 
+  SmartDashboard::PutNumber("pivot_angle",
+                            pivot_controller_.GetAngle().to(deg));
+
   csv_log_["time"] = std::to_string(t.to(s));
   csv_log_["pivot_voltage"] = std::to_string(pivot_voltage.to(V));
   csv_log_["elevator_voltage"] = std::to_string(elevator_voltage.to(V));
@@ -175,7 +177,6 @@ bool ArmSubsystem::BallIntaked() { return ball_sensor_->Get(); }
 std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
   Voltage elevator_voltage, pivot_voltage;
   bool elevator_brake, pivot_brake;
-  climbing_done_ = false;
   elevator_voltage = elevator_controller_.UpdateClimb(
       dt, elevator_encoder_->Get() * .0003191764 * m,
       pivot_encoder_->Get() * deg / 5.0, enabled_);
@@ -184,31 +185,29 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
   switch (climb_state_) {
     case ClimbState::PULLING_UP:
       pivot_brake = true;
-      elevator_brake = elevator_controller_.IsDone();
+      elevator_brake = elevator_controller_.ShouldFireBrake();
       if (elevator_controller_.IsDone()) {
-        pivot_controller_.SetGoal(80 * deg, thresh_);
+        pivot_controller_.SetGoal(90 * deg, thresh_);
         climb_state_ = ClimbState::PIVOTING_ROBOT;
       }
+      climbing_done_ = false;
       break;
     case ClimbState::PIVOTING_ROBOT:
       pivot_brake = pivot_controller_.ShouldFireBrake();
       elevator_brake = true;
-      pivot_voltage = pivot_controller_.Update(
-          dt, pivot_encoder_->Get() * deg / 5.0, !pivot_hall_->Get(), enabled_);
+      pivot_voltage = -12 * V;
+      // pivot_voltage = pivot_controller_.UpdateClimb(
+      //    dt, pivot_encoder_->Get() * deg / 5.0, !pivot_hall_->Get(),
+      //    enabled_);
       if (pivot_controller_.IsDone()) {
         elevator_controller_.SetGoal(0 * m);
-        climb_state_ = ClimbState::SECOND_PULLUP;
-      }
-      break;
-    case ClimbState::SECOND_PULLUP:
-      pivot_brake = true;
-      elevator_brake = elevator_controller_.IsDone();
-      if (elevator_controller_.IsDone()) {
         climb_state_ = ClimbState::DONE;
       }
+      climbing_done_ = false;
       break;
     case ClimbState::DONE:
       pivot_brake = elevator_brake = climbing_done_ = true;
+      pivot_voltage = elevator_voltage = 0 * V;
       break;
   }
   return std::make_tuple(pivot_voltage, pivot_brake, elevator_voltage,
@@ -225,7 +224,7 @@ void ArmSubsystem::GoToLong() {
 }
 
 void ArmSubsystem::GoToAutoShot() {
-  ArmGoal goal{35 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{36.5 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
@@ -242,6 +241,12 @@ void ArmSubsystem::GoToTuckSpin() {
   SetHoodOpen(false);
 }
 
+void ArmSubsystem::GoToIntakeSpin() {
+  ArmGoal goal{4.5 * deg, 0 * m, 5500 * rev / (60 * s)};
+  SetGoal(goal);
+  SetHoodOpen(false);
+}
+
 void ArmSubsystem::GoToFender() {
   ArmGoal goal{10 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
@@ -249,7 +254,7 @@ void ArmSubsystem::GoToFender() {
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{4.5 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{4 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }

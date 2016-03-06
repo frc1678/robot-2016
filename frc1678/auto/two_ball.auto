@@ -4,10 +4,12 @@ CheckArmCalibration
 WHILE:
   DriveStraight: 16.5
 ALSO:
-  SetArmPosition: TUCK_SPIN: 5
+  SetArmPosition: INTAKE_SPIN: 6
 
 SetArmPosition: AUTO: 3
 PointTurn: angle: -55.0
+
+Wait: 1.5
 
 Align
 Wait: seconds: 0.3
@@ -18,6 +20,6 @@ Wait: 0.6
 
 AbsolutePointTurn: 0.0
 WHILE:
-  DriveStraightAtAngle: -16.5, 0.0
+  DriveStraightAtAngle: -14.5, 0.0
 ALSO:
   SetArmPosition: TUCK: 1

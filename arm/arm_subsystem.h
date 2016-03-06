@@ -30,6 +30,7 @@ class ArmSubsystem : public muan::Updateable {
 
   void GoToLong();
   void GoToAutoShot();
+  void GoToIntakeSpin();
   void GoToTuck();
   void GoToTuckSpin();
   void GoToFender();
@@ -69,7 +70,7 @@ class ArmSubsystem : public muan::Updateable {
     ESTOP
   };
 
-  enum class ClimbState { PULLING_UP, PIVOTING_ROBOT, SECOND_PULLUP, DONE };
+  enum class ClimbState { PULLING_UP, PIVOTING_ROBOT, DONE };
 
   ArmState state_ = ArmState::DISABLED;
   ClimbState climb_state_ = ClimbState::DONE;

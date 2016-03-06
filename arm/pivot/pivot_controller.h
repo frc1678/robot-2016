@@ -41,7 +41,7 @@ class PivotController {
   Voltage GetClimbFFVoltage(Angle a);
 
   bool calibrated_ = false;
-  const Time disk_brake_time = .15 * s;
+  const Time disk_brake_time = .2 * s;
   Time brake_timer_;
   Angle calibration_offset_ = 0 * deg;
 

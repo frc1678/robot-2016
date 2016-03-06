@@ -8,7 +8,15 @@
 #include "auto_functions.h"
 #include "frc1678/frc1678.h"
 
-enum Position { LONG = 0, TUCK, INTAKE, AUTO_SHOT, DEFENSE, TUCK_SPIN };
+enum Position {
+  LONG = 0,
+  TUCK,
+  INTAKE,
+  AUTO_SHOT,
+  DEFENSE,
+  TUCK_SPIN,
+  INTAKE_SPIN
+};
 
 namespace AutoFunction {
 void SetUpAutoFunction();

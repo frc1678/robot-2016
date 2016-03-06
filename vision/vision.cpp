@@ -12,13 +12,16 @@ CitrusVision::CitrusVision(RobotSubsystems& subs, RobotConstants constants)
   constants_ = constants;
 }
 
-void CitrusVision::Start() {
+Angle CitrusVision::GetAngleOff() {
   const Angle camera_angle = 1.136 * deg;
 
   float raw_table_angle = -table_->GetNumber("angleToTarget", 0);
   Angle camera_diff = (-table_->GetNumber("angleToTarget", 0) + constants_.camera_offset) * camera_angle;
-  printf("cam: got %f from camera, turning %f\n", raw_table_angle, camera_diff.to(deg));
-  subsystems_.drive.PointTurn(camera_diff, false);
+  return camera_diff;
+}
+
+void CitrusVision::Start() {
+  subsystems_.drive.PointTurn(GetAngleOff(), false);
 }
 
 bool CitrusVision::IsSeeing() {
@@ -31,7 +34,7 @@ bool CitrusVision::Update(bool enabled) {
 
 bool CitrusVision::Aligned() {
   if (IsSeeing() &&
-     (muan::abs(table_->GetNumber("angleToTarget", 0) * deg) < 1 * deg)) {
+     (muan::abs(GetAngleOff()) < 1 * deg)) {
     return true;
   } else {
     return false;
