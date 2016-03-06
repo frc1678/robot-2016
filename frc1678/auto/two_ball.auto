@@ -3,7 +3,6 @@ CheckArmCalibration
 
 RunIntake: true
 SetArmPosition: INTAKE: 2
-SetArmPosition: INTAKE: 2
 
 Wait: 0.2
 
@@ -24,7 +23,6 @@ Wait: 0.6
 
 AbsolutePointTurn: -9.0
 
-SetArmPosition: INTAKE: 2
 SetArmPosition: INTAKE: 2
 RunIntake: true
 DriveStraight: -11.0
