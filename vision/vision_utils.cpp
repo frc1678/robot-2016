@@ -2,8 +2,13 @@
 #include "opencv2/highgui.hpp"
 #include <cmath>
 #include <iostream>
+#include "network_reader.h"
 
 cv::Mat vision::getImage(std::string URL) {
+  try{
+    std::cout<<getResponseBody(readFromNetwork("10.16.78.11", 80, "/jpg/image.jpg"))<<std::endl;
+  }
+  catch(const std::string e) { std::cout<<e<<std::endl; }
   // TODO(Lucas): actally read from URL
   return cv::imread("light_on.jpg");
 }

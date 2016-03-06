@@ -7,7 +7,7 @@
 
 int main() {
   ObjectTracker tracker = ObjectTracker();
-  std::thread sender(vision::startSending);
+  //std::thread sender(vision::startSending);
   while (true) {
     Time captureTime = muan::now();
     cv::Mat image = vision::getImage("");
@@ -15,6 +15,6 @@ int main() {
     position.time_captured = captureTime;
     vision::updateData(image, position);
   }
-  sender.join();
+  //sender.join();
   return 0;
 }

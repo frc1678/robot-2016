@@ -28,7 +28,7 @@ cc_binary(
 
 cc_library(
   name = "vision_utils",
-  srcs = ["vision_utils.cpp"],
-  hdrs = ["vision_utils.h"],
+  srcs = ["vision_utils.cpp", "network_reader.cpp"],
+  hdrs = ["vision_utils.h", "network_reader.h"],
   deps = ["//opencv"]
 )
