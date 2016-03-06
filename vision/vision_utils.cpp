@@ -14,3 +14,17 @@ Angle vision::AngleBetweenPoints(cv::Point p1, cv::Point center, cv::Point p2) {
     //flip sign if cross product is negative
     (((p1.x-center.x)*(p2.y-center.y)-(p2.x-center.x)*(p1.y-center.y))<0?-1:1)*rad;
 }
+
+int vision::getColorNumber(std::string colorName) {
+  for(unsigned int i=0; i<colorspaces.size(); i++) {
+    if(colorNames[i]==colorName) return colorspaces[i];
+  }
+  return -1;
+}
+
+std::string vision::getColorName(int colorNumber) {
+  for(unsigned int i=0; i<colorspaces.size(); i++) {
+    if(colorspaces[i]==colorNumber) return colorNames[i];
+  }
+  return "";
+}

@@ -1,4 +1,5 @@
 #include "in_range_instructions.h"
+#include "vision_utils.h"
 #include "opencv2/imgproc.hpp"
 #include <fstream>
 #include <regex>
@@ -34,6 +35,10 @@ void InRangeInstructions::Thresh(cv::Mat& image) {
   cv::inRange(image, low_, high_, image);
 }
 
-void WriteInstructions(std::string filename) {
-  // TODO(Lucas): write to file
+void InRangeInstructions::WriteInstructions(std::string filename) {
+  std::ofstream file(filename);
+  file<<"Auto-generated using Citrus Vision 2016, c++ version\nColorspace: " <<
+    colorspace_ << " (" << vision::getColorName(colorspace_) << ")\nlow=(" <<
+    low_.val[0] << ", " << low_.val[1] << ", " << low_.val[2] << ")\nhigh=(" <<
+    high_.val[0] << ", " << high_.val[1] << ", " <<high_.val[2] << ")";
 }
