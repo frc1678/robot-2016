@@ -88,8 +88,7 @@ void CitrusRobot::AutonomousInit() {
   subsystems_.arm.SetEnabled(true);
   subsystems_.drive.gyro_reader_->SetOffset();
 
-
-  if(auto_runner != nullptr) {
+  if (auto_runner != nullptr) {
     delete auto_runner;
   }
   auto_runner = new LemonScriptRunner("/home/lvuser/" + GetAutoRoutine(), this);
