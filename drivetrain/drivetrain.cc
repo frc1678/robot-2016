@@ -310,7 +310,7 @@ class PolyDrivetrain {
   void SetGoal(double wheel, double throttle, bool quickturn, bool highgear) {
     double kWheelNonLinearity = 0.6;
     if(!highgear){
-      kWheelNonLinearity = 0.75;
+      kWheelNonLinearity = 0.5;
     }
     // Apply a sin function that's scaled to make it feel better.
     const double angular_range = M_PI_2 * kWheelNonLinearity;
@@ -321,7 +321,11 @@ class PolyDrivetrain {
     wheel_ = tan(angular_range * wheel) / tan(angular_range);
     wheel_ = tan(angular_range * wheel_) / tan(angular_range);
     if (!quickturn_) {
-      wheel_ *= (1.2);
+      if(highgear) {
+        wheel_ *= 1.2;
+      } else {
+        wheel_ *= 1.05;
+      }
     }
 
     static const double kThrottleDeadband = 0.05;
