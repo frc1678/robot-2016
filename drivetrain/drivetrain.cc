@@ -315,8 +315,6 @@ class PolyDrivetrain {
     // Apply a sin function that's scaled to make it feel better.
     const double angular_range = M_PI_2 * kWheelNonLinearity;
 
-    std::cout << kWheelNonLinearity << std::endl;
-
     quickturn_ = quickturn;
     wheel_ = tan(angular_range * wheel) / tan(angular_range);
     wheel_ = tan(angular_range * wheel_) / tan(angular_range);

@@ -6,9 +6,6 @@
 PivotController::PivotController(RobotConstants constants)
     : controller_(constants.pivot_gains),
       climb_controller_(constants.pivot_climb_gains) {
-  std::cout << "Pivot gains: " << constants.pivot_gains.kP << ", "
-            << constants.pivot_gains.kI << ", " << constants.pivot_gains.kD
-            << std::endl;
   goal_ = offset_ = 0 * deg;
   thresh_ = .5 * deg;
   SetConstants(constants);
@@ -49,8 +46,6 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
     case PivotState::MOVING:
       out_voltage =
           controller_.Calculate(dt, goal_ - angle) + GetFFVoltage(angle);
-      std::cout << out_voltage.to(V) << ", " << angle.to(deg) << ", "
-                << controller_.GetDerivative() << std::endl;
       if (muan::abs(goal_ - angle) < thresh_ &&
           muan::abs(controller_.GetDerivative()) < 5 * deg / s) {
         state_ = PivotState::PREP_STOP;
@@ -115,7 +110,6 @@ Voltage PivotController::UpdateClimb(Time dt, Angle encoder_angle,
   }
   last_ = angle;
   out_voltage = muan::Cap(out_voltage, -12 * V, 12 * V);
-  std::cout << "pivot voltage: " << out_voltage.to(V) << std::endl;
 
   return out_voltage;
 }
