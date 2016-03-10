@@ -20,7 +20,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
     ret.camera_offset = -7.5;  // TODO(Wesley) convert to unit?
     ret.pivot_efficiency = .6;
   } else if (id == RobotIdentifier::APPA) {
-    ret.pivot_calibration_offset = 22.8 * deg;
+    ret.pivot_calibration_offset = 24.8 * deg;
 
     ret.pivot_gains = {80 * V / rad, 0 * V / (rad * s), 1 * V / (rad / s)};
     ret.pivot_climb_gains = {140 * V / rad, 40 * V / (rad * s),
