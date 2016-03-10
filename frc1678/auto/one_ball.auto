@@ -4,7 +4,7 @@ CheckArmCalibration
 WHILE:
   DriveStraight: 16.5
 ALSO:
-  SetArmPosition: INTAKE_SPIN: 6
+  SetArmPosition: INTAKE: 2
 
 SetArmPosition: AUTO: 3
 PointTurn: angle: -55.0
