@@ -218,13 +218,13 @@ bool ArmSubsystem::IsDone() { return state_ == ArmState::FINISHED; }
 
 // Sets targets for the arm subsystem
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{46 * deg, .38 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{43 * deg, .35 * m, 6500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToAutoShot() {
-  ArmGoal goal{36.5 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{36.5 * deg, 0 * m, 6500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
