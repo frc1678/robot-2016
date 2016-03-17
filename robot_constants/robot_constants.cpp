@@ -33,13 +33,13 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   } else if (id == RobotIdentifier::COMP) {
     ret.pivot_calibration_offset = 20.4 * deg;
 
-    ret.pivot_gains = {80 * V / rad, 0 * V / (rad * s), 1.5 * V / (rad / s)};
+    ret.pivot_gains = {80 * V / rad, 0 * V / (rad * s), 2 * V / (rad / s)};
     ret.pivot_climb_gains = {100 * V / rad, 40 * V / (rad * s),
                              0 * V / (rad / s)};
 
-    ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
+    ret.elevator_gains = {100 * V / m, 20 * V / (m * s), 0 * V / (m / s)};
 
-    ret.camera_offset = -1.3;  // TODO(Wesley) convert to unit?
+    ret.camera_offset = -0.8;  // TODO(Wesley) convert to unit?
     ret.pivot_efficiency = .85;
   }
   return ret;
