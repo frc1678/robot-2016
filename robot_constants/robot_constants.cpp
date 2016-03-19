@@ -40,7 +40,9 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   }
   ret.pivot_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) + "/pivot_gains");
   ret.pivot_climb_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) + "/pivot_climb_gains");
-  ret.elevator_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) + "/elevator_gains");
+  ret.elevator_gains = LoadConstantsFromFile<Length, Voltage>(GetRobotString(id) + "/elevator_gains");
+  ret.drivetrain_angle_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) + "/drivetrain_angle_gains");
+  ret.drivetrain_distance_gains = LoadConstantsFromFile<Length, Voltage>(GetRobotString(id) + "/drivetrain_distance_gains");
   return ret;
 }
 

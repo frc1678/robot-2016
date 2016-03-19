@@ -6,9 +6,8 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(50 * V / rad, 10 * V / rad / s, 10 * V / rad * s), // Updated 02/06, SSBB
-      //angle_controller_(47 * V / rad, 40 * V / rad / s, 14 * V / rad * s), // Updated 02/06, SSBB
-      distance_controller_(17 * V / m, 10 * V / m / s, 8.5 * V / m * s),
+      angle_controller_(RobotConstants::GetInstance().drivetrain_angle_gains),
+      distance_controller_(RobotConstants::GetInstance().drivetrain_distance_gains),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}),

@@ -16,6 +16,7 @@
 #include "drivetrain/drivetrain.h"
 #include "gyro/gyro_reader.h"
 #include "utils/smart_dashboard_helper.h"
+#include "robot_constants/robot_constants.h"
 
 using drivetrain::control_loops::DrivetrainGoal;
 using drivetrain::control_loops::DrivetrainPosition;

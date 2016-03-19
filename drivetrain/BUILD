@@ -44,7 +44,7 @@ cc_test(
   ],
   deps = [
     '//aos_control:state_feedback_loop',
-    '//aos_control:coerce_goal',  
+    '//aos_control:coerce_goal',
     'drivetrain_lib',
     '@gtest//:main',
   ],
@@ -55,6 +55,6 @@ cc_library(
   name = 'drivetrain_subsystem',
   srcs = ['drivetrain_subsystem.cpp'],
   hdrs = ['drivetrain_subsystem.h'],
-  deps = ['drivetrain_lib', '//muan', '//frc1678:robot_ports', '@wpilib//:main', '//gyro',  '//utils:smart_dashboard_helper', '//muan/unitscpp'],
+  deps = ['drivetrain_lib', '//muan', '//frc1678:robot_ports', '@wpilib//:main', '//gyro',  '//utils:smart_dashboard_helper', '//muan/unitscpp', '//robot_constants'],
   visibility = ["//visibility:public"]
 )
