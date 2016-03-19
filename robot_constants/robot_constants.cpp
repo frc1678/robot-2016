@@ -27,38 +27,20 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   RobotConstants ret;
   if (id == RobotIdentifier::SSBB) {
     ret.pivot_calibration_offset = 21.2 * deg;
-
-    ret.pivot_gains = {140 * V / rad, 0 * V / (rad * s), 2 * V / (rad / s)};
-    ret.pivot_climb_gains = {100 * V / rad, 40 * V / (rad * s),
-                             0 * V / (rad / s)};
-
-    ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
-
-    ret.camera_offset = -7.5;  // TODO(Wesley) convert to unit?
     ret.pivot_efficiency = .6;
+    ret.camera_offset = -7.5;
   } else if (id == RobotIdentifier::APPA) {
     ret.pivot_calibration_offset = 24.8 * deg;
-
-    ret.pivot_gains = {80 * V / rad, 0 * V / (rad * s), 1 * V / (rad / s)};
-    ret.pivot_climb_gains = {140 * V / rad, 40 * V / (rad * s),
-                             0 * V / (rad / s)};
-
-    ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
-
-    ret.camera_offset = -4.1;  // TODO(Wesley) convert to unit?
     ret.pivot_efficiency = .85;
+    ret.camera_offset = -4.1;
   } else if (id == RobotIdentifier::COMP) {
     ret.pivot_calibration_offset = 20.4 * deg;
-
-    ret.pivot_gains = {80 * V / rad, 0 * V / (rad * s), 2 * V / (rad / s)};
-    ret.pivot_climb_gains = {100 * V / rad, 40 * V / (rad * s),
-                             0 * V / (rad / s)};
-
-    ret.elevator_gains = {100 * V / m, 20 * V / (m * s), 0 * V / (m / s)};
-
-    ret.camera_offset = -0.8;  // TODO(Wesley) convert to unit?
     ret.pivot_efficiency = .85;
+    ret.camera_offset = -0.8;
   }
+  ret.pivot_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) + "/pivot_gains");
+  ret.pivot_climb_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) + "/pivot_climb_gains");
+  ret.elevator_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) + "/elevator_gains");
   return ret;
 }
 

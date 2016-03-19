@@ -1,0 +1,9 @@
+#!/bin/bash
+
+rio_addr="roboRIO-1678-FRC.local"
+if [ $# -gt 0 ]
+then
+        rio_addr=$1
+fi
+
+sshpass -p '' scp -r constants admin@$rio_addr:/home/lvuser/

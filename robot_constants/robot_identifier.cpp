@@ -15,7 +15,7 @@ RobotIdentifier FindRobotIdentifier() {
   } else if (mac == "00:80:2f:21:a9:33") {
     id = RobotIdentifier::COMP;
   } else if (mac == "00:80:2f:21:b1:54") {
-    id = RobotIdentifier::SSBB;       
+    id = RobotIdentifier::SSBB;
   } else {
     id = RobotIdentifier::UNSURE;
   }
@@ -27,4 +27,16 @@ RobotIdentifier GetRobotIdentifier() {
   static std::once_flag flag_;
   std::call_once(flag_, []() { id_ = FindRobotIdentifier(); });
   return id_;
+}
+
+std::string GetRobotString(RobotIdentifier id) {
+  if (id == RobotIdentifier::APPA) {
+    return "appa";
+  } else if (id == RobotIdentifier::COMP) {
+    return "comp";
+  } else if (id == RobotIdentifier::SSBB) {
+    return "ssbb";
+  } else if (id == RobotIdentifier::UNSURE) {
+    return "unsure";
+  }
 }
