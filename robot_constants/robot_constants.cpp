@@ -1,9 +1,26 @@
 #include "robot_constants.h"
 #include "robot_identifier.h"
 #include "muan/unitscpp/unitscpp.h"
+#include <iostream>
+#include <fstream>
+#include <string>
 
 const RobotConstants& RobotConstants::GetInstance() {
   return RobotConstants::instance;
+}
+
+template<typename I, typename T>
+typename muan::PidController<I,T>::PidGains LoadConstantsFromFile(std::string filename) {
+  double p_constant = 0;
+  double i_constant = 0;
+  double d_constant = 0;
+  std::ifstream constants_file("/home/lvuser/constants/" + filename);
+  if (constants_file.is_open())
+  {
+    constants_file >> p_constant >> i_constant >> d_constant;
+    constants_file.close();
+  }
+  return typename muan::PidController<I, T>::PidGains {p_constant * T(1)/I(1), i_constant * T(1)/(I(1)*s), d_constant * T(1)/(I(1)/s)};
 }
 
 RobotConstants GenerateRobotConstants(RobotIdentifier id) {
