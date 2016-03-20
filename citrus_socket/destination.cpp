@@ -3,6 +3,7 @@
 
 Destination::Destination(std::string address, uint32_t port) : port_(port) {
   hp_ = gethostbyname(address.c_str());
+  if(!hp_) throw("could not connect");
 }
 
 Destination::~Destination() {}

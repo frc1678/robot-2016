@@ -22,7 +22,7 @@ void vision::startSending() {
 }
 
 void sendData() {
-  std::lock_guard<std::mutex> guard(position_mutex);
+  position_mutex.lock();
   if (image_.data) {
     cv::imshow("detected", image_);
     cv::waitKey(1);
@@ -42,6 +42,7 @@ void sendData() {
               << (muan::now() - position_.time_captured).to(s) << " seconds\n"
               << std::endl;
   }
+  position_mutex.unlock();
   try {
     connection.Send(data, Destination("roborio-1678-frc.local", 16782));
   } catch (...) {
@@ -50,7 +51,8 @@ void sendData() {
   //connection.Send(data, Destination("localhost", 16782));
 }
 void vision::updateData(cv::Mat image, TrackerResults position) {
-  std::lock_guard<std::mutex> guard(position_mutex);
+  position_mutex.lock();
   position_ = position;
   image_ = image;
+  position_mutex.unlock();
 }

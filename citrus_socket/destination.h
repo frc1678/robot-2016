@@ -23,10 +23,6 @@ class Destination {
  private:
   uint32_t port_;
   hostent* hp_;
-  //char[4] ipAddress;
-  char* ipAddressString;
-  struct addrinfo *res;
-
 };
 
 #endif /* CITRUS_SOCKET_DESTINATION_ */
