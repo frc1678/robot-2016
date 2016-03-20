@@ -2,7 +2,7 @@
 #include <iostream>
 
 ObjectTracker::ObjectTracker()
-    : range(InRangeInstructions("PARAMS.txt")),
+    : range(InRangeInstructions("/home/citrus/PARAMS.txt")),
       detector(ShapeDetector(std::vector<Angle>(
           {90 * deg, -90 * deg, -90 * deg, 90 * deg, 90 * deg, 90 * deg, 90 * deg, 90 * deg}))) {}
 

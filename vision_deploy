@@ -1,0 +1,4 @@
+#!/bin/bash
+# TODO(Lucas) update this for coprocessor
+cp bazel-bin/vision/coprocessor_side ~/vision
+cp PARAMS.txt ~
