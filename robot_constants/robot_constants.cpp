@@ -26,17 +26,32 @@ typename muan::PidController<I,T>::PidGains LoadConstantsFromFile(std::string fi
 RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   RobotConstants ret;
   if (id == RobotIdentifier::SSBB) {
+    std::cout << "Robot Id: SSBB" << std::endl;
     ret.pivot_calibration_offset = 21.2 * deg;
     ret.pivot_efficiency = .6;
     ret.camera_offset = -7.5;
+
+    ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
+    ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};
+    ret.fender_shot_goals = {10 * deg, 0 * m, 5500 * rev / (60 * s)};
   } else if (id == RobotIdentifier::APPA) {
+    std::cout << "Robot Id: APPA" << std::endl;
     ret.pivot_calibration_offset = 24.8 * deg;
     ret.pivot_efficiency = .85;
     ret.camera_offset = -4.1;
+
+    ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
+    ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};
+    ret.fender_shot_goals = {10 * deg, 0 * m, 5500 * rev / (60 * s)};
   } else if (id == RobotIdentifier::COMP) {
+    std::cout << "Robot Id: COMP" << std::endl;
     ret.pivot_calibration_offset = 20.4 * deg;
     ret.pivot_efficiency = .85;
     ret.camera_offset = -0.8;
+
+    ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
+    ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};
+    ret.fender_shot_goals = {10 * deg, 0 * m, 5500 * rev / (60 * s)};
   }
   ret.pivot_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) + "/pivot_gains");
   ret.pivot_climb_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) + "/pivot_climb_gains");

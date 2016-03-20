@@ -43,6 +43,9 @@ ArmSubsystem::ArmSubsystem()
   thresh_ = 0.5 * deg;
 
   intake_target_ = IntakeGoal::OFF;
+  intake_timer_ = 0 * s;
+
+  constants = RobotConstants::GetInstance();
 }
 
 ArmSubsystem::~ArmSubsystem() {}
@@ -139,7 +142,13 @@ void ArmSubsystem::Update(Time dt) {
     intake_front_->Set(-1);
     intake_side_->Set(1);
     if (ball_sensor_->Get()) {
-      intake_target_ = IntakeGoal::OFF;
+      if (intake_timer_ < 0.5 * s) {
+        intake_front_->Set(-1);
+        intake_side_->Set(1);
+      } else {
+        intake_target_ = IntakeGoal::OFF;
+      }
+      intake_timer_ += 0.05 * s;
     }
   } else if (intake_target_ == IntakeGoal::FORWARD_FOREVER) {
     intake_front_->Set(-1);
@@ -150,6 +159,7 @@ void ArmSubsystem::Update(Time dt) {
   } else {
     intake_front_->Set(0);
     intake_side_->Set(0);
+    intake_timer_ = 0 * s;
   }
 
   SmartDashboard::PutNumber("pivot_angle",
@@ -218,13 +228,17 @@ bool ArmSubsystem::IsDone() { return state_ == ArmState::FINISHED; }
 
 // Sets targets for the arm subsystem
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{42 * deg, .33 * m, 6500 * rev / (60 * s)};
+  ArmGoal goal =
+      constants
+          .long_shot_goals;  // Look at robot_constants to change these values
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToAutoShot() {
-  ArmGoal goal{36 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal =
+      constants
+          .auto_shot_goals;  // Look at robot_constants to change these values
   SetGoal(goal);
   SetHoodOpen(true);
 }
@@ -248,7 +262,9 @@ void ArmSubsystem::GoToIntakeSpin() {
 }
 
 void ArmSubsystem::GoToFender() {
-  ArmGoal goal{10 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal =
+      constants
+          .fender_shot_goals;  // Look at robot_constants to change these values
   SetGoal(goal);
   SetHoodOpen(true);
 }
