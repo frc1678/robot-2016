@@ -43,6 +43,7 @@ ArmSubsystem::ArmSubsystem()
   thresh_ = 0.5 * deg;
 
   intake_target_ = IntakeGoal::OFF;
+  intake_timer_ = 0 * s;
 
   constants = RobotConstants::GetInstance();
 }
@@ -141,7 +142,13 @@ void ArmSubsystem::Update(Time dt) {
     intake_front_->Set(-1);
     intake_side_->Set(1);
     if (ball_sensor_->Get()) {
-      intake_target_ = IntakeGoal::OFF;
+      if (intake_timer_ < 0.5 * s) {
+        intake_front_->Set(-1);
+        intake_side_->Set(1);
+      } else {
+        intake_target_ = IntakeGoal::OFF;
+      }
+      intake_timer_ += 0.05 * s;
     }
   } else if (intake_target_ == IntakeGoal::FORWARD_FOREVER) {
     intake_front_->Set(-1);
@@ -152,6 +159,7 @@ void ArmSubsystem::Update(Time dt) {
   } else {
     intake_front_->Set(0);
     intake_side_->Set(0);
+    intake_timer_ = 0 * s;
   }
 
   SmartDashboard::PutNumber("pivot_angle",

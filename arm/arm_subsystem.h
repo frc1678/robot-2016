@@ -110,6 +110,7 @@ class ArmSubsystem : public muan::Updateable {
   Time t = 0 * s;
 
   IntakeGoal intake_target_;
+  Time intake_timer_;
 
   Angle thresh_;
 };
