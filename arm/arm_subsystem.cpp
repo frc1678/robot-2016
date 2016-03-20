@@ -187,7 +187,7 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
       pivot_brake = true;
       elevator_brake = elevator_controller_.ShouldFireBrake();
       if (elevator_controller_.IsDone()) {
-        pivot_controller_.SetGoal(90 * deg, thresh_);
+        pivot_controller_.SetGoal(85 * deg, thresh_);
         climb_state_ = ClimbState::PIVOTING_ROBOT;
       }
       climbing_done_ = false;
@@ -218,13 +218,13 @@ bool ArmSubsystem::IsDone() { return state_ == ArmState::FINISHED; }
 
 // Sets targets for the arm subsystem
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{46 * deg, .38 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{42 * deg, .33 * m, 6500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToAutoShot() {
-  ArmGoal goal{36.5 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{36 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
 }
@@ -272,7 +272,7 @@ void ArmSubsystem::StartClimb() {
 }
 
 void ArmSubsystem::ContinueClimb() {
-  ArmGoal goal{97 * deg, 0.58 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{105 * deg, 0.58 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   // I'm sorry, future self. I know you're disappointed in me, but I'm too
   // lazy
