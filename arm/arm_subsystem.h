@@ -10,11 +10,6 @@
 #include "muan/utils/timer.h"
 #include "utils/smart_dashboard_helper.h"
 
-struct ArmGoal {
-  Angle pivot_goal;
-  Length elevator_goal;
-  AngularVelocity shooter_goal;
-};
 enum class IntakeGoal { OFF = 0, REVERSE, FORWARD_UNTIL, FORWARD_FOREVER };
 
 class ArmSubsystem : public muan::Updateable {
@@ -74,6 +69,7 @@ class ArmSubsystem : public muan::Updateable {
 
   ArmState state_ = ArmState::DISABLED;
   ClimbState climb_state_ = ClimbState::DONE;
+  RobotConstants constants;
 
   std::unique_ptr<Encoder> pivot_encoder_;
   std::unique_ptr<DigitalInput> pivot_hall_;

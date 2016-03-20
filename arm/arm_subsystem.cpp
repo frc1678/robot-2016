@@ -43,6 +43,8 @@ ArmSubsystem::ArmSubsystem()
   thresh_ = 0.5 * deg;
 
   intake_target_ = IntakeGoal::OFF;
+
+  constants = RobotConstants::GetInstance();
 }
 
 ArmSubsystem::~ArmSubsystem() {}
@@ -218,13 +220,17 @@ bool ArmSubsystem::IsDone() { return state_ == ArmState::FINISHED; }
 
 // Sets targets for the arm subsystem
 void ArmSubsystem::GoToLong() {
-  ArmGoal goal{42 * deg, .33 * m, 6500 * rev / (60 * s)};
+  ArmGoal goal =
+      constants
+          .long_shot_goals;  // Look at robot_constants to change these values
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToAutoShot() {
-  ArmGoal goal{36 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal =
+      constants
+          .auto_shot_goals;  // Look at robot_constants to change these values
   SetGoal(goal);
   SetHoodOpen(true);
 }
@@ -248,7 +254,9 @@ void ArmSubsystem::GoToIntakeSpin() {
 }
 
 void ArmSubsystem::GoToFender() {
-  ArmGoal goal{10 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal =
+      constants
+          .fender_shot_goals;  // Look at robot_constants to change these values
   SetGoal(goal);
   SetHoodOpen(true);
 }
