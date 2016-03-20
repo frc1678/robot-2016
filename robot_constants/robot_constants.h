@@ -7,6 +7,7 @@
 class RobotConstants {
  public:
   static const RobotConstants& GetInstance();
+  static void ReloadConstants();
 
   Angle pivot_calibration_offset;
 

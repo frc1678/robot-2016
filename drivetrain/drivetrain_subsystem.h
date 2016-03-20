@@ -31,6 +31,7 @@ class DrivetrainSubsystem : public muan::Updateable {
 
   void Update(Time dt) override;
   void Start();
+  void UpdateConstants();
   void SetDriveGoal(const DrivetrainGoal& goal);
   Length GetDistanceDriven();
   void Shift(bool high);
@@ -38,7 +39,7 @@ class DrivetrainSubsystem : public muan::Updateable {
   void FollowMotionProfile(
       std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
       std::unique_ptr<muan::MotionProfile<Angle>> angle_profile,
-      bool highgear = false);
+      bool highgear = false, bool use_distance_termination = true, bool use_angle_termination = true);
   bool IsProfileComplete();
   void CancelMotionProfile();
 
@@ -76,6 +77,9 @@ class DrivetrainSubsystem : public muan::Updateable {
   DrivetrainGoal current_goal_;
   std::unique_ptr<muan::MotionProfile<Length>> distance_profile_;
   std::unique_ptr<muan::MotionProfile<Angle>> angle_profile_;
+
+  bool use_distance_termination_ = true;
+  bool use_angle_termination_ = true;
 
   muan::PidController<Angle, Voltage> angle_controller_;
   muan::PidController<Length, Voltage> distance_controller_;

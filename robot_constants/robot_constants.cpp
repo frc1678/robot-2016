@@ -46,5 +46,9 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   return ret;
 }
 
+void RobotConstants::ReloadConstants() {
+  RobotConstants::instance = GenerateRobotConstants(GetRobotIdentifier());
+}
+
 RobotConstants RobotConstants::instance =
     GenerateRobotConstants(GetRobotIdentifier());
