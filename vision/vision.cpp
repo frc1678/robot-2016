@@ -2,66 +2,64 @@
 #include "muan/control/trapezoidal_motion_profile.h"
 #include <iostream>
 #include <memory>
+#include "citrus_socket/network_serialize.h"
 
-CitrusVision::CitrusVision(RobotSubsystems& subs)
-    : subsystems_(subs),
-      gyro_history_(.02 * s),
-      angle_log_("angles", {"cameraAngle", "gyroHistory"}) {
-  table_ = NetworkTable::GetTable("vision");
+CitrusVision::CitrusVision(RobotSubsystems& subs, RobotConstants constants)
+            : subsystems_(subs),
+  gyro_history_(.02 * s),
+  angle_log_("angles", {"cameraAngle", "gyroHistory"}),
+  connection(CitrusSocket(16782)) {
+  constants_ = constants;
+  isFound = false;
+  hasConnection = false;
+  angleReceived = 0 * deg;
+  lag = 0 * s;
+}
+
+Angle CitrusVision::GetAngleOff() {
+  const double camera_angle = 1.136; // multiply by this to turn camera angles into gyro angles
+
+  Angle camera_diff = (-angleReceived + constants_.camera_offset * deg) * camera_angle;
+  return camera_diff;
 }
 
 void CitrusVision::Start() {
-  Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * deg;
-  bool is_found = table_->GetBoolean("targetFound", false);
-  std::cout << "FOUND: " << is_found << ", moving to " << camera_diff.to(rad)
-            << std::endl;
-  if (is_found) {
-    using muan::TrapezoidalMotionProfile;
-    auto distance_profile = std::make_unique<TrapezoidalMotionProfile<Length>>(
-        0 * m, 10 * m / s, 10 * m / s / s);
-    auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-        camera_diff, 240 * deg / s, 500 * deg / s / s);
-    subsystems_.drive.FollowMotionProfile(std::move(distance_profile),
-                                          std::move(angle_profile));
-  }
+  subsystems_.drive.PointTurn(GetAngleOff(), false);
 }
 
 bool CitrusVision::Update(bool enabled) {
-  /* Angle camera_diff = -table_->GetNumber("angleToTarget", 0) * deg; */
-  /* /1* Time latency = table_->GetNumber("captureTime", -100) * s; *1/ */
-  /* // latency = std::min(latency, 1.99 * s); */
-  /* bool is_found = table_->GetBoolean("targetFound", false); */
-  /* // Angle camera_diff = -SmartDashboard::GetNumber("angleToTarget", 0) *
-   * deg; */
-  /* // Time latency = SmartDashboard::GetNumber("captureTime", -100); */
-  /* Angle target_angle = camera_diff +
-   * subsystems_.drive.gyro_reader_->GetAngle(); */
-  /* if (subsystems_.drive.IsProfileComplete() && */
-  /*     /1* latency >= 0 * s && *1/ is_found && enabled) { */
-  /*   if (std::abs((target_angle - subsystems_.drive.gyro_reader_->GetAngle())
-   */
-  /*                    .to(deg)) < 0.5) { */
-  /*     printf("Finished vision: %f s\n", test_timer.Get().to(s)); */
-  /*     return true; */
-  /*   } */
-  /*   using muan::TrapezoidalMotionProfile; */
-  /*   auto distance_profile =
-   * std::make_unique<TrapezoidalMotionProfile<Length>>( */
-  /*       0 * m, 10 * m / s, 10 * m / s / s); */
-  /*   auto angle_profile = std::make_unique<TrapezoidalMotionProfile<Angle>>(
-   */
-  /*       target_angle - subsystems_.drive.gyro_reader_->GetAngle(), */
-  /*       4.3 * rad / s, 270 * deg / s / s); */
-  /*   subsystems_.drive.FollowMotionProfile(std::move(distance_profile), */
-  /*                                         std::move(angle_profile)); */
-  /* } */
-  /* gyro_history_.Update(subsystems_.drive.gyro_reader_->GetAngle()); */
-  /* return false; */
-  std::cout << "Angle travelled: " << subsystems_.drive.gyro_reader_->GetAngle()
-            << std::endl;
+  ReadPosition();
+  std::cout<<"angle: "<<angleReceived.to(deg)<<
+          "lag: "<<lag.to(s)<<std::endl;
+  return subsystems_.drive.IsProfileComplete();
+}
+
+bool CitrusVision::Aligned() {
+  if (isFound && hasConnection &&
+      (muan::abs(GetAngleOff()) < 1 * deg)) {
+    return true;
+  } else {
+       return false;
+  }
 }
 
 void CitrusVision::EndTest() {
   // test_log_["end"] = std::to_string(table_->GetNumber("angleToTarget", 0));
   // test_log_.EndTest();
+}
+
+void CitrusVision::ReadPosition() { 
+  try {
+    nlohmann::json json_recv;
+    while (connection.HasPackets()) {
+      json_recv = to_json(connection.Receive());
+    }
+    isFound=json_recv["found"];
+    angleReceived=json_recv["angle"]*deg;
+    lag=json_recv["lag"]*s;
+    hasConnection = true;
+  }
+  catch (...) {
+    hasConnection = false;
+  }
 }

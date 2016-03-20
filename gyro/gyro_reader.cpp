@@ -7,15 +7,13 @@
 
 GyroReader::GyroReader() : muan::Updateable(100 * hz) {
   gyro = new GyroInterface();
-  dio = new DigitalOutput(4);
-  dio->Set(1);
   is_initalized = Init();
 }
 
 bool GyroReader::Init() {
   if (!gyro->InitializeGyro()) {
+    //printf("Gyro init returned false");
     return false;
-    printf("Gyro init returned false");
   }
   return true;
 }
@@ -35,9 +33,9 @@ void GyroReader::Calibrate(Time dt) {
       // delta_angle.to(deg));
       if (calibration_time_counter >= calibration_time) {
         calibration_drift = calibration_drift_angle / calibration_time_counter;
-        //printf("[gyro] Final calib val: %f\n", calibration_drift.to(deg/s));
+        // printf("[gyro] Final calib val: %f\n", calibration_drift.to(deg/s));
         // printf("#--- START TRIAL %d ---\n", trial);
-        printf("[gyro] finished calibrating :)\n");
+        //printf("[gyro] finished calibrating :)\n");
         is_calibrated = true;
         need_led_switch = true;
       }
@@ -46,18 +44,21 @@ void GyroReader::Calibrate(Time dt) {
 }
 
 Angle GyroReader::GetAngle() {
-  return angle;  // That was easy...
+  return angle - offset_;  // That was easy...
+}
+
+void GyroReader::SetOffset() {
+  offset_ += angle;
 }
 
 void GyroReader::Update(Time dt) {
   if (!is_initalized) {
-    printf("Gyro not initalized :'(\n");
+    //printf("Gyro not initalized :'(\n");
   } else {
     if (!is_calibrated) {
       Calibrate(dt);
     } else {
       if (need_led_switch) {
-        dio->Set(0);
         need_led_switch = false;
       }
       angle += ((gyro->ExtractAngle(gyro->GetReading()) * rad / s -
@@ -65,7 +66,7 @@ void GyroReader::Update(Time dt) {
                 dt) *
                (360 / degrees_per_circle);
       time += dt;
-      //printf("[gyro] Angle: %f deg\n", angle.to(deg));
+      // printf("[gyro] Angle: %f deg\n", angle.to(deg));
       // printf("%f\t%f\n", time.to(s),  angle.to(deg));
       // if (time >= 140*s) {
       // time = 0*s;
@@ -79,3 +80,5 @@ void GyroReader::Update(Time dt) {
     }
   }
 }
+
+bool GyroReader::IsCalibrated() { return is_calibrated; }

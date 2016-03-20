@@ -1,8 +1,15 @@
+cc_binary(
+  name = "recieve_test",
+  srcs = ["recieve_test.cpp"],
+  deps = ["//citrus_socket"],
+)
+
 cc_library(
   name = "robot_side",
   srcs = ["vision.cpp"],
   hdrs = ["vision.h"],
-  deps = ["@wpilib//:main", "//frc1678:robot_subsystems"]
+  deps = ["@wpilib//:main", "//frc1678:robot_subsystems", "//muan", "//muan/unitscpp", "//citrus_socket"],
+  visibility = ["//visibility:public"]
 )
 
 cc_library(
@@ -16,7 +23,7 @@ cc_library(
   name = "vision_sender",
   srcs = ["data_sender.cpp"],
   hdrs = ["data_sender.h"],
-  deps = [":object_detector", "//unitscpp", "//muan", "//opencv"]
+  deps = [":object_detector", "//unitscpp", "//muan", "//opencv", "//citrus_socket"]
 )
 
 cc_binary(

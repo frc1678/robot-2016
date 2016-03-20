@@ -2,7 +2,6 @@
 #include "opencv2/highgui.hpp"
 #include <cmath>
 #include <iostream>
-#include "network_reader.h"
 
 Angle vision::AngleBetweenPoints(cv::Point p1, cv::Point center, cv::Point p2) {
   return std::acos(

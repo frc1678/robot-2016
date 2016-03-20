@@ -9,7 +9,14 @@ cc_library(
 cc_library(
   name = "robot_subsystems",
   hdrs = ["robot_subsystems.h"],
-  deps = ["//drivetrain:drivetrain_subsystem"],
+  deps = ["//drivetrain:drivetrain_subsystem", "//arm:arm_subsystem"],
+  visibility = ["//visibility:public"]
+)
+
+cc_library(
+  name = "declarations",
+  hdrs = ["frc1678.h"],
+  deps = [":robot_subsystems", "//vision:robot_side"],
   visibility = ["//visibility:public"]
 )
 
@@ -18,9 +25,12 @@ cc_binary(
   deps=[
     "@wpilib//:main",
     ":robot_subsystems",
-    "//unitscpp",
+    "//muan/unitscpp",
     "//muan:multithreading",
-    "//vision:robot_side"
+    "//vision:robot_side",
+    "//frc1678/auto",
+    "//robot_constants",
+    "//utils:citrus_button",
   ],
-  srcs=glob(["*.cpp", "*.h"]) #TODO (jasmine): Add button interface as separate target?
+  srcs=glob(["*.cpp"])
 )

@@ -252,6 +252,7 @@ std::ostream& operator<<(std::ostream& s, const Units<U1, U2, U3, U4>& rhs) {
 
 // Typedefs for fundamental units
 typedef Units<1, 0, 0, 0> Length;
+typedef Units<1, 0, 0, 0> Distance;
 typedef Units<0, 1, 0, 0> Time;
 typedef Units<0, 0, 1, 0> Mass;
 typedef Units<0, 0, 0, 1> Current;
@@ -286,8 +287,11 @@ const Mass g = .001 * kg;
 const Mass mg = .001 * g;
 const Time s = 1;
 const Time ms = 1e-3 * s;
+const Time us = 1e-6 * s;
 const Time hour = 3600 * s;
+const AngularVelocity rpm = rev / (60 * s);
 const Current A = 1;
+const Force N = 1;
 const Voltage V = kg * m * m / (A * s * s * s);
 const Voltage pwm = 12 * V;
 const Length click = pi * 6 * in / 360;

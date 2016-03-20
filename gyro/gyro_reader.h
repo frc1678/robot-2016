@@ -3,7 +3,7 @@
 
 #include <WPILib.h>
 #include "gyro_interface.h"
-#include "unitscpp/unitscpp.h"
+#include "muan/unitscpp/unitscpp.h"
 #include "muan/multithreading/updateable.h"
 
 class GyroReader : public muan::Updateable {
@@ -46,8 +46,7 @@ class GyroReader : public muan::Updateable {
   Angle calibration_drift_angle = 0 * rad;
 
   Angle angle = 0 * rad;
-
-  DigitalOutput *dio;
+  Angle offset_ = 0 * deg;
 
   int trial = 1;
 
@@ -56,7 +55,9 @@ class GyroReader : public muan::Updateable {
   bool Init();
   void Calibrate(Time dt);
   Angle GetAngle();
+  void SetOffset();
   virtual void Update(Time dt);
+  bool IsCalibrated();
 };
 
 #endif

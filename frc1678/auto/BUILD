@@ -1,0 +1,19 @@
+cc_library(
+  name="auto",
+  srcs=glob([
+    '*.cpp',
+  ]),
+  hdrs=glob([
+    '*.h',
+  ]),
+  deps=[
+    "@wpilib//:main",
+    "//muan/unitscpp",
+    "//muan:utils",
+    "//gyro",
+    "//frc1678:declarations",
+    "//lemonscript",
+    "//arm:arm_subsystem",
+  ],
+  visibility = ["//visibility:public"]
+)

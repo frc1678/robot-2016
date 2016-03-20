@@ -4,6 +4,7 @@
 #include "data_sender.h"
 #include <thread>
 #include "vision_utils.h"
+#include <iostream>
 
 int main() {
   ObjectTracker tracker = ObjectTracker();

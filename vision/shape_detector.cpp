@@ -35,7 +35,7 @@ void ShapeDetector::setData(cv::Mat image) {
   }
   double bestTarget = 0;
   for (unsigned int i = 0; i < contours.size(); i++) {
-    std::vector<cv::Point> currentPoints = convertToPolygon(contours[i]);
+    std::vector<cv::Point> currentPoints = convertToPolygon(contours[i], image);
     if (getTargetCertainty(currentPoints, i == closestToPrevious) >=
         bestTarget) {
       points_ = currentPoints;
@@ -58,7 +58,8 @@ std::vector<std::vector<cv::Point>> ShapeDetector::getAllContours(cv::Mat m) {
   return contours;
 }
 
-std::vector<cv::Point> ShapeDetector::convertToPolygon(std::vector<cv::Point> points) {
+std::vector<cv::Point> ShapeDetector::convertToPolygon(std::vector<cv::Point> points, const cv::Mat &image) {
+  //if(cv::boundingRect(points).area() < image.rows * image.cols / 200) return points;
   std::vector<cv::Point> retval;
   double epsilon=0;
   do {

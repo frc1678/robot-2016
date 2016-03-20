@@ -1,7 +1,7 @@
 #include "maximization.h"
 #include <iostream>
 
-Maximization::Maximization(const ThingToMaximize* func) {
+Maximization::Maximization(const ThingToMaximize *func) {
   f=func;
 }
 

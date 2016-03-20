@@ -4,18 +4,26 @@
 #include <fstream>
 #include <regex>
 #include <sstream>
+#include <iostream>
 
 InRangeInstructions::InRangeInstructions(std::string filename) {
   std::ifstream file(filename);
   std::string str, buffer;
-  while(file) {
-    std::getline(file, buffer);
-    str+=buffer;
+  if(!file) {
+    str = "4 0 100 100 100 255 255";
+    std::cout<<filename<<" does not exist"<<std::endl;
+  }
+  else {
+    while(file) {
+      std::getline(file, buffer);
+      str+=buffer;
+    }
   }
   str=std::regex_replace(str, std::regex("[\\D]"), " ");
   std::stringstream ss;
   ss<<str;
   ss>>colorspace_;
+  std::cout<<colorspace_<<std::endl;
   int num1, num2, num3;
   ss>>num1>>num2>>num3;
   low_ = cv::Scalar(num1, num2, num3);

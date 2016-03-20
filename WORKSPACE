@@ -9,7 +9,7 @@ new_http_archive(
 new_http_archive(
   name = 'wpilib',
   build_file = 'wpilib.BUILD',
-  sha256 = '367ca2bef14426f04c0c60fd71638009d81fb024e6e42c8c6202746a93e51ab7',
+  sha256 = '0d4471ff34c29963ad7ffb0a9bc1db9566159ffadb2f7d29997ce5ac255e727d',
   url = 'https://www.dropbox.com/s/agexr7gt2o838eo/wpilib.zip?dl=0&raw=1'
 )
 
@@ -25,4 +25,11 @@ new_git_repository(
   build_file = 'cddlib.BUILD',
   remote = 'https://github.com/mcmtroffaes/cddlib',
   commit = '370919d'
+)
+
+new_git_repository(
+  name = 'json',
+  build_file = 'json.BUILD',
+  remote = 'https://github.com/nlohmann/json',
+  commit = '53879f9'
 )

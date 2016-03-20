@@ -18,7 +18,18 @@ void CalibrationInput::applyThresh(InRangeInstructions thresh) {
 
 InRangeInstructions vision::calibrate(CalibrationInput images) {
   std::vector<InRangeInstructions> ranges;
+  std::vector<double> scores;
   int bestColorspace=0;
-  double bestScore=(~0);
+  double bestScore=-100000;
   for(int i=0; i<colorspaces.size(); i++) {
-    ScoreRangeVals* scorer=new ScoreRangeVals(colorspaces[i]);
+    ScoreRangeVals scorer(colorspaces[i], images, scoreIgnoreBlack(), scoreSelectAll());
+    Maximization bestRangeFinder(&scorer);;
+    scores.push_back(bestRangeFinder.maximize());
+    std::vector<double> maximizedValues=bestRangeFinder.getVals();
+    ranges.push_back(InRangeInstructions(
+        cv::Scalar(maximizedValues[0], maximizedValues[1], maximizedValues[2]),
+        cv::Scalar(maximizedValues[3], maximizedValues[4], maximizedValues[5]),
+        colorspaces[i]));
+  }
+  //TODO(Lucas) add selection
+}
