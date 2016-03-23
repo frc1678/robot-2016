@@ -11,13 +11,17 @@ ObjectTracker::~ObjectTracker() {}
 TrackerResults ObjectTracker::Update(cv::Mat& image) {
   TrackerResults retval;
   range.Thresh(image);
+
+  // erode and dilate to remove noise
   int erodeWidth = image.cols * .006;
   cv::erode(image, image, cv::getStructuringElement(cv::MORPH_ELLIPSE,
-  cv::Size(erodeWidth*2+1, erodeWidth*2+1), cv::Point(erodeWidth/2, erodeWidth/2)));
+      cv::Size(erodeWidth*2+1, erodeWidth*2+1), cv::Point(erodeWidth/2, erodeWidth/2)));
   cv::dilate(image, image, cv::getStructuringElement(cv::MORPH_ELLIPSE,
-  cv::Size(erodeWidth*4+1, erodeWidth*4+1), cv::Point(erodeWidth, erodeWidth)));
+      cv::Size(erodeWidth*4+1, erodeWidth*4+1), cv::Point(erodeWidth, erodeWidth)));
 
   detector.setData(image);
+
+
   if (detector.getScore() > 0) {
     cv::cvtColor(image, image, CV_GRAY2BGR);
     cv::drawContours(

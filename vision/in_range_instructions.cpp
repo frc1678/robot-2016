@@ -9,17 +9,22 @@
 InRangeInstructions::InRangeInstructions(std::string filename) {
   std::ifstream file(filename);
   std::string str, buffer;
+
+  // use default value, but output warning
   if(!file) {
     str = "4 0 100 100 100 255 255";
     std::cout<<filename<<" does not exist"<<std::endl;
   }
+  // read from file
   else {
     while(file) {
       std::getline(file, buffer);
       str+=buffer;
     }
   }
+  // ignore everything except numbers
   str=std::regex_replace(str, std::regex("[\\D]"), " ");
+
   std::stringstream ss;
   ss<<str;
   ss>>colorspace_;
