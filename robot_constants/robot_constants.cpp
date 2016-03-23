@@ -36,9 +36,8 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
 
     ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
 
-    ret.camera_offset = -2.2;  // TODO(Wesley) convert to unit?
+    ret.camera_offset = 1.1;  // TODO(Wesley) convert to unit?
     ret.pivot_efficiency = .6;
-    ret.camera_offset = -7.5;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};

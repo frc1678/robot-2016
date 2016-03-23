@@ -31,6 +31,9 @@ bool CitrusVision::Update(bool enabled) {
   ReadPosition();
   std::cout<<"angle: "<<angleReceived.to(deg)<<
           "lag: "<<lag.to(s)<<std::endl;
+  angle_log_["cameraAngle"] = std::to_string(angleReceived.to(deg));
+  angle_log_["gyroHistory"] = std::to_string(subsystems_.drive.GetGyroAngle().to(deg));
+  angle_log_.EndLine();
   return subsystems_.drive.IsProfileComplete();
 }
 
