@@ -20,6 +20,13 @@ int main() {
   camera.open(cameraIndex);
   if(!camera.isOpened()) return 0;
 
+  camera.set(CV_CAP_PROP_BRIGHTNESS, 0); // minimum
+  camera.set(CV_CAP_PROP_CONTRAST, 1); // maximun
+  camera.set(CV_CAP_PROP_SATURATION, 1); // maximun
+  std::string command="v4l2-ctl -d /dev/video" + std::to_string(cameraIndex) +
+          " -c exposure_auto=1 -c exposure_absolute=5"; // manual, minimum
+  system(command.c_str()); // not best way, but it keeps the settings together
+
   ObjectTracker tracker = ObjectTracker();
 
   // for accurate lag measurements, run sender in another thread
