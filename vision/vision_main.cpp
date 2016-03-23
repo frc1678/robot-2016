@@ -6,26 +6,24 @@
 #include "vision_utils.h"
 #include <iostream>
 
-int main(int numArgs, char **args) {
-  //if(numArgs < 2) {
-  //   std::cout << "provide camera number as argument" << std::endl
-  //           << "suggested command: ls /dev | grep video | vision" <<std::endl;
-  //   return -1;
-  //}
-  //int cameraIndex = args[numArgs - 1][5] - '0';
-
-  ObjectTracker tracker = ObjectTracker();
+int main() {
   cv::VideoCapture camera;
-  camera.open(1);
-  if(!camera.isOpened()) camera.open(2);
+  int cameraIndex=0;
+  for(int i=0; i<8; i++) {
+    camera.open(i);
+    if(camera.isOpened()) cameraIndex = i;
+  }
+  camera.open(cameraIndex);
   if(!camera.isOpened()) return 0;
 
+  ObjectTracker tracker = ObjectTracker();
   std::thread sender(vision::startSending);
+
   while (true) {
     cv::Mat image;
     Time captureTime = muan::now();
     if(!camera.read(image)) return 0;
-    TrackerResults position  = tracker.Update(image);
+    TrackerResults position = tracker.Update(image);
     position.time_captured = captureTime;
     vision::updateData(image, position);
     image.release();

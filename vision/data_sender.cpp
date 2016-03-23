@@ -48,7 +48,6 @@ void sendData() {
   } catch (...) {
     std::cout<<"no connection"<<std::endl;
   }
-  //connection.Send(data, Destination("localhost", 16782));
 }
 void vision::updateData(cv::Mat image, TrackerResults position) {
   position_mutex.lock();
