@@ -1,1 +1,12 @@
-4 0 40 0 30 255 100
+colorspace: 4 (RGB)
+low: (0, 40, 0)
+high: (30, 255, 100) 
+
+colorspaces: 
+  fifty two: HLS
+  forty: HSV
+  forty four: Lab
+  fifty: Luv
+  four: RGB
+  thirty six: YCrCb
+  eighty two: YUV
