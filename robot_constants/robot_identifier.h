@@ -12,4 +12,6 @@ enum class RobotIdentifier {
 
 RobotIdentifier GetRobotIdentifier();
 
+std::string GetRobotString(RobotIdentifier id);
+
 #endif /* ROBOT_CONSTANTS_ROBOT_IDENTIFIER_H_ */

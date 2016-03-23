@@ -6,9 +6,8 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
-      angle_controller_(50 * V / rad, 10 * V / rad / s, 10 * V / rad * s), // Updated 02/06, SSBB
-      //angle_controller_(47 * V / rad, 40 * V / rad / s, 14 * V / rad * s), // Updated 02/06, SSBB
-      distance_controller_(17 * V / m, 10 * V / m / s, 8.5 * V / m * s),
+      angle_controller_(RobotConstants::GetInstance().drivetrain_angle_gains),
+      distance_controller_(RobotConstants::GetInstance().drivetrain_distance_gains),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}),
@@ -125,8 +124,8 @@ void DrivetrainSubsystem::Update(Time dt) {
       bool profile_finished_angle =
           muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
 
-      if (profiles_finished_time && profile_finished_angle &&
-          profile_finished_distance) {
+      if (profiles_finished_time && (profile_finished_angle || !use_angle_termination_) &&
+          (profile_finished_distance || !use_distance_termination_)) {
         angle_profile_.reset();
         distance_profile_.reset();
         is_operator_controlled_ = true;
@@ -153,6 +152,12 @@ void DrivetrainSubsystem::Update(Time dt) {
   csv_log_["gear"] = current_goal_.highgear ? "high" : "low";
   csv_helper_.Update();
   csv_log_.EndLine();  // Flush the current row of the log
+}
+
+void DrivetrainSubsystem::UpdateConstants() {
+  RobotConstants::ReloadConstants();
+  angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_gains);
+  distance_controller_.SetGains(RobotConstants::GetInstance().drivetrain_distance_gains);
 }
 
 void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal &goal) {
@@ -192,7 +197,7 @@ void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
       0 * m, 10 * ft / s, 10 * ft / s / s);
   auto ap =
       std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, speed, accel);
-  FollowMotionProfile(std::move(dp), std::move(ap), highgear);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear, false, true);
 }
 
 void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
@@ -203,7 +208,7 @@ void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
       0 * m, 10 * ft / s, 10 * ft / s / s);
   auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
       angle - gyro_reader_->GetAngle() - gyro_zero_offset_, speed, accel);
-  FollowMotionProfile(std::move(dp), std::move(ap), highgear);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear, false, true);
 }
 
 void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
@@ -214,7 +219,7 @@ void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
                                                                accel);
   auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
       0 * rad, 1 * rad / s, 1 * rad / s / s);
-  FollowMotionProfile(std::move(dp), std::move(ap), highgear);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, true);
 }
 
 void DrivetrainSubsystem::DriveDistanceAtAngle(Length distance, Angle angle,
@@ -228,12 +233,15 @@ void DrivetrainSubsystem::DriveDistanceAtAngle(Length distance, Angle angle,
                                                                accel);
   auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
       angle - gyro_reader_->GetAngle(), angular_speed, angular_accel);
-  FollowMotionProfile(std::move(dp), std::move(ap), highgear);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, true);
 }
 
 void DrivetrainSubsystem::FollowMotionProfile(
     std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
-    std::unique_ptr<muan::MotionProfile<Angle>> angle_profile, bool highgear) {
+    std::unique_ptr<muan::MotionProfile<Angle>> angle_profile, bool highgear, bool use_distance_termination, bool use_angle_termination) {
+  UpdateConstants();
+  use_angle_termination_ = use_angle_termination;
+  use_distance_termination_ = use_distance_termination;
   current_goal_.highgear = highgear;
   distance_profile_ = std::move(distance_profile);
   angle_profile_ = std::move(angle_profile);
