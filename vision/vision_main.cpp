@@ -33,6 +33,7 @@ int main() {
   // for accurate lag measurements, run sender in another thread
   std::thread sender(vision::startSending);
 
+  cv::namedWindow("detected", cv::WINDOW_AUTOSIZE);
   while (true) {
     cv::Mat image;
 
@@ -44,10 +45,16 @@ int main() {
     // Using https://github.com/amannababanana/opencv for fix.
     if(!camera.read(image)) return 0;
 
+    cv::resize(image, image, cv::Size(image.cols / 3, image.rows / 3));
     TrackerResults position = tracker.Update(image);
     position.time_captured = captureTime;
-    vision::updateData(image, position);
+    vision::updateData(position);
+    if (image.data) {
+      cv::imshow("detected", image);
+      cv::waitKey(1);
+    }
     image.release();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   sender.join();
   return 0;

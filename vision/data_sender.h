@@ -5,7 +5,7 @@
 #include "object_detector.h"
 
 namespace vision {
-void updateData(cv::Mat image, TrackerResults position);
+void updateData(TrackerResults position);
 void startSending();
 }
 

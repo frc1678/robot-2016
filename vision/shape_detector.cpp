@@ -61,12 +61,13 @@ std::vector<std::vector<cv::Point>> ShapeDetector::getAllContours(cv::Mat m) {
   std::vector<cv::Vec4i> hierarchy;
   cv::findContours(m.clone(), contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_NONE,
                    cv::Point(0, 0));
+  m.release();
   return contours;
 }
 
 std::vector<cv::Point> ShapeDetector::convertToPolygon(std::vector<cv::Point> points, const cv::Mat &image) {
   // if it is too small don't do any processing
-  //if(cv::boundingRect(points).area() < image.rows * image.cols / 200) return points;
+  if(cv::boundingRect(points).area() < image.rows * image.cols / 200) return points;
   std::vector<cv::Point> retval;
 
   // attempt to get the contour as a polygon with angles_.size() sides

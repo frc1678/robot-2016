@@ -10,11 +10,9 @@ void sendData();
 
 CitrusSocket connection(1678);
 std::mutex position_mutex;
-cv::Mat image_;
 TrackerResults position_;
 
 void vision::startSending() {
-  cv::namedWindow("detected", cv::WINDOW_AUTOSIZE);
   while (true) {
     muan::sleep_for(.01 * s);
     ::sendData();
@@ -23,10 +21,6 @@ void vision::startSending() {
 
 void sendData() {
   position_mutex.lock();
-  if (image_.data) {
-    cv::imshow("detected", image_);
-    cv::waitKey(1);
-  }
   SerializedData data;
   if (position_.is_found) {
     nlohmann::json json_object = {{"found", true}, {"angle", position_.angle.to(deg)}, {"lag", (muan::now() - position_.time_captured).to(s)}};
@@ -44,14 +38,13 @@ void sendData() {
   }
   position_mutex.unlock();
   try {
-    connection.Send(data, Destination("roborio-1678-frc.local", 16782));
+    connection.Send(data, Destination("roborio-1678-frc.local", 1678));
   } catch (...) {
     std::cout<<"no connection"<<std::endl;
   }
 }
-void vision::updateData(cv::Mat image, TrackerResults position) {
+void vision::updateData(TrackerResults position) {
   position_mutex.lock();
   position_ = position;
-  image_ = image;
   position_mutex.unlock();
 }
