@@ -2,7 +2,7 @@
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/usr/local")
+  set(CMAKE_INSTALL_PREFIX "/home/citrus/code/2016/opencv/debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,17 +34,17 @@ endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "dev")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/opencv" TYPE FILE FILES
-    "/home/citrus/code/2016/opencv/include/opencv/ml.h"
+    "/home/citrus/code/2016/opencv/include/opencv/cvaux.h"
+    "/home/citrus/code/2016/opencv/include/opencv/cxeigen.hpp"
+    "/home/citrus/code/2016/opencv/include/opencv/cv.h"
+    "/home/citrus/code/2016/opencv/include/opencv/cvwimage.h"
     "/home/citrus/code/2016/opencv/include/opencv/cxmisc.h"
     "/home/citrus/code/2016/opencv/include/opencv/cv.hpp"
-    "/home/citrus/code/2016/opencv/include/opencv/cxeigen.hpp"
-    "/home/citrus/code/2016/opencv/include/opencv/highgui.h"
     "/home/citrus/code/2016/opencv/include/opencv/cvaux.hpp"
-    "/home/citrus/code/2016/opencv/include/opencv/cvwimage.h"
-    "/home/citrus/code/2016/opencv/include/opencv/cvaux.h"
-    "/home/citrus/code/2016/opencv/include/opencv/cxcore.hpp"
-    "/home/citrus/code/2016/opencv/include/opencv/cv.h"
     "/home/citrus/code/2016/opencv/include/opencv/cxcore.h"
+    "/home/citrus/code/2016/opencv/include/opencv/ml.h"
+    "/home/citrus/code/2016/opencv/include/opencv/highgui.h"
+    "/home/citrus/code/2016/opencv/include/opencv/cxcore.hpp"
     )
 endif()
 
