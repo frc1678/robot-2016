@@ -54,7 +54,7 @@ int main() {
       cv::waitKey(1);
     }
     image.release();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   sender.join();
   return 0;
