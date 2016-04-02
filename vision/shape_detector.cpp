@@ -35,16 +35,17 @@ void ShapeDetector::setData(cv::Mat image) {
     }
   }
 
-  // get index of best target
-  double bestTarget = 0;
+  // get best target
+  double bestScore = 0;
   for (unsigned int i = 0; i < contours.size(); i++) {
     std::vector<cv::Point> currentPoints = convertToPolygon(contours[i], image);
     if (getTargetCertainty(currentPoints, i == closestToPrevious) >=
-        bestTarget) {
+        bestScore) {
       points_ = currentPoints;
-      bestTarget = getTargetCertainty(points_, i == closestToPrevious);
+      bestScore = getTargetCertainty(points_, i == closestToPrevious);
     }
   }
+  if (bestScore == 0) points_.clear();
 
   // update coordinates of best target
   if (points_.size() >= 2) {
@@ -53,7 +54,7 @@ void ShapeDetector::setData(cv::Mat image) {
     best_y = (bounds.br().y + bounds.tl().y) / 2;
   }
 
-  score_=bestTarget;
+  score_=bestScore;
 }
 
 std::vector<std::vector<cv::Point>> ShapeDetector::getAllContours(cv::Mat m) {
@@ -85,7 +86,7 @@ double ShapeDetector::getTargetCertainty(std::vector<cv::Point> points,
   if(points.size()!=angles_.size()) {
     return std::log(cv::boundingRect(points).area());
   }
-  double bestScore=0;
+  double bestScore=-1000;
 
   // the angles in points may not be in the same order as the inputed ones,
   // try lining them up all ways
