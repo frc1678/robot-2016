@@ -1,14 +1,8 @@
-cc_binary(
-  name = "recieve_test",
-  srcs = ["recieve_test.cpp"],
-  deps = ["//citrus_socket"],
-)
-
 cc_library(
   name = "robot_side",
   srcs = ["vision.cpp"],
   hdrs = ["vision.h"],
-  deps = ["@wpilib//:main", "//frc1678:robot_subsystems", "//muan", "//muan/unitscpp", "//citrus_socket"],
+  deps = ["//frc1678:robot_subsystems", "//muan", "//muan/unitscpp", "//citrus_socket"],
   visibility = ["//visibility:public"]
 )
 
@@ -51,4 +45,10 @@ cc_binary(
   name = "calibration_main",
   srcs = ["calibration_main.cpp"],
   deps = ["//opencv", ":image_calibration", ":vision_utils"]
+)
+
+cc_test(
+  name = "tests",
+  srcs = ["tests.cpp"],
+  deps = ["//opencv", "@gtest//:main", ":object_detector", ":vision_sender", ":vision_utils", "//muan", "//unitscpp"]
 )
