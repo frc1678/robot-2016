@@ -24,7 +24,10 @@ void DeleteAutoFunction();
 bool SetWedge(CitrusRobot* robot, bool up);
 bool DriveStraight(
     CitrusRobot* robot,
-    float dist);  // TODO(Wesley) Change name to be the same as elsewhere
+    float dist, bool highgear);  // TODO(Wesley) Change name to be the same as elsewhere
+bool DriveYolo(
+    CitrusRobot* robot,
+    float dist, bool highgear);
 bool DriveStraightAtAngle(CitrusRobot* robot, float dist, float angle);
 bool PointTurn(CitrusRobot* robot, float angle);
 bool AbsolutePointTurn(CitrusRobot* robot, float angle);

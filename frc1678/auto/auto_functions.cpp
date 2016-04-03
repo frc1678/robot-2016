@@ -14,14 +14,40 @@ void AutoFunction::DeleteAutoFunction() {
 
 // Test for LemonScript
 bool newDriveState = true;
-bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist) {
+bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist, bool highgear) {
   if (newDriveState) {
-    robot->subsystems_.drive.DriveDistance(dist * ft);
+    robot->subsystems_.drive.DriveDistance(dist * ft, highgear);
     newDriveState = false;
   }
 
   if (robot->subsystems_.drive.IsProfileComplete()) {
     newDriveState = true;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//TODO(Wesley) Make it so I don't need eyebleach after looking at this function
+bool newDriveYoloState = true;
+Length yolo_start_dist;
+bool AutoFunction::DriveYolo(CitrusRobot* robot, float dist, bool highgear) {
+  if (newDriveYoloState) {
+    robot->subsystems_.drive.DriveDistance((dist * 1000) * ft, highgear);
+    yolo_start_dist = robot->subsystems_.drive.GetDistanceDriven();
+    newDriveYoloState = false;
+  }
+
+  if (dist >= 0 &&
+      robot->subsystems_.drive.GetDistanceDriven() - yolo_start_dist >= dist * ft) {
+    newDriveYoloState = true;
+    robot->subsystems_.drive.CancelMotionProfile();
+    return true;
+  } else if (dist < 0 &&
+             robot->subsystems_.drive.GetDistanceDriven() - yolo_start_dist <=
+                 dist * ft) {
+    newDriveYoloState = true;
+    robot->subsystems_.drive.CancelMotionProfile();
     return true;
   } else {
     return false;
