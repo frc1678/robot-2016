@@ -38,6 +38,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
 
     ret.camera_offset = 1.1;  // TODO(Wesley) convert to unit?
     ret.pivot_efficiency = .6;
+    ret.camera_scaling_factor = 1.34;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};
@@ -46,6 +47,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
     ret.pivot_calibration_offset = 24.8 * deg;
     ret.pivot_efficiency = .85;
     ret.camera_offset = -4.1;
+    ret.camera_scaling_factor = 1.136;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {34 * deg, 0 * m, 7000 * rev / (60 * s)};
@@ -54,6 +56,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
     ret.pivot_calibration_offset = 20.4 * deg;
     ret.pivot_efficiency = .85;
     ret.camera_offset = -0.8;
+    ret.camera_scaling_factor = 1.0;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};

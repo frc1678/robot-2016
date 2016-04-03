@@ -18,8 +18,8 @@ CitrusVision::CitrusVision(RobotSubsystems &subs, RobotConstants constants)
 }
 
 Angle CitrusVision::GetAngleOff() {
-  const double camera_angle =
-      1.136;  // multiply by this to turn camera angles into gyro angles
+  const double camera_angle = constants_.camera_scaling_factor;
+// Axis camera      1.136;  // multiply by this to turn camera angles into gyro angles
 
   Angle camera_diff =
       (-angleReceived + constants_.camera_offset * deg) * camera_angle;

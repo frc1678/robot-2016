@@ -27,6 +27,7 @@ class RobotConstants {
 
   float camera_offset;
   double pivot_efficiency;
+  float camera_scaling_factor;
 
   ArmGoal long_shot_goals, auto_shot_goals, fender_shot_goals;
 
