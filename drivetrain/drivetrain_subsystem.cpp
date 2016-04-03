@@ -60,8 +60,8 @@ void DrivetrainSubsystem::Update(Time dt) {
     mutex_lock lock(mu_);
     if (is_operator_controlled_) {
       current_goal_.control_loop_driving = false;
-      /* drive_loop_->RunIteration(&current_goal_, &pos, */
-      /*                           is_enabled_ ? &out : nullptr, &status); */
+      drive_loop_->RunIteration(&current_goal_, &pos, 
+                                 is_enabled_ ? &out : nullptr, &status); 
       out.left_voltage = -out.left_voltage;
       out.right_voltage = -out.right_voltage;
       // TODO(Wesley) Find out why this is giving 12V and 0V as output
