@@ -80,6 +80,7 @@ void CitrusRobot::RobotInit() {
   subsystems_.arm.Start();
   std::vector<std::string> robot_names = {"comp", "appa", "ssbb", "wtf"};
   SmartDashboard::PutString("Robot", robot_names[(int)GetRobotIdentifier()]);
+  camera_timer_->Start();
 }
 
 void CitrusRobot::AutonomousInit() {
@@ -341,9 +342,18 @@ void CitrusRobot::UpdateLights() {
     }
   }
 
+  if(!vision_.HasConnection()) {
+    if(camera_timer_->Get() < 0.5) {
+      lights_ = ColorLight::OFF;
+    }
+  }
+
+  if(camera_timer_->Get() > 1.0) {
+    camera_timer_->Reset();
+  }
   // if (start_climb_ && subsystems_.arm.AllIsDone()) {
   //  lights_ = ColorLight::YELLOW;
-  // if (subsystems_.arm.ClimbIsDone()) {
+ // if (subsystems_.arm.ClimbIsDone()) {
   //  lights_ = ColorLight::GREEN;
   //}
 }
@@ -367,6 +377,9 @@ void CitrusRobot::ColorLights() {
       break;
     case ColorLight::PINK:
       SetLightColor(1, 0, 1);
+      break;
+    case ColorLight::OFF:
+      SetLightColor(0, 0, 0);
       break;
   }
 }

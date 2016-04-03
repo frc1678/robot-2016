@@ -100,6 +100,7 @@ class ArmSubsystem : public muan::Updateable {
   bool enabled_ = false;
   bool finished_ = true;
   bool climbing_done_ = false;
+  bool climbing_advance_ = false;
 
   ArmGoal current_goal_;
 

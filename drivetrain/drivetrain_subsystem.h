@@ -88,6 +88,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   Angle gyro_offset_ = 0 * rad;
   Angle old_angle_ = 0 * rad;
   Angle even_older_angle_ = 0 * rad;
+  Velocity last_angle_velocity_ = 0 * m / s;
+  Velocity last_distance_velocity_ = 0 * m / s;
 
   Angle last_angle_ = 0 * rad;
   Time t;
