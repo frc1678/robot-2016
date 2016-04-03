@@ -85,6 +85,9 @@ void ArmSubsystem::Update(Time dt) {
         elevator_controller_.SetGoal(current_goal_.elevator_goal);
       }
       shooter_controller_.SetGoal(current_goal_.shooter_goal);
+      if(climbing_advance_) {
+        pivot_voltage = 6.0 * V;
+      }
       break;
     case ArmState::EXTENDING:
       finished_ = false;
@@ -119,7 +122,13 @@ void ArmSubsystem::Update(Time dt) {
   elevator_motor_a_->Set(-elevator_voltage.to(12 * V));
   elevator_motor_b_->Set(-elevator_voltage.to(12 * V));
   elevator_disk_brake_->Set(elevator_brake ? DoubleSolenoid::Value::kReverse
-                                           : DoubleSolenoid::Value::kForward);
+                                           : DoubleSolenoid::Value::kForward); 
+        
+  if((ball_sensor_->Get() && climbing_advance_) && (pivot_controller_.GetError() < (3 * deg))){
+    CompleteClimb();
+    climbing_advance_ = false;
+  }
+
 
   Voltage shooter_voltage =
       shooter_controller_.Update(0.005 * s, shooter_encoder_->Get() * deg);
@@ -297,6 +306,7 @@ void ArmSubsystem::ContinueClimb() {
   state_ = ArmState::MOVING_PIVOT;
   pivot_controller_.SetGoal(current_goal_.pivot_goal, 1.0 * deg);
   SetHoodOpen(true);
+  climbing_advance_ = true;
 }
 
 void ArmSubsystem::CompleteClimb() {

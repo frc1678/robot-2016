@@ -7,7 +7,7 @@
 
 // class LemonScriptRunner { };
 
-enum class ColorLight { RED = 0, YELLOW, GREEN, BLUE, WHITE, PINK };
+enum class ColorLight { RED = 0, YELLOW, GREEN, BLUE, WHITE, PINK, OFF };
 
 class CitrusButton;
 class CitrusAxis;
@@ -41,6 +41,7 @@ class CitrusRobot : public IterativeRobot {
 
   DigitalInput *switch_one;
   DigitalInput *switch_two;
+  Timer *camera_timer_ = new Timer();
 
   bool is_wedge_deployed_ = false;
   bool test_flag_;

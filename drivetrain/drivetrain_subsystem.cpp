@@ -64,7 +64,11 @@ void DrivetrainSubsystem::Update(Time dt) {
       out.left_voltage = -out.left_voltage;
       out.right_voltage = -out.right_voltage;
       // TODO(Wesley) Find out why this is giving 12V and 0V as output
-    } else {
+   // } else if (is_continuous_) {
+    
+    }
+    else {
+
       // TODO(Wesley) Reset the PID controller if we went from tele to auto
       // TODO(Wesley) Add operator control to exit auto mode
       t += dt;
@@ -199,6 +203,7 @@ void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
       std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, speed, accel);
   FollowMotionProfile(std::move(dp), std::move(ap), highgear, false, true);
 }
+
 
 void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
   AngularVelocity speed = (highgear ? 380 : 240) * deg / s;

@@ -15,6 +15,7 @@ class CitrusVision {
   void EndTest();
   bool Aligned();
   bool IsSeeing() { return isFound; }
+  bool HasConnection() {return hasConnection; }
  private:
   void ReadPosition();
   Angle GetAngleOff();
