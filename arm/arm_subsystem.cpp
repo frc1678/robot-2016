@@ -17,6 +17,8 @@ ArmSubsystem::ArmSubsystem()
   pivot_hall_ = std::make_unique<DigitalInput>(RobotPorts::pivot_hall);
   pivot_disk_brake_ = std::make_unique<DoubleSolenoid>(
       RobotPorts::pivot_brake_a, RobotPorts::pivot_brake_b);
+  pivot_disk_brake_->Set(was_pivot_brake_ ? DoubleSolenoid::Value::kReverse
+                                          : DoubleSolenoid::Value::kForward);
   pivot_motor_a_ = std::make_unique<VictorSP>(RobotPorts::pivot_motor_a);
   pivot_motor_b_ = std::make_unique<VictorSP>(RobotPorts::pivot_motor_b);
 
@@ -29,6 +31,9 @@ ArmSubsystem::ArmSubsystem()
                                                 RobotPorts::elevator_encoder_b);
   elevator_disk_brake_ = std::make_unique<DoubleSolenoid>(
       RobotPorts::elevator_brake_a, RobotPorts::elevator_brake_b);
+  elevator_disk_brake_->Set(was_elevator_brake_
+                                ? DoubleSolenoid::Value::kReverse
+                                : DoubleSolenoid::Value::kForward);
   elevator_motor_a_ = std::make_unique<VictorSP>(RobotPorts::elevator_motor_a);
   elevator_motor_b_ = std::make_unique<VictorSP>(RobotPorts::elevator_motor_b);
 
@@ -61,6 +66,7 @@ void ArmSubsystem::Update(Time dt) {
   bool elevator_brake = elevator_controller_.ShouldFireBrake(),
        pivot_brake = pivot_controller_.ShouldFireBrake();
   if (!enabled_) state_ = ArmState::DISABLED;
+
   switch (state_) {
     case ArmState::DISABLED:
       if (enabled_) state_ = ArmState::FINISHED;
@@ -114,21 +120,19 @@ void ArmSubsystem::Update(Time dt) {
       pivot_brake = elevator_brake = false;
       break;
   }
-
   pivot_motor_a_->Set(pivot_voltage.to(12 * V));
   pivot_motor_b_->Set(pivot_voltage.to(12 * V));
-  pivot_disk_brake_->Set(pivot_brake ? DoubleSolenoid::Value::kReverse
-                                     : DoubleSolenoid::Value::kForward);
+  SetPivotBrake(pivot_brake);
+
   elevator_motor_a_->Set(-elevator_voltage.to(12 * V));
   elevator_motor_b_->Set(-elevator_voltage.to(12 * V));
-  elevator_disk_brake_->Set(elevator_brake ? DoubleSolenoid::Value::kReverse
-                                           : DoubleSolenoid::Value::kForward); 
         
   if((ball_sensor_->Get() && climbing_advance_) && (pivot_controller_.GetError() < (3 * deg))){
     CompleteClimb();
     climbing_advance_ = false;
   }
 
+  SetElevatorBrake(elevator_brake);
 
   Voltage shooter_voltage =
       shooter_controller_.Update(0.005 * s, shooter_encoder_->Get() * deg);
@@ -157,7 +161,7 @@ void ArmSubsystem::Update(Time dt) {
       } else {
         intake_target_ = IntakeGoal::OFF;
       }
-      intake_timer_ += 0.05 * s;
+      intake_timer_ += dt;
     }
   } else if (intake_target_ == IntakeGoal::FORWARD_FOREVER) {
     intake_front_->Set(-1);
@@ -343,3 +347,19 @@ bool ArmSubsystem::ShooterSpeeded() {
 bool ArmSubsystem::AllIsDone() { return finished_; }
 
 bool ArmSubsystem::ClimbIsDone() { return climbing_done_; }
+
+void ArmSubsystem::SetPivotBrake(bool on) {
+  if (on != was_pivot_brake_) {
+    pivot_disk_brake_->Set(on ? DoubleSolenoid::Value::kReverse
+                              : DoubleSolenoid::Value::kForward);
+    was_pivot_brake_ = on;
+  }
+}
+
+void ArmSubsystem::SetElevatorBrake(bool on) {
+  if (on != was_elevator_brake_) {
+    elevator_disk_brake_->Set(on ? DoubleSolenoid::Value::kReverse
+                                 : DoubleSolenoid::Value::kForward);
+    was_elevator_brake_ = on;
+  }
+}
