@@ -175,10 +175,11 @@ void ArmSubsystem::Update(Time dt) {
     intake_timer_ = 0 * s;
   }
 
-  SmartDashboard::PutNumber("pivot_angle",
-                            pivot_controller_.GetAngle().to(deg));
+  SmartDashboard::PutBoolean("advance climb", climbing_advance_);
+                            
 
   csv_log_["time"] = std::to_string(t.to(s));
+  csv_log_["climbing"] = std::to_string(climbing_advance_);
   csv_log_["pivot_voltage"] = std::to_string(pivot_voltage.to(V));
   csv_log_["elevator_voltage"] = std::to_string(elevator_voltage.to(V));
   csv_log_["pivot_angle"] =
@@ -199,6 +200,7 @@ bool ArmSubsystem::BallIntaked() { return ball_sensor_->Get(); }
 
 std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
   Voltage elevator_voltage, pivot_voltage;
+  climbing_advance_ = false;
   bool elevator_brake, pivot_brake;
   elevator_voltage = elevator_controller_.UpdateClimb(
       dt, elevator_encoder_->Get() * .0003191764 * m,
@@ -292,12 +294,14 @@ void ArmSubsystem::GoToDefensive() {
   ArmGoal goal{30 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
+  climbing_advance_ = false;
 }
 
 void ArmSubsystem::StartClimb() {
   ArmGoal goal{85 * deg, 0.58 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
+  climbing_advance_ = false;
 }
 
 void ArmSubsystem::ContinueClimb() {
@@ -317,6 +321,7 @@ void ArmSubsystem::CompleteClimb() {
   state_ = ArmState::CLIMBING;
   climb_state_ = ClimbState::PULLING_UP;
   elevator_controller_.SetGoal(0 * m);
+  climbing_advance_ = false;
 }
 
 void ArmSubsystem::SetHoodOpen(bool open) { shooter_hood_->Set(open); }

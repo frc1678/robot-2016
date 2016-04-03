@@ -34,6 +34,7 @@ CitrusRobot::CitrusRobot()
   climb_end_ = std::make_unique<CitrusButton>(j_manip_.get(), 8);
   wedge_toggle_ = std::make_unique<CitrusButton>(j_manip_.get(), 5);
   run_intake_until_ = std::make_unique<CitrusButton>(j_manip_.get(), 6);
+  cancel_profile_ = std::make_unique<CitrusButton>(j_stick_.get(), 8);
 
   fender_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::SOUTH);
@@ -151,6 +152,9 @@ void CitrusRobot::TeleopPeriodic() {
   }
   if (align_->ButtonClicked()) {
     vision_.Start();
+  } 
+  if (cancel_profile_->ButtonClicked()) {
+    subsystems_.drive.CancelMotionProfile();
   }
   if (shift_high_->ButtonClicked()) {
     in_highgear_ = true;
@@ -274,6 +278,7 @@ void CitrusRobot::UpdateButtons() {
   run_intake_until_->Update();
   reverse_intake_->Update();
   wedge_toggle_->Update();
+  cancel_profile_->Update();
 }
 
 void CitrusRobot::UpdateLights() {

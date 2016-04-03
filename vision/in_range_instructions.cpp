@@ -23,7 +23,7 @@ InRangeInstructions::InRangeInstructions(std::string filename) {
     }
   }
   // ignore everything except numbers
-  str=std::regex_replace(str, std::regex("[\\D]"), " ");
+  str=std::regex_replace(str, std::regex("[\\D]"), std::string(" "));
 
   std::stringstream ss;
   ss<<str;
