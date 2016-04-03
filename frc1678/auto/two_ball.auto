@@ -1,0 +1,61 @@
+// Init
+SetWedge: false
+RunIntake: true
+
+
+// Move arm to intake
+CheckArmCalibration
+SetArmPosition: 6
+
+// Wait to intake ball
+Wait: 0.15
+
+
+// spline
+
+
+// Drive under low bar
+Shift: true
+DriveStraight: 7.5, true
+
+
+// Turn towards goal
+Shift: false
+COMPLETE ALL:
+  PointTurn: -30.0
+  SetArmPosition: 3
+
+
+//Align
+Shoot
+
+Wait: 0.1
+
+
+// Turn to prep for low bar
+COMPLETE ALL:
+  AbsolutePointTurn: 0.0
+  SetArmPosition: 5
+
+
+// Drive under low bar and move to intake position
+Shift: true
+WHILE:
+  DriveYolo: -9.5, true
+ALSO:
+  EncoderWait: -5.5
+  COMPLETE ALL:
+    SetArmPosition: 6
+    RunIntake: true
+
+
+// Drive under low bar and turn
+DriveStraight: 9.5, true
+Shift: false
+COMPLETE ALL:
+  SetArmPosition: 3
+  PointTurn: -30.0
+
+
+//Align
+Shoot
