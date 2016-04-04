@@ -42,6 +42,7 @@ class ArmSubsystem : public muan::Updateable {
   void SetShooter(bool on);
 
   void Shoot();
+  bool IsShooting();
   bool ShooterSpeeded();
 
   bool AllIsDone();

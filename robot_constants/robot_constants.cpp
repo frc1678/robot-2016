@@ -25,6 +25,8 @@ typename muan::PidController<I, T>::PidGains LoadConstantsFromFile(
       d_constant * T(1) / (I(1) / s)};
 }
 
+// flip camera offset from what you want it to display as
+
 RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   RobotConstants ret;
   if (id == RobotIdentifier::SSBB) {
@@ -45,7 +47,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   } else if (id == RobotIdentifier::APPA) {
     ret.pivot_calibration_offset = 24.8 * deg;
     ret.pivot_efficiency = .85;
-    ret.camera_offset = -4.1;
+    ret.camera_offset = 0.13;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {34 * deg, 0 * m, 7000 * rev / (60 * s)};
@@ -67,6 +69,8 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
       GetRobotString(id) + "/elevator_gains");
   ret.drivetrain_angle_gains = LoadConstantsFromFile<Angle, Voltage>(
       GetRobotString(id) + "/drivetrain_angle_gains");
+  ret.vision_angle_gains = LoadConstantsFromFile<Angle, Voltage>(
+      GetRobotString(id) + "/vision_angle_gains");
   ret.drivetrain_distance_gains = LoadConstantsFromFile<Length, Voltage>(
       GetRobotString(id) + "/drivetrain_distance_gains");
   return ret;

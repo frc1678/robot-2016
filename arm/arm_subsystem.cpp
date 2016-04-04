@@ -336,6 +336,10 @@ void ArmSubsystem::Shoot() {
   should_shoot_ = true;
 }
 
+bool ArmSubsystem::IsShooting() {
+  return should_shoot_;
+}
+
 bool ArmSubsystem::ShooterSpeeded() {
   return shooter_controller_.IsAtVelocity();
 }

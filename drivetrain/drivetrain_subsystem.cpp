@@ -8,6 +8,7 @@ DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
       angle_controller_(RobotConstants::GetInstance().drivetrain_angle_gains),
       distance_controller_(RobotConstants::GetInstance().drivetrain_distance_gains),
+      vision_angle_controller_(RobotConstants::GetInstance().vision_angle_gains),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}),
@@ -40,7 +41,7 @@ void DrivetrainSubsystem::Start() {
   event_log_.Write("Starting drivetrain subsystem...", "INIT", CODE_STAMP);
   drive_->SetSafetyEnabled(false);
   gyro_reader_->Start();
-  is_operator_controlled_ = true;
+  mode_ = DriveMode::OPERATOR;
   t = 0 * s;
   Updateable::Start();  // This needs to be called last so that Update(Time)
                         // doesn't get called until after everything is
@@ -57,17 +58,13 @@ void DrivetrainSubsystem::Update(Time dt) {
 
   {
     mutex_lock lock(mu_);
-    if (is_operator_controlled_) {
+    if (mode_ == DriveMode::OPERATOR) {
       current_goal_.control_loop_driving = false;
       drive_loop_->RunIteration(&current_goal_, &pos,
                                 is_enabled_ ? &out : nullptr, &status);
       out.left_voltage = -out.left_voltage;
       out.right_voltage = -out.right_voltage;
-      // TODO(Wesley) Find out why this is giving 12V and 0V as output
-   // } else if (is_continuous_) {
-    
-    }
-    else {
+    } else if (mode_ == DriveMode::MOTION_PROFILE) {
 
       // TODO(Wesley) Reset the PID controller if we went from tele to auto
       // TODO(Wesley) Add operator control to exit auto mode
@@ -132,7 +129,7 @@ void DrivetrainSubsystem::Update(Time dt) {
           (profile_finished_distance || !use_distance_termination_)) {
         angle_profile_.reset();
         distance_profile_.reset();
-        is_operator_controlled_ = true;
+        mode_ = DriveMode::OPERATOR;
         angle_controller_.Reset();
         std::ostringstream ss;
         ss << "Finished motion profiles: " << angle_from_start.to(deg)
@@ -140,6 +137,18 @@ void DrivetrainSubsystem::Update(Time dt) {
            << t.to(s) << " seconds";
         event_log_.Write(ss.str(), "MOTION", CODE_STAMP);
       }
+    } else if (mode_ == DriveMode::VISION) {
+      t += dt;
+
+      Voltage pid_voltage = vision_angle_controller_.Calculate(t,
+          vision_target_angle_ - gyro_reader_->GetAngle());
+
+      if (muan::abs(pid_voltage) < 2 * V ) {
+        pid_voltage = 2 * V * (pid_voltage > 0 ? 1 : -1);
+      }
+
+      out.left_voltage = pid_voltage.to(V);
+      out.right_voltage = -pid_voltage.to(V);
     }
   }
 
@@ -156,6 +165,21 @@ void DrivetrainSubsystem::Update(Time dt) {
   csv_log_["gear"] = current_goal_.highgear ? "high" : "low";
   csv_helper_.Update();
   csv_log_.EndLine();  // Flush the current row of the log
+}
+
+void DrivetrainSubsystem::SetVisionTargetAngle(Angle vision_target_angle) {
+  vision_target_angle_ = gyro_reader_->GetAngle() - vision_target_angle;
+}
+
+void DrivetrainSubsystem::RunVisionTracking(bool vision) {
+  if (mode_ != VISION && vision) {
+    vision_angle_controller_.Reset();
+  }
+  if (vision) {
+    mode_ = VISION;
+  } else {
+    mode_ = OPERATOR;
+  }
 }
 
 void DrivetrainSubsystem::UpdateConstants() {
@@ -244,13 +268,12 @@ void DrivetrainSubsystem::DriveDistanceAtAngle(Length distance, Angle angle,
 void DrivetrainSubsystem::FollowMotionProfile(
     std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
     std::unique_ptr<muan::MotionProfile<Angle>> angle_profile, bool highgear, bool use_distance_termination, bool use_angle_termination) {
-  UpdateConstants();
   use_angle_termination_ = use_angle_termination;
   use_distance_termination_ = use_distance_termination;
   current_goal_.highgear = highgear;
   distance_profile_ = std::move(distance_profile);
   angle_profile_ = std::move(angle_profile);
-  is_operator_controlled_ = false;
+  mode_ = DriveMode::MOTION_PROFILE;
   t = 0 * s;
   DrivetrainPosition pos;
   SetDrivePosition(&pos);  // Is this bad?
@@ -269,7 +292,7 @@ void DrivetrainSubsystem::CancelMotionProfile() {
   mutex_lock lock(mu_);
   distance_profile_.reset();
   angle_profile_.reset();
-  is_operator_controlled_ = true;
+  mode_ = DriveMode::OPERATOR;
 }
 
 Angle DrivetrainSubsystem::GetGyroAngle() { return gyro_reader_->GetAngle(); }
