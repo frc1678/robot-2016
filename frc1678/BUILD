@@ -31,6 +31,7 @@ cc_binary(
     "//frc1678/auto",
     "//robot_constants",
     "//utils:citrus_button",
+    '//splinegen:hermite'
   ],
   srcs=glob(["*.cpp"])
 )

@@ -17,6 +17,7 @@
 #include "gyro/gyro_reader.h"
 #include "utils/smart_dashboard_helper.h"
 #include "robot_constants/robot_constants.h"
+#include "splinegen/trajectory.h"
 
 using drivetrain::control_loops::DrivetrainGoal;
 using drivetrain::control_loops::DrivetrainPosition;
@@ -41,6 +42,7 @@ class DrivetrainSubsystem : public muan::Updateable {
       std::unique_ptr<muan::MotionProfile<Angle>> angle_profile,
       bool highgear = false, bool use_distance_termination = true,
       bool use_angle_termination = true);
+  void FollowTrajectory(std::shared_ptr<Trajectory> traj);
   bool IsProfileComplete();
   void CancelMotionProfile();
 
@@ -78,6 +80,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   DrivetrainGoal current_goal_;
   std::unique_ptr<muan::MotionProfile<Length>> distance_profile_;
   std::unique_ptr<muan::MotionProfile<Angle>> angle_profile_;
+
+  std::shared_ptr<Trajectory> current_trajectory_;
 
   bool use_distance_termination_ = true;
   bool use_angle_termination_ = true;

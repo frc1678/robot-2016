@@ -1,4 +1,6 @@
 #include "drivetrain_subsystem.h"
+#include "splinegen/trajectory.h"
+#include <memory>
 
 using mutex_lock = std::lock_guard<std::mutex>;
 
@@ -76,17 +78,17 @@ void DrivetrainSubsystem::Update(Time dt) {
 
       // Feed forward term
       Voltage feed_forward_angle = GetAngleFFVoltage(
-          angle_profile_->CalculateDerivative(t),
-          angle_profile_->CalculateSecondDerivative(t), current_goal_.highgear);
+          current_trajectory_->CalculateAngularVelocity(t),
+          current_trajectory_->CalculateAngularAcceleration(t), current_goal_.highgear);
 
       Voltage feed_forward_distance =
-          GetDistanceFFVoltage(distance_profile_->CalculateDerivative(t),
-                               distance_profile_->CalculateSecondDerivative(t),
+          GetDistanceFFVoltage(current_trajectory_->CalculateForwardVelocity(t),
+                               current_trajectory_->CalculateForwardAcceleration(t),
                                current_goal_.highgear);
 
       // PID Term
-      Angle target_angle_ = angle_profile_->Calculate(t);
-      Length target_distance_ = distance_profile_->Calculate(t);
+      Angle target_angle_ = current_trajectory_->CalculateHeading(t);
+      Length target_distance_ = current_trajectory_->CalculateArcLength(t);
 
       // The difference between the gyro at the start of the profile and now
       Angle angle_from_start = gyro_reader_->GetAngle() - gyro_offset_;
@@ -109,6 +111,7 @@ void DrivetrainSubsystem::Update(Time dt) {
           angle_controller_.Calculate(dt, target_angle_ - angle_from_start);
       Voltage correction_distance = distance_controller_.Calculate(
           dt, target_distance_ - distance_from_start);
+      correction_angle = correction_distance = 0;
 
       Voltage out_left = -feed_forward_angle - correction_angle +
                          feed_forward_distance + correction_distance;
@@ -121,13 +124,13 @@ void DrivetrainSubsystem::Update(Time dt) {
       last_angle_ = angle_from_start;
 
       // End conditions
-      bool profiles_finished_time =
-          angle_profile_->finished(t) && distance_profile_->finished(t);
-      bool profile_finished_distance =
-          muan::abs(distance_from_start - distance_profile_->Calculate(t)) <
-          2 * cm;
-      bool profile_finished_angle =
-          muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
+      bool profiles_finished_time = false;
+      //     angle_profile_->finished(t) && distance_profile_->finished(t);
+      bool profile_finished_distance = false;
+      //     muan::abs(distance_from_start - distance_profile_->Calculate(t)) <
+      //     2 * cm;
+      bool profile_finished_angle = false;
+      //     muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
 
       if (profiles_finished_time &&
           (profile_finished_angle || !use_angle_termination_) &&
@@ -267,6 +270,20 @@ void DrivetrainSubsystem::FollowMotionProfile(
   angle_controller_.Reset();
   distance_controller_.Reset();
   is_loop_highgear = highgear;
+}
+
+void DrivetrainSubsystem::FollowTrajectory(std::shared_ptr<Trajectory> traj) {
+  is_operator_controlled_ = false;
+  t = 0 * s;
+  DrivetrainPosition pos;
+  SetDrivePosition(&pos);  // Is this bad?
+  encoder_offset_ = (pos.left_encoder + pos.right_encoder) / 2;
+  gyro_offset_ = gyro_reader_->GetAngle();
+  angle_controller_.Reset();
+  distance_controller_.Reset();
+
+  current_trajectory_ = traj;
+  current_goal_.highgear = false;
 }
 
 bool DrivetrainSubsystem::IsProfileComplete() {

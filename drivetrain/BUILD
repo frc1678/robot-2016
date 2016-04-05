@@ -18,8 +18,7 @@ cc_library(
   name = 'drivetrain_lib',
   srcs = [
     'drivetrain.cc',
-    'polydrivetrain_cim_plant.cc',
-    'drivetrain_dog_motor_plant.cc',
+    'polydrivetrain_cim_plant.cc', 'drivetrain_dog_motor_plant.cc',
     'polydrivetrain_dog_motor_plant.cc',
   ],
   hdrs = [
@@ -55,6 +54,6 @@ cc_library(
   name = 'drivetrain_subsystem',
   srcs = ['drivetrain_subsystem.cpp'],
   hdrs = ['drivetrain_subsystem.h'],
-  deps = ['drivetrain_lib', '//muan', '//frc1678:robot_ports', '@wpilib//:main', '//gyro',  '//utils:smart_dashboard_helper', '//muan/unitscpp', '//robot_constants'],
+  deps = ['drivetrain_lib', '//muan', '//frc1678:robot_ports', '@wpilib//:main', '//gyro',  '//utils:smart_dashboard_helper', '//muan/unitscpp', '//robot_constants', '//splinegen:trajectory'],
   visibility = ["//visibility:public"]
 )

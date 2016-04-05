@@ -1,4 +1,8 @@
 #include <WPILib.h>
+#include "splinegen/reparametrize.h"
+#include "splinegen/reparametrized_trajectory.h"
+#include "splinegen/hermite_spline.h"
+#include "splinegen/constraints.h"
 #include <memory>
 
 #include "robot_constants/robot_identifier.h"
@@ -85,6 +89,7 @@ void CitrusRobot::RobotInit() {
 }
 
 void CitrusRobot::AutonomousInit() {
+  /*
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
   subsystems_.drive.gyro_reader_->SetOffset();
@@ -93,11 +98,19 @@ void CitrusRobot::AutonomousInit() {
     delete auto_runner;
   }
   auto_runner = new LemonScriptRunner("/home/lvuser/" + GetAutoRoutine(), this);
+  */
+  spline::Point<Length> start(0 * m, 0 * m);
+  spline::Point<Length> end(1 * m, 1 * m);
+  spline::Point<Velocity> start_vel(1 * m / s, 0 * m / s);
+  spline::Point<Velocity> end_vel(1 * m / s, 0 * m / s);
+  auto spline = std::make_shared<spline::HermiteSpline>(start, end, start_vel, end_vel);
+  auto reparametrized = spline::Reparametrize(spline, DriveConstraints(1.44 * m / s, 10 * ft / s / s, 380 * deg / s, 500 * deg / s / s));
+  subsystems_.drive.FollowTrajectory(reparametrized);
 }
 
 void CitrusRobot::AutonomousPeriodic() {
-  auto_runner->Update();
-  wedge_->Set(is_wedge_deployed_);
+  // auto_runner->Update();
+  // wedge_->Set(is_wedge_deployed_);
 }
 
 void CitrusRobot::TeleopInit() {
