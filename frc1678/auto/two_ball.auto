@@ -1,61 +1,54 @@
 // Init
 SetWedge: false
-RunIntake: true
-
+RunIntake: 1
+Shift: false
 
 // Move arm to intake
 CheckArmCalibration
 SetArmPosition: 6
 
-// Wait to intake ball
-Wait: 0.15
-
-
-// spline
-
-
-// Drive under low bar
+// I can't believe it's not splines!(TM)
+DriveStraightAtAngle: 2.1, 20.0, false
 Shift: true
-DriveStraight: 7.5, true
-
+DriveStraightAtAngle: 10.0, 0.0, true
 
 // Turn towards goal
 Shift: false
 COMPLETE ALL:
-  PointTurn: -30.0
+  AbsolutePointTurn: -40.0
   SetArmPosition: 3
-
 
 //Align
 Shoot
 
 Wait: 0.1
 
-
 // Turn to prep for low bar
 COMPLETE ALL:
-  AbsolutePointTurn: 0.0
+  AbsolutePointTurn: -2.5
   SetArmPosition: 5
-
 
 // Drive under low bar and move to intake position
 Shift: true
 WHILE:
-  DriveYolo: -9.5, true
+  DriveStraightAtAngle: -12.0, -2.5, true
 ALSO:
   EncoderWait: -5.5
   COMPLETE ALL:
     SetArmPosition: 6
-    RunIntake: true
-
+    RunIntake: 2
 
 // Drive under low bar and turn
-DriveStraight: 9.5, true
+WHILE:
+  DriveStraightAtAngle: 12.0, -3.0, true
+ALSO:
+  Wait: 0.75
+  RunIntake: 0
+
 Shift: false
 COMPLETE ALL:
+  AbsolutePointTurn: -40.0
   SetArmPosition: 3
-  PointTurn: -30.0
-
 
 //Align
 Shoot

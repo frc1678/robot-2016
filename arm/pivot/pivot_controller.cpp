@@ -60,7 +60,7 @@ Voltage PivotController::Update(Time dt, Angle encoder_angle,
       }
       break;
     case PivotState::DISABLED:
-      if (min_hall_triggered) {
+      if (min_hall_triggered && !calibrated_) {
         offset_ = encoder_angle - calibration_offset_;
         calibrated_ = true;
       }

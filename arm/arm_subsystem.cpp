@@ -256,7 +256,7 @@ void ArmSubsystem::GoToTuckSpin() {
 }
 
 void ArmSubsystem::GoToIntakeSpin() {
-  ArmGoal goal{4.0 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{2.8 * deg, 0 * m, 5500 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }
@@ -270,7 +270,7 @@ void ArmSubsystem::GoToFender() {
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{4.0 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{2.8 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
 }

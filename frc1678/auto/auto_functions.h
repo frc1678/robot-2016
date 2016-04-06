@@ -18,6 +18,12 @@ enum Position {
   INTAKE_SPIN
 };
 
+enum IntakeStatus {
+  OFF = 0,
+  UNTIL,
+  FOREVER
+};
+
 namespace AutoFunction {
 void SetUpAutoFunction();
 void DeleteAutoFunction();
@@ -28,14 +34,17 @@ bool DriveStraight(
 bool DriveYolo(
     CitrusRobot* robot,
     float dist, bool highgear);
-bool DriveStraightAtAngle(CitrusRobot* robot, float dist, float angle);
+bool DriveYoloAtAngle(
+    CitrusRobot* robot,
+    float dist, float angle, bool highgear);
+bool DriveStraightAtAngle(CitrusRobot* robot, float dist, float angle, bool highgear);
 bool PointTurn(CitrusRobot* robot, float angle);
 bool AbsolutePointTurn(CitrusRobot* robot, float angle);
 bool Shift(CitrusRobot* robot, bool highgear);
 bool Wait(CitrusRobot* robot, float time);
 bool EncoderWait(CitrusRobot* robot, float dist);
 bool Shoot(CitrusRobot* robot);
-bool RunIntake(CitrusRobot* robot, bool run);
+bool RunIntake(CitrusRobot* robot, IntakeStatus run);
 bool SetArmPosition(CitrusRobot* robot, Position arm_position);
 bool CheckArmCalibration(CitrusRobot* robot);
 bool DropPinch(CitrusRobot* robot);

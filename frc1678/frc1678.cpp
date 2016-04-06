@@ -90,7 +90,8 @@ void CitrusRobot::AutonomousInit() {
   if (auto_runner != nullptr) {
     delete auto_runner;
   }
-  auto_runner = new LemonScriptRunner("/home/lvuser/" + GetAutoRoutine(), this);
+  //TODO(Wesley) Move file IO out of auto init
+  auto_runner = new LemonScriptRunner("/home/lvuser/two_ball.auto"/* + GetAutoRoutine()*/, this);
 }
 
 void CitrusRobot::AutonomousPeriodic() {

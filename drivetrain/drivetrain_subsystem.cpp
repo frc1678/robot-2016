@@ -120,7 +120,7 @@ void DrivetrainSubsystem::Update(Time dt) {
           angle_profile_->finished(t) && distance_profile_->finished(t);
       bool profile_finished_distance =
           muan::abs(distance_from_start - distance_profile_->Calculate(t)) <
-          8 * cm;
+          4 * cm;
       bool profile_finished_angle =
           muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
 

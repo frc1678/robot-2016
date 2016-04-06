@@ -18,8 +18,11 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *driveYolo =
       new AvailableCppCommandDeclaration((void *)AutoFunction::DriveYolo, "DriveYolo", {DataType::FLOAT, DataType::BOOLEAN});
 
+  AvailableCppCommandDeclaration *driveYoloAtAngle =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveYoloAtAngle, "DriveYoloAtAngle", {DataType::FLOAT, DataType::FLOAT, DataType::BOOLEAN});
+
   AvailableCppCommandDeclaration *driveStraightAtAngle =
-      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraightAtAngle, "DriveStraightAtAngle", {DataType::FLOAT, DataType::FLOAT});
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraightAtAngle, "DriveStraightAtAngle", {DataType::FLOAT, DataType::FLOAT, DataType::BOOLEAN});
 
   AvailableCppCommandDeclaration *pointTurn =
       new AvailableCppCommandDeclaration((void *)AutoFunction::PointTurn, "PointTurn", {DataType::FLOAT});
@@ -40,7 +43,7 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
           new AvailableCppCommandDeclaration((void *)AutoFunction::Shoot, "Shoot", {});
 
   AvailableCppCommandDeclaration *runIntake = 
-          new AvailableCppCommandDeclaration((void *)AutoFunction::RunIntake, "RunIntake", {DataType::BOOLEAN});
+          new AvailableCppCommandDeclaration((void *)AutoFunction::RunIntake, "RunIntake", {DataType::INT});
 
   AvailableCppCommandDeclaration *setArmPosition = 
           new AvailableCppCommandDeclaration((void *)AutoFunction::SetArmPosition, "SetArmPosition", {DataType::INT});
@@ -56,7 +59,7 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   
 
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, driveYolo, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, encoderWait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge};
+      driveStraight, driveYolo, driveYoloAtAngle, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, encoderWait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge};
   state.declareAvailableCppCommands(commands);
 
   try {
