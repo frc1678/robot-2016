@@ -45,7 +45,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   } else if (id == RobotIdentifier::APPA) {
     ret.pivot_calibration_offset = 24.0 * deg;
     ret.pivot_efficiency = .85;
-    ret.camera_offset = -4.1;
+    ret.camera_offset = -3.1;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {34 * deg, 0 * m, 7000 * rev / (60 * s)};
