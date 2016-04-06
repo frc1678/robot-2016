@@ -43,7 +43,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
     ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};
     ret.fender_shot_goals = {10 * deg, 0 * m, 5500 * rev / (60 * s)};
   } else if (id == RobotIdentifier::APPA) {
-    ret.pivot_calibration_offset = 25.0 * deg;
+    ret.pivot_calibration_offset = 24.0 * deg;
     ret.pivot_efficiency = .85;
     ret.camera_offset = -4.1;
 
