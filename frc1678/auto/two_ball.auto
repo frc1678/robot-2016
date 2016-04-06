@@ -18,7 +18,8 @@ COMPLETE ALL:
   AbsolutePointTurn: -40.0
   SetArmPosition: 3
 
-//Align
+Align
+Align
 Shoot
 
 Wait: 0.1
@@ -50,5 +51,6 @@ COMPLETE ALL:
   AbsolutePointTurn: -40.0
   SetArmPosition: 3
 
-//Align
+Align
+Align
 Shoot
