@@ -7,13 +7,14 @@
 CitrusVision::CitrusVision(RobotSubsystems &subs, RobotConstants constants)
     : subsystems_(subs),
       gyro_history_(.02 * s),
-      angle_log_("angles", {"cameraAngle", "gyroHistory"}),
+      angle_log_("angles", {"cameraAngle", "gyroHistory", "cameraProfileRunning"}),
       angle_helper_(&angle_log_),
       connection(CitrusSocket(1678)) {
   constants_ = constants;
   isFound = false;
   hasConnection = false;
   angleReceived = 0 * deg;
+  last_angle_ = 0 * deg;
   lag = 0 * s;
 }
 
@@ -28,6 +29,7 @@ Angle CitrusVision::GetAngleOff() {
 
 void CitrusVision::Start() {
   subsystems_.drive.PointTurn(GetAngleOff(), false);
+  align_counter_ = 0;
 }
 
 bool CitrusVision::Update(bool enabled) {
@@ -35,13 +37,30 @@ bool CitrusVision::Update(bool enabled) {
   angle_log_["cameraAngle"] = std::to_string(angleReceived.to(deg));
   angle_log_["gyroHistory"] =
       std::to_string(subsystems_.drive.GetGyroAngle().to(deg));
+  angle_log_["cameraProfileRunning"] = std::to_string(subsystems_.drive.IsProfileComplete());
   angle_helper_.Update();
   angle_log_.EndLine();
+  if( last_angle_ == angleReceived) {
+    hasNewImage = false;
+  } else { hasNewImage = true; }
+  last_angle_ = angleReceived;
   return subsystems_.drive.IsProfileComplete();
 }
 
 bool CitrusVision::Aligned() {
-  if (isFound && hasConnection && (muan::abs(GetAngleOff()) < 1 * deg)) {
+  if (isFound && hasConnection && (muan::abs(GetAngleOff()) < 1 * deg) && last_align_) {
+    align_counter_++;
+    last_align_ = true;
+  } else if (isFound && hasConnection && (muan::abs(GetAngleOff()) < 1 * deg) && !last_align_) {
+    align_counter_ = 0;
+    last_align_ = true;
+  } else {
+    last_align_ = false;
+    align_counter_ = 0;
+  }
+  
+          
+  if (align_counter_ > 10){
     return true;
   } else {
     return false;

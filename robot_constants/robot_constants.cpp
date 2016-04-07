@@ -38,7 +38,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
 
     ret.camera_offset = 1.1;  // TODO(Wesley) convert to unit?
     ret.pivot_efficiency = .6;
-    ret.camera_scaling_factor = 1.34;
+    ret.camera_scaling_factor = 1.01;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};
@@ -46,8 +46,9 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   } else if (id == RobotIdentifier::APPA) {
     ret.pivot_calibration_offset = 24.8 * deg;
     ret.pivot_efficiency = .85;
-    ret.camera_offset = -4.1;
-    ret.camera_scaling_factor = 1.136;
+    // Right is negative
+    ret.camera_offset = -2;
+    ret.camera_scaling_factor = 1.236;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {34 * deg, 0 * m, 7000 * rev / (60 * s)};
@@ -81,3 +82,7 @@ void RobotConstants::ReloadConstants() {
 
 RobotConstants RobotConstants::instance =
     GenerateRobotConstants(GetRobotIdentifier());
+
+
+
+    // 1.236 is the actual scaling factor for APPA and is 1.34 for SSBB

@@ -47,6 +47,7 @@ class ArmSubsystem : public muan::Updateable {
   bool AllIsDone();
   bool ClimbIsDone();
   bool BallIntaked();
+  bool IsShooting() { return should_shoot_; }
 
  private:
   std::tuple<Voltage, bool, Voltage, bool> UpdateClimb(Time dt);
