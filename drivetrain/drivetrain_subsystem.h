@@ -82,8 +82,6 @@ class DrivetrainSubsystem : public muan::Updateable {
   bool use_distance_termination_ = true;
   bool use_angle_termination_ = true;
 
-  std::atomic<bool> was_highgear{false};
-
   muan::PidController<Angle, Voltage> angle_controller_;
   muan::PidController<Length, Voltage> distance_controller_;
 

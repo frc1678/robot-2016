@@ -81,6 +81,8 @@ void CitrusRobot::RobotInit() {
   subsystems_.arm.Start();
   std::vector<std::string> robot_names = {"comp", "appa", "ssbb", "wtf"};
   SmartDashboard::PutString("Robot", robot_names[(int)GetRobotIdentifier()]);
+  SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
+  SmartDashboard::PutNumber("Profiles Run", profiles_run_); 
   camera_timer_->Start();
 }
 
@@ -134,6 +136,7 @@ void CitrusRobot::DisabledPeriodic() {
   vision_.Update(false);
   UpdateLights();
   ColorLights();
+  SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
   j_manip_->SetRumble(Joystick::kRightRumble, 0);
   j_manip_->SetRumble(Joystick::kLeftRumble, 0);
 }
@@ -146,6 +149,8 @@ void CitrusRobot::TeleopPeriodic() {
 
   SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   SmartDashboard::PutNumber("Stick", j_stick_->GetY());
+  SmartDashboard::PutBoolean("Aligned", vision_.Aligned()); 
+  SmartDashboard::PutNumber("Align counter", vision_.align_counter_); 
 
   if (shoot_->ButtonClicked()) {
     subsystems_.arm.Shoot();
@@ -155,6 +160,19 @@ void CitrusRobot::TeleopPeriodic() {
   } 
   if (cancel_profile_->ButtonClicked()) {
     subsystems_.drive.CancelMotionProfile();
+  }
+  if (align_->ButtonPressed()) {
+    if (align_->ButtonClicked()) {
+      profiles_run_ = 0;
+    }
+    // Need to be NOT aligned, NOT running a profile, and NOT shooting or NOT in a shooting position
+    if (!vision_.InitallyAligned() && subsystems_.drive.IsProfileComplete()  && (!subsystems_.arm.IsShooting() || !shootable_) && profiles_run_ <  3) { 
+      vision_.Start();
+      profiles_run_++;            
+    } else if (((vision_.Aligned() || (!vision_.Aligned() && profiles_run_ == 3)) && subsystems_.drive.IsProfileComplete()) && shootable_) { 
+      subsystems_.arm.Shoot();
+      SmartDashboard::PutNumber("Profiles Run", profiles_run_); 
+    }
   }
   if (shift_high_->ButtonClicked()) {
     in_highgear_ = true;
@@ -203,6 +221,7 @@ void CitrusRobot::TeleopPeriodic() {
     start_climb_ = false;
     intaking_ = false;
     tuck_def_ = false;
+    profiles_run_ = 0;
   }
   if (run_intake_until_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
@@ -242,6 +261,8 @@ void CitrusRobot::TeleopPeriodic() {
   // if (wedge_toggle_->ButtonClicked()) {
   wedge_->Set(is_wedge_deployed_);
   //}
+
+  SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
 
   SetDriveGoal(&drivetrain_goal);
   subsystems_.drive.SetDriveGoal(drivetrain_goal);
@@ -294,8 +315,8 @@ void CitrusRobot::UpdateLights() {
   }
 
   if (vision_.Aligned() && shootable_ && !tuck_def_ &&
-      subsystems_.arm.AllIsDone() &&
-      subsystems_.arm.ShooterSpeeded()) {  // if aligned and ready to shoot
+      subsystems_.arm.AllIsDone() ){ // &&
+   //   subsystems_.arm.ShooterSpeeded()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
   }
 
@@ -361,6 +382,7 @@ void CitrusRobot::UpdateLights() {
  // if (subsystems_.arm.ClimbIsDone()) {
   //  lights_ = ColorLight::GREEN;
   //}
+//  lights_ = ColorLight::OFF;
 }
 
 void CitrusRobot::ColorLights() {
@@ -393,7 +415,7 @@ void CitrusRobot::SetLightColor(int r, int g, int b) {
   l_red_->Set(r);
   l_green_->Set(g);
   l_blue_->Set(b);
-  l_pow_->Set(1);
+  l_pow_->Set(0);
 }
 
 CitrusRobot::~CitrusRobot() {}

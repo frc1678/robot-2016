@@ -14,8 +14,11 @@ class CitrusVision {
   bool Update(bool enable);
   void EndTest();
   bool Aligned();
+  bool InitallyAligned() { return (align_counter_ >= 1); }
   bool IsSeeing() { return isFound; }
   bool HasConnection() {return hasConnection; }
+  bool HasNewImage() { return hasNewImage; }
+  int align_counter_ = 0;
  private:
   void ReadPosition();
   Angle GetAngleOff();
@@ -28,8 +31,10 @@ class CitrusVision {
   muan::CSVLog angle_log_;
   SmartDashboardHelper angle_helper_;
 
-  bool isFound, hasConnection;
+  bool isFound, hasConnection, hasNewImage;
+  bool last_align_ = false;
   Angle angleReceived;
+  Angle last_angle_;
   Time lag;
 };
 

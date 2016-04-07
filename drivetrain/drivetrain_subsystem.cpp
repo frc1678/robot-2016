@@ -65,7 +65,6 @@ void DrivetrainSubsystem::Update(Time dt) {
       out.left_voltage = -out.left_voltage;
       out.right_voltage = -out.right_voltage;
       // TODO(Wesley) Find out why this is giving 12V and 0V as output
-   // } else if (is_continuous_) {
     
     }
     else {
@@ -148,10 +147,6 @@ void DrivetrainSubsystem::Update(Time dt) {
   // TODO (Finn): Also deal with shifting output and with logging
   // from the status.
   drive_->TankDrive(-out.left_voltage / 12.0, -out.right_voltage / 12.0, false);
-  if (current_goal_.highgear != was_highgear) {
-    shifting_->Set(!current_goal_.highgear);
-    was_highgear = current_goal_.highgear;
-  }
 
   csv_log_["enc_left"] = std::to_string(pos.left_encoder);
   csv_log_["enc_right"] = std::to_string(pos.right_encoder);
@@ -173,6 +168,7 @@ void DrivetrainSubsystem::UpdateConstants() {
 
 void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal &goal) {
   mutex_lock lock(mu_);
+  Shift(current_goal_.highgear);
   current_goal_ = goal;
 }
 
@@ -182,7 +178,12 @@ Length DrivetrainSubsystem::GetDistanceDriven() {
   return (pos.left_encoder + pos.right_encoder) / 2 * m;
 }
 
-void DrivetrainSubsystem::Shift(bool high) { current_goal_.highgear = high; }
+void DrivetrainSubsystem::Shift(bool high) {
+  if (current_goal_.highgear != high) {
+    shifting_->Set(!high);
+    current_goal_.highgear = high;
+  }
+}
 
 void DrivetrainSubsystem::SetDrivePosition(
     DrivetrainPosition *drivetrain_position) {
@@ -200,7 +201,7 @@ void DrivetrainSubsystem::SetDrivePosition(
 // TODO(Wesley) Add generate motion profile functions so I don't repeat as much
 // code
 
-void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
+void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) { 
   AngularVelocity speed = (highgear ? 380 : 240) * deg / s;
   AngularAcceleration accel = (highgear ? 250 : 500) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
@@ -252,10 +253,9 @@ void DrivetrainSubsystem::FollowMotionProfile(
     std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
     std::unique_ptr<muan::MotionProfile<Angle>> angle_profile, bool highgear,
     bool use_distance_termination, bool use_angle_termination) {
-  UpdateConstants();
   use_angle_termination_ = use_angle_termination;
   use_distance_termination_ = use_distance_termination;
-  current_goal_.highgear = highgear;
+  Shift(highgear);
   distance_profile_ = std::move(distance_profile);
   angle_profile_ = std::move(angle_profile);
   is_operator_controlled_ = false;
