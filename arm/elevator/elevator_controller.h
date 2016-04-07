@@ -20,6 +20,7 @@ class ElevatorController {
   bool ShouldFireBrake();
 
   Length GetPosition() { return current_displacement_; }
+  Length GetError() { return (current_goal_ - current_displacement_); }
 
  private:
   enum class ElevatorState {

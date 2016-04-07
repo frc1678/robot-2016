@@ -17,6 +17,8 @@ ArmSubsystem::ArmSubsystem()
   pivot_hall_ = std::make_unique<DigitalInput>(RobotPorts::pivot_hall);
   pivot_disk_brake_ = std::make_unique<DoubleSolenoid>(
       RobotPorts::pivot_brake_a, RobotPorts::pivot_brake_b);
+  pivot_disk_brake_->Set(was_pivot_brake_ ? DoubleSolenoid::Value::kReverse
+                                          : DoubleSolenoid::Value::kForward);
   pivot_motor_a_ = std::make_unique<VictorSP>(RobotPorts::pivot_motor_a);
   pivot_motor_b_ = std::make_unique<VictorSP>(RobotPorts::pivot_motor_b);
 
@@ -29,6 +31,9 @@ ArmSubsystem::ArmSubsystem()
                                                 RobotPorts::elevator_encoder_b);
   elevator_disk_brake_ = std::make_unique<DoubleSolenoid>(
       RobotPorts::elevator_brake_a, RobotPorts::elevator_brake_b);
+  elevator_disk_brake_->Set(was_elevator_brake_
+                                ? DoubleSolenoid::Value::kReverse
+                                : DoubleSolenoid::Value::kForward);
   elevator_motor_a_ = std::make_unique<VictorSP>(RobotPorts::elevator_motor_a);
   elevator_motor_b_ = std::make_unique<VictorSP>(RobotPorts::elevator_motor_b);
 
@@ -61,6 +66,7 @@ void ArmSubsystem::Update(Time dt) {
   bool elevator_brake = elevator_controller_.ShouldFireBrake(),
        pivot_brake = pivot_controller_.ShouldFireBrake();
   if (!enabled_) state_ = ArmState::DISABLED;
+
   switch (state_) {
     case ArmState::DISABLED:
       if (enabled_) state_ = ArmState::FINISHED;
@@ -85,6 +91,9 @@ void ArmSubsystem::Update(Time dt) {
         elevator_controller_.SetGoal(current_goal_.elevator_goal);
       }
       shooter_controller_.SetGoal(current_goal_.shooter_goal);
+      if(climbing_advance_) {
+        pivot_voltage = 6.0 * V;
+      }
       break;
     case ArmState::EXTENDING:
       finished_ = false;
@@ -111,15 +120,19 @@ void ArmSubsystem::Update(Time dt) {
       pivot_brake = elevator_brake = false;
       break;
   }
-
   pivot_motor_a_->Set(pivot_voltage.to(12 * V));
   pivot_motor_b_->Set(pivot_voltage.to(12 * V));
-  pivot_disk_brake_->Set(pivot_brake ? DoubleSolenoid::Value::kReverse
-                                     : DoubleSolenoid::Value::kForward);
+  SetPivotBrake(pivot_brake);
+
   elevator_motor_a_->Set(-elevator_voltage.to(12 * V));
   elevator_motor_b_->Set(-elevator_voltage.to(12 * V));
-  elevator_disk_brake_->Set(elevator_brake ? DoubleSolenoid::Value::kReverse
-                                           : DoubleSolenoid::Value::kForward);
+        
+  if((ball_sensor_->Get() && climbing_advance_) && (pivot_controller_.GetError() < (3 * deg))){
+    CompleteClimb();
+    climbing_advance_ = false;
+  }
+
+  SetElevatorBrake(elevator_brake);
 
   Voltage shooter_voltage =
       shooter_controller_.Update(0.005 * s, shooter_encoder_->Get() * deg);
@@ -148,7 +161,7 @@ void ArmSubsystem::Update(Time dt) {
       } else {
         intake_target_ = IntakeGoal::OFF;
       }
-      intake_timer_ += 0.05 * s;
+      intake_timer_ += dt;
     }
   } else if (intake_target_ == IntakeGoal::FORWARD_FOREVER) {
     intake_front_->Set(-1);
@@ -162,10 +175,11 @@ void ArmSubsystem::Update(Time dt) {
     intake_timer_ = 0 * s;
   }
 
-  SmartDashboard::PutNumber("pivot_angle",
-                            pivot_controller_.GetAngle().to(deg));
+  SmartDashboard::PutBoolean("advance climb", climbing_advance_);
+                            
 
   csv_log_["time"] = std::to_string(t.to(s));
+  csv_log_["climbing"] = std::to_string(climbing_advance_);
   csv_log_["pivot_voltage"] = std::to_string(pivot_voltage.to(V));
   csv_log_["elevator_voltage"] = std::to_string(elevator_voltage.to(V));
   csv_log_["pivot_angle"] =
@@ -186,6 +200,7 @@ bool ArmSubsystem::BallIntaked() { return ball_sensor_->Get(); }
 
 std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
   Voltage elevator_voltage, pivot_voltage;
+  climbing_advance_ = false;
   bool elevator_brake, pivot_brake;
   elevator_voltage = elevator_controller_.UpdateClimb(
       dt, elevator_encoder_->Get() * .0003191764 * m,
@@ -279,12 +294,14 @@ void ArmSubsystem::GoToDefensive() {
   ArmGoal goal{30 * deg, 0 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(false);
+  climbing_advance_ = false;
 }
 
 void ArmSubsystem::StartClimb() {
   ArmGoal goal{85 * deg, 0.58 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
+  climbing_advance_ = false;
 }
 
 void ArmSubsystem::ContinueClimb() {
@@ -297,12 +314,14 @@ void ArmSubsystem::ContinueClimb() {
   state_ = ArmState::MOVING_PIVOT;
   pivot_controller_.SetGoal(current_goal_.pivot_goal, 1.0 * deg);
   SetHoodOpen(true);
+  climbing_advance_ = true;
 }
 
 void ArmSubsystem::CompleteClimb() {
   state_ = ArmState::CLIMBING;
   climb_state_ = ClimbState::PULLING_UP;
   elevator_controller_.SetGoal(0 * m);
+  climbing_advance_ = false;
 }
 
 void ArmSubsystem::SetHoodOpen(bool open) { shooter_hood_->Set(open); }
@@ -333,3 +352,19 @@ bool ArmSubsystem::ShooterSpeeded() {
 bool ArmSubsystem::AllIsDone() { return finished_; }
 
 bool ArmSubsystem::ClimbIsDone() { return climbing_done_; }
+
+void ArmSubsystem::SetPivotBrake(bool on) {
+  if (on != was_pivot_brake_) {
+    pivot_disk_brake_->Set(on ? DoubleSolenoid::Value::kReverse
+                              : DoubleSolenoid::Value::kForward);
+    was_pivot_brake_ = on;
+  }
+}
+
+void ArmSubsystem::SetElevatorBrake(bool on) {
+  if (on != was_elevator_brake_) {
+    elevator_disk_brake_->Set(on ? DoubleSolenoid::Value::kReverse
+                                 : DoubleSolenoid::Value::kForward);
+    was_elevator_brake_ = on;
+  }
+}

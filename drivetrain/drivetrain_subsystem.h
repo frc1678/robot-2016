@@ -39,7 +39,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   void FollowMotionProfile(
       std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
       std::unique_ptr<muan::MotionProfile<Angle>> angle_profile,
-      bool highgear = false, bool use_distance_termination = true, bool use_angle_termination = true);
+      bool highgear = false, bool use_distance_termination = true,
+      bool use_angle_termination = true);
   bool IsProfileComplete();
   void CancelMotionProfile();
 
@@ -81,6 +82,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   bool use_distance_termination_ = true;
   bool use_angle_termination_ = true;
 
+  std::atomic<bool> was_highgear{false};
+
   muan::PidController<Angle, Voltage> angle_controller_;
   muan::PidController<Length, Voltage> distance_controller_;
 
@@ -88,6 +91,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   Angle gyro_offset_ = 0 * rad;
   Angle old_angle_ = 0 * rad;
   Angle even_older_angle_ = 0 * rad;
+  Velocity last_angle_velocity_ = 0 * m / s;
+  Velocity last_distance_velocity_ = 0 * m / s;
 
   Angle last_angle_ = 0 * rad;
   Time t;
@@ -96,6 +101,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   muan::TextLog event_log_;
   muan::CSVLog csv_log_;
   SmartDashboardHelper csv_helper_;
+
+  muan::Timer timer;
 };
 
 #endif

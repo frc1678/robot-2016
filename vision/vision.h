@@ -15,6 +15,7 @@ class CitrusVision {
   void EndTest();
   bool Aligned();
   bool IsSeeing() { return isFound; }
+  bool HasConnection() {return hasConnection; }
  private:
   void ReadPosition();
   Angle GetAngleOff();
@@ -25,6 +26,7 @@ class CitrusVision {
   muan::History<Angle, 100> gyro_history_;
   muan::Timer test_timer;
   muan::CSVLog angle_log_;
+  SmartDashboardHelper angle_helper_;
 
   bool isFound, hasConnection;
   Angle angleReceived;

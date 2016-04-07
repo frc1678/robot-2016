@@ -8,6 +8,7 @@ CitrusVision::CitrusVision(RobotSubsystems &subs, RobotConstants constants)
     : subsystems_(subs),
       gyro_history_(.02 * s),
       angle_log_("angles", {"cameraAngle", "gyroHistory"}),
+      angle_helper_(&angle_log_),
       connection(CitrusSocket(1678)) {
   constants_ = constants;
   isFound = false;
@@ -34,6 +35,7 @@ bool CitrusVision::Update(bool enabled) {
   angle_log_["cameraAngle"] = std::to_string(angleReceived.to(deg));
   angle_log_["gyroHistory"] =
       std::to_string(subsystems_.drive.GetGyroAngle().to(deg));
+  angle_helper_.Update();
   angle_log_.EndLine();
   return subsystems_.drive.IsProfileComplete();
 }
@@ -52,6 +54,7 @@ void CitrusVision::EndTest() {
 }
 
 void CitrusVision::ReadPosition() {
+  bool gotPackets = false;
   try {
     nlohmann::json json_recv;
     while (connection.HasPackets()) {
@@ -60,8 +63,8 @@ void CitrusVision::ReadPosition() {
     isFound = json_recv["found"];
     angleReceived = json_recv["angle"] * deg;
     lag = json_recv["lag"] * s;
-    hasConnection = true;
+    gotPackets = true;
   } catch (...) {
-    hasConnection = false;
   }
+  hasConnection = gotPackets;
 }

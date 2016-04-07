@@ -7,7 +7,8 @@ using mutex_lock = std::lock_guard<std::mutex>;
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
       angle_controller_(RobotConstants::GetInstance().drivetrain_angle_gains),
-      distance_controller_(RobotConstants::GetInstance().drivetrain_distance_gains),
+      distance_controller_(
+          RobotConstants::GetInstance().drivetrain_distance_gains),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "goal_dist", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}),
@@ -59,12 +60,16 @@ void DrivetrainSubsystem::Update(Time dt) {
     mutex_lock lock(mu_);
     if (is_operator_controlled_) {
       current_goal_.control_loop_driving = false;
-      drive_loop_->RunIteration(&current_goal_, &pos,
-                                is_enabled_ ? &out : nullptr, &status);
+      drive_loop_->RunIteration(&current_goal_, &pos, 
+                                 is_enabled_ ? &out : nullptr, &status); 
       out.left_voltage = -out.left_voltage;
       out.right_voltage = -out.right_voltage;
       // TODO(Wesley) Find out why this is giving 12V and 0V as output
-    } else {
+   // } else if (is_continuous_) {
+    
+    }
+    else {
+
       // TODO(Wesley) Reset the PID controller if we went from tele to auto
       // TODO(Wesley) Add operator control to exit auto mode
       t += dt;
@@ -124,7 +129,8 @@ void DrivetrainSubsystem::Update(Time dt) {
       bool profile_finished_angle =
           muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
 
-      if (profiles_finished_time && (profile_finished_angle || !use_angle_termination_) &&
+      if (profiles_finished_time &&
+          (profile_finished_angle || !use_angle_termination_) &&
           (profile_finished_distance || !use_distance_termination_)) {
         angle_profile_.reset();
         distance_profile_.reset();
@@ -144,7 +150,10 @@ void DrivetrainSubsystem::Update(Time dt) {
   // TODO (Finn): Also deal with shifting output and with logging
   // from the status.
   drive_->TankDrive(-out.left_voltage / 12.0, -out.right_voltage / 12.0, false);
-  shifting_->Set(!current_goal_.highgear);
+  if (current_goal_.highgear != was_highgear) {
+    shifting_->Set(!current_goal_.highgear);
+    was_highgear = current_goal_.highgear;
+  }
 
   csv_log_["enc_left"] = std::to_string(pos.left_encoder);
   csv_log_["enc_right"] = std::to_string(pos.right_encoder);
@@ -158,8 +167,10 @@ void DrivetrainSubsystem::Update(Time dt) {
 
 void DrivetrainSubsystem::UpdateConstants() {
   RobotConstants::ReloadConstants();
-  angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_gains);
-  distance_controller_.SetGains(RobotConstants::GetInstance().drivetrain_distance_gains);
+  angle_controller_.SetGains(
+      RobotConstants::GetInstance().drivetrain_angle_gains);
+  distance_controller_.SetGains(
+      RobotConstants::GetInstance().drivetrain_distance_gains);
 }
 
 void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal &goal) {
@@ -202,6 +213,7 @@ void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
   FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, true);
 }
 
+
 void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
   AngularVelocity speed = (highgear ? 380 : 240) * deg / s;
   AngularAcceleration accel = (highgear ? 250 : 500) * deg / s / s;
@@ -240,7 +252,8 @@ void DrivetrainSubsystem::DriveDistanceAtAngle(Length distance, Angle angle,
 
 void DrivetrainSubsystem::FollowMotionProfile(
     std::unique_ptr<muan::MotionProfile<Length>> distance_profile,
-    std::unique_ptr<muan::MotionProfile<Angle>> angle_profile, bool highgear, bool use_distance_termination, bool use_angle_termination) {
+    std::unique_ptr<muan::MotionProfile<Angle>> angle_profile, bool highgear,
+    bool use_distance_termination, bool use_angle_termination) {
   UpdateConstants();
   use_angle_termination_ = use_angle_termination;
   use_distance_termination_ = use_distance_termination;

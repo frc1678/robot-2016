@@ -7,7 +7,7 @@
 
 // class LemonScriptRunner { };
 
-enum class ColorLight { RED = 0, YELLOW, GREEN, BLUE, WHITE, PINK };
+enum class ColorLight { RED = 0, YELLOW, GREEN, BLUE, WHITE, PINK, OFF };
 
 class CitrusButton;
 class CitrusAxis;
@@ -25,7 +25,7 @@ class CitrusRobot : public IterativeRobot {
   // Kelly's buttons
   std::unique_ptr<CitrusButton> tuck_pos_, defensive_pos_, climb_pos_,
       climb_pos_continue_, climb_end_, intake_pos_, wedge_toggle_,
-      run_intake_until_;
+      run_intake_until_, cancel_profile_;
   std::unique_ptr<CitrusPOV> fender_pos_, long_pos_, short_pos_;
   std::unique_ptr<CitrusAxis> run_intake_forever_, reverse_intake_;
 
@@ -41,6 +41,7 @@ class CitrusRobot : public IterativeRobot {
 
   DigitalInput *switch_one;
   DigitalInput *switch_two;
+  Timer *camera_timer_ = new Timer();
 
   bool is_wedge_deployed_ = false;
   bool test_flag_;

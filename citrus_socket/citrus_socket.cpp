@@ -42,7 +42,7 @@ void CitrusSocket::Send(const std::string &to_send, Destination to) {
   auto result = sendto(socket_, to_send.c_str(), to_send.length(), 0,
                        (sockaddr *)&destaddr, sizeof(destaddr));
   if (result == -1) {
-    // TODO(Kyle) Handle all possible errors
+    throw "could not send data";
   }
 }
 

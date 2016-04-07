@@ -18,6 +18,7 @@ class PivotController {
   bool IsDone();
   bool IsCalibrated();
   Angle GetAngle() { return last_; }
+  Angle GetError() { return (goal_ - last_); }
 
  private:
   muan::AverageFilterPidController<Angle, Voltage> controller_,

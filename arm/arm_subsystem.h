@@ -100,6 +100,7 @@ class ArmSubsystem : public muan::Updateable {
   bool enabled_ = false;
   bool finished_ = true;
   bool climbing_done_ = false;
+  bool climbing_advance_ = false;
 
   ArmGoal current_goal_;
 
@@ -113,6 +114,10 @@ class ArmSubsystem : public muan::Updateable {
   Time intake_timer_;
 
   Angle thresh_;
+
+  void SetPivotBrake(bool on);
+  void SetElevatorBrake(bool on);
+  bool was_pivot_brake_{false}, was_elevator_brake_{false};
 };
 
 #endif /* ARM_ARM_SUBSYSTEM_H_ */

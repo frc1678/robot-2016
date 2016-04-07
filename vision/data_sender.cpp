@@ -30,7 +30,7 @@ void sendData() {
               << (muan::now() - position_.time_captured).to(s) << "seconds\n"
               << std::endl;
   } else {
-    nlohmann::json json_object = {{"found", false}, {"angle", 0.0}, {"time", (muan::now() - position_.time_captured).to(s)}};
+    nlohmann::json json_object = {{"found", false}, {"angle", 0.0}, {"lag", (muan::now() - position_.time_captured).to(s)}};
     data << from_json(json_object);
     std::cout << "not found\nlag: "
               << (muan::now() - position_.time_captured).to(s) << " seconds\n"
