@@ -7,11 +7,10 @@ SetArmPosition: AUTO: 3
 PointTurn: angle: -25.0
 Wait: seconds: 1.5
 Align
-Wait: 0.3
-Align
 Shoot
 
 Wait: 0.6
 
+//Wait: 0.3
 AbsolutePointTurn: 0.0
 DriveStraightAtAngle: -9.0, 0.0, false
