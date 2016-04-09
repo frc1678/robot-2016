@@ -253,7 +253,7 @@ bool AutoFunction::Align(CitrusRobot* robot) {
     toStartVision = false;
   }
 
-  if (robot->vision_.Aligned()) {
+  if (robot->vision_.Aligned() ) {
     toStartVision = true;
     return true;
   }
