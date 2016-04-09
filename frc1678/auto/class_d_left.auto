@@ -1,17 +1,17 @@
 CheckArmCalibration
 SetArmPosition: 4
 
-DriveStraight: 14.0
+DriveStraight: 12.5, false
 
 SetArmPosition: AUTO: 3
-PointTurn: angle: -15.0
+PointTurn: angle: -25.0
 Wait: seconds: 1.5
 Align
-Wait: 0.3
-Align
+//Wait: 0.3
+//Align
 Shoot
 
 Wait: 0.6
 
 AbsolutePointTurn: 0.0
-DriveStraightAtAngle: -9.5, 0.0
+DriveStraightAtAngle: -9.0, 0.0, false

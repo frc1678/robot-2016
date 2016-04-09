@@ -14,7 +14,7 @@ class CitrusVision {
   bool Update(bool enable);
   void EndTest();
   bool Aligned();
-  bool InitallyAligned() { return (align_counter_ >= 1); }
+  bool InitallyAligned() { return (!Aligned() && align_counter_ >= 1); }
   bool IsSeeing() { return isFound; }
   bool HasConnection() {return hasConnection; }
   bool HasNewImage() { return hasNewImage; }

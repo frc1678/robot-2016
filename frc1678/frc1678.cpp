@@ -35,6 +35,7 @@ CitrusRobot::CitrusRobot()
   wedge_toggle_ = std::make_unique<CitrusButton>(j_manip_.get(), 5);
   run_intake_until_ = std::make_unique<CitrusButton>(j_manip_.get(), 6);
   cancel_profile_ = std::make_unique<CitrusButton>(j_stick_.get(), 8);
+  proxy_shot_override_ = std::make_unique<CitrusButton>(j_manip_.get(), 9);
 
   fender_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::SOUTH);
@@ -65,7 +66,7 @@ std::string CitrusRobot::GetAutoRoutine() {
   std::map<int8_t, std::string> auto_map;
 
   auto_map[0b00000011] = "one_ball.auto";
-  auto_map[0b00000001] = "one_ball.auto";
+  auto_map[0b00000001] = "two_ball.auto";
   auto_map[0b00000010] = "class_d_left.auto";
   auto_map[0b00000000] = "class_d_right.auto";
 
@@ -94,11 +95,14 @@ void CitrusRobot::AutonomousInit() {
   if (auto_runner != nullptr) {
     delete auto_runner;
   }
+  //TODO(Wesley) Move file IO out of auto init
   auto_runner = new LemonScriptRunner("/home/lvuser/" + GetAutoRoutine(), this);
+  subsystems_.arm.proxy_shot_override_ = true;
 }
 
 void CitrusRobot::AutonomousPeriodic() {
   auto_runner->Update();
+  vision_.Update(true);
   wedge_->Set(is_wedge_deployed_);
 }
 
@@ -107,6 +111,7 @@ void CitrusRobot::TeleopInit() {
   // subsystems_.drive.DriveDistance(2 * m);
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
+  subsystems_.arm.proxy_shot_override_ = false;
   disabled_ = false;
   subsystems_.drive.CancelMotionProfile();
 }
@@ -164,38 +169,45 @@ void CitrusRobot::TeleopPeriodic() {
   if (align_->ButtonPressed()) {
     if (align_->ButtonClicked()) {
       profiles_run_ = 0;
+      vision_.Start();
+    }
+
+    if ( subsystems_.drive.IsProfileComplete() && shootable_ && !subsystems_.arm.IsShooting() && vision_.Aligned()){
+      subsystems_.arm.Shoot();
     }
     // Need to be NOT aligned, NOT running a profile, and NOT shooting or NOT in a shooting position
-    if (!vision_.InitallyAligned() && subsystems_.drive.IsProfileComplete()  && (!subsystems_.arm.IsShooting() || !shootable_) && profiles_run_ <  3) { 
+/*    if (!vision_.InitallyAligned() && subsystems_.drive.IsProfileComplete()  && (!subsystems_.arm.IsShooting() || !shootable_) && profiles_run_ ==  0) { 
       vision_.Start();
       profiles_run_++;            
-    } else if (((vision_.Aligned() || (!vision_.Aligned() && profiles_run_ == 3)) && subsystems_.drive.IsProfileComplete()) && shootable_) { 
+    } else if (((vision_.Aligned() || (!vision_.Aligned() && profiles_run_ == 1)) && subsystems_.drive.IsProfileComplete()) && shootable_) { 
       subsystems_.arm.Shoot();
       SmartDashboard::PutNumber("Profiles Run", profiles_run_); 
-    }
+    }*/
   }
   if (shift_high_->ButtonClicked()) {
+    subsystems_.drive.Shift(true);
     in_highgear_ = true;
   }
   if (shift_low_->ButtonClicked()) {
+    subsystems_.drive.Shift(false);
     in_highgear_ = false;
   }
   if (tuck_pos_->ButtonClicked()) {
-    subsystems_.arm.GoToTuck();
+    subsystems_.arm.GoToTuckSpin();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
     tuck_def_ = true;
   }
   if (defensive_pos_->ButtonClicked()) {
-    subsystems_.arm.GoToDefensive();
+    subsystems_.arm.GoToDefensiveSpin();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = false;
     tuck_def_ = true;
   }
   if (intake_pos_->ButtonClicked()) {
-    subsystems_.arm.GoToIntake();
+    subsystems_.arm.GoToIntakeSpin();
     shootable_ = false;
     start_climb_ = false;
     intaking_ = true;
@@ -255,6 +267,11 @@ void CitrusRobot::TeleopPeriodic() {
     intaking_ = false;
     tuck_def_ = false;
   }
+  if(proxy_shot_override_->ButtonClicked()) {
+    if(subsystems_.arm.proxy_shot_override_) {
+      subsystems_.arm.proxy_shot_override_ = false;
+    } else { subsystems_.arm.proxy_shot_override_ = true; }
+  }
 
   // Toggle the wedge when the button is deployed
   is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
@@ -300,6 +317,7 @@ void CitrusRobot::UpdateButtons() {
   reverse_intake_->Update();
   wedge_toggle_->Update();
   cancel_profile_->Update();
+  proxy_shot_override_->Update();
 }
 
 void CitrusRobot::UpdateLights() {
@@ -315,8 +333,8 @@ void CitrusRobot::UpdateLights() {
   }
 
   if (vision_.Aligned() && shootable_ && !tuck_def_ &&
-      subsystems_.arm.AllIsDone() ){ // &&
-   //   subsystems_.arm.ShooterSpeeded()) {  // if aligned and ready to shoot
+      subsystems_.arm.AllIsDone()  &&
+      subsystems_.arm.ShooterSpeeded()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;
   }
 
@@ -355,6 +373,7 @@ void CitrusRobot::UpdateLights() {
     j_manip_->SetRumble(Joystick::kLeftRumble, 0);
 
     std::string auto_routine = GetAutoRoutine();
+    SmartDashboard::PutString("auto", auto_routine);
     if (auto_routine == "one_ball.auto") {
       lights_ = ColorLight::GREEN;
     } else if (auto_routine == "two_ball.auto") {

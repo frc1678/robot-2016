@@ -44,11 +44,11 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
     ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};
     ret.fender_shot_goals = {10 * deg, 0 * m, 5500 * rev / (60 * s)};
   } else if (id == RobotIdentifier::APPA) {
-    ret.pivot_calibration_offset = 24.8 * deg;
+    ret.pivot_calibration_offset = 24.0 * deg;
     ret.pivot_efficiency = .85;
     // Right is negative
     ret.camera_offset = -2;
-    ret.camera_scaling_factor = 1.236;
+    ret.camera_scaling_factor = 1.1;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {34 * deg, 0 * m, 7000 * rev / (60 * s)};
@@ -56,12 +56,12 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   } else if (id == RobotIdentifier::COMP) {
     ret.pivot_calibration_offset = 20.4 * deg;
     ret.pivot_efficiency = .85;
-    ret.camera_offset = -0.8;
-    ret.camera_scaling_factor = 1.0;
+    ret.camera_offset = -.514;
+    ret.camera_scaling_factor = 1.1;
 
-    ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
-    ret.auto_shot_goals = {36 * deg, 0 * m, 5500 * rev / (60 * s)};
-    ret.fender_shot_goals = {10 * deg, 0 * m, 5500 * rev / (60 * s)};
+    ret.long_shot_goals = {42 * deg, .33 * m, 7000 * rev / (60 * s)};
+    ret.auto_shot_goals = {36 * deg, 0 * m, 6500 * rev / (60 * s)};
+    ret.fender_shot_goals = {10 * deg, 0 * m, 6500 * rev / (60 * s)};
   }
   ret.pivot_gains = LoadConstantsFromFile<Angle, Voltage>(GetRobotString(id) +
                                                           "/pivot_gains");

@@ -14,14 +14,67 @@ void AutoFunction::DeleteAutoFunction() {
 
 // Test for LemonScript
 bool newDriveState = true;
-bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist) {
+bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist, bool highgear) {
   if (newDriveState) {
-    robot->subsystems_.drive.DriveDistance(dist * ft);
+    robot->subsystems_.drive.DriveDistance(dist * ft, highgear);
     newDriveState = false;
   }
 
   if (robot->subsystems_.drive.IsProfileComplete()) {
     newDriveState = true;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//TODO(Wesley) Make it so I don't need eyebleach after looking at this function
+bool newDriveYoloState = true;
+Length yolo_start_dist;
+bool AutoFunction::DriveYolo(CitrusRobot* robot, float dist, bool highgear) {
+  if (newDriveYoloState) {
+    robot->subsystems_.drive.DriveDistance((dist * 1000) * ft, highgear);
+    yolo_start_dist = robot->subsystems_.drive.GetDistanceDriven();
+    newDriveYoloState = false;
+  }
+
+  if (dist >= 0 &&
+      robot->subsystems_.drive.GetDistanceDriven() - yolo_start_dist >= dist * ft) {
+    newDriveYoloState = true;
+    robot->subsystems_.drive.CancelMotionProfile();
+    return true;
+  } else if (dist < 0 &&
+             robot->subsystems_.drive.GetDistanceDriven() - yolo_start_dist <=
+                 dist * ft) {
+    newDriveYoloState = true;
+    robot->subsystems_.drive.CancelMotionProfile();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//TODO(Wesley) Make it so I don't need eyebleach after looking at this function
+// I feel bad about this code mostly because kyle will mock me if he sees it :P
+bool newDriveYoloAtAngleState = true;
+Length yolo_angle_start_dist;
+bool AutoFunction::DriveYoloAtAngle(CitrusRobot* robot, float dist, float angle, bool highgear) {
+  if (newDriveYoloAtAngleState) {
+    robot->subsystems_.drive.DriveDistanceAtAngle((dist * 1000) * ft, angle * deg, highgear);
+    yolo_start_dist = robot->subsystems_.drive.GetDistanceDriven();
+    newDriveYoloAtAngleState = false;
+  }
+
+  if (dist >= 0 &&
+      robot->subsystems_.drive.GetDistanceDriven() - yolo_start_dist >= dist * ft) {
+    newDriveYoloAtAngleState = true;
+    robot->subsystems_.drive.CancelMotionProfile();
+    return true;
+  } else if (dist < 0 &&
+             robot->subsystems_.drive.GetDistanceDriven() - yolo_start_dist <=
+                 dist * ft) {
+    newDriveYoloAtAngleState = true;
+    robot->subsystems_.drive.CancelMotionProfile();
     return true;
   } else {
     return false;
@@ -35,9 +88,9 @@ bool AutoFunction::SetWedge(CitrusRobot* robot, bool up) {
 
 bool newDriveAtAngleState = true;
 bool AutoFunction::DriveStraightAtAngle(CitrusRobot* robot, float dist,
-                                        float angle) {
+                                        float angle, bool highgear) {
   if (newDriveAtAngleState) {
-    robot->subsystems_.drive.DriveDistanceAtAngle(dist * ft, angle * deg);
+    robot->subsystems_.drive.DriveDistanceAtAngle(dist * ft, angle * deg, highgear);
     newDriveAtAngleState = false;
   }
 
@@ -124,16 +177,26 @@ bool AutoFunction::Shoot(CitrusRobot* robot) {
   // Need to set arm position to LONG before calling this shoot
   // Wait for shooter to reach shooting speed
   if (robot->subsystems_.arm.IsDone()) {
-    robot->subsystems_.arm.Shoot();
+    robot->subsystems_.arm.Shoot(false);
     return true;  // shooter->finished();
   }
 
   return false;
 }
 
-bool AutoFunction::RunIntake(CitrusRobot* robot, bool run) {
-  robot->subsystems_.arm.SetIntake(run ? IntakeGoal::FORWARD_UNTIL : IntakeGoal::OFF);
+bool AutoFunction::RunIntake(CitrusRobot* robot, IntakeStatus run) {
+  if (run == OFF) {
+    robot->subsystems_.arm.SetIntake(IntakeGoal::OFF);
+  } else if (run == UNTIL) {
+    robot->subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
+  } else if (run == FOREVER) {
+    robot->subsystems_.arm.SetIntake(IntakeGoal::FORWARD_FOREVER);
+  }
   return true;
+}
+
+bool AutoFunction::WaitForBall(CitrusRobot* robot) {
+  return robot->subsystems_.arm.BallIntaked();
 }
 
 bool newArmPosition = true;
@@ -178,9 +241,10 @@ bool AutoFunction::CheckArmCalibration(CitrusRobot* robot) {
   return robot->subsystems_.arm.IsCalibrated();
 }
 
-bool AutoFunction::DropPinch(CitrusRobot* robot) {
+bool AutoFunction::DropBall(CitrusRobot* robot) {
+  robot->subsystems_.arm.DropBall();
   return true;
-}  // Why is this needed?
+}
 
 bool toStartVision = true;
 bool AutoFunction::Align(CitrusRobot* robot) {
@@ -189,10 +253,13 @@ bool AutoFunction::Align(CitrusRobot* robot) {
     toStartVision = false;
   }
 
-  if (robot->vision_.Update(
-          true)) {  // (TODO) Ash: Modify when vision Update() is fixed.
+  if (robot->vision_.Aligned()) {
     toStartVision = true;
     return true;
+  }
+
+  if (robot->subsystems_.drive.IsProfileComplete()) {
+    robot->vision_.Start();
   }
 
   return false;

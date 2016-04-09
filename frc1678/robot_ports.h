@@ -33,6 +33,8 @@ constexpr unsigned int elevator_brake_a = 2, elevator_brake_b = 3;
 
 // Solenoid port for shooter hood
 constexpr unsigned int shooter_hood = 6;
+
+constexpr unsigned int ball_pinch = 4;
 }
 
 namespace JoystickPorts {

@@ -13,10 +13,16 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   using lemonscript::DataType;
 
   AvailableCppCommandDeclaration *driveStraight =
-      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight, "DriveStraight", {DataType::FLOAT});
-  
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight, "DriveStraight", {DataType::FLOAT, DataType::BOOLEAN});
+
+  AvailableCppCommandDeclaration *driveYolo =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveYolo, "DriveYolo", {DataType::FLOAT, DataType::BOOLEAN});
+
+  AvailableCppCommandDeclaration *driveYoloAtAngle =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveYoloAtAngle, "DriveYoloAtAngle", {DataType::FLOAT, DataType::FLOAT, DataType::BOOLEAN});
+
   AvailableCppCommandDeclaration *driveStraightAtAngle =
-      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraightAtAngle, "DriveStraightAtAngle", {DataType::FLOAT, DataType::FLOAT});
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraightAtAngle, "DriveStraightAtAngle", {DataType::FLOAT, DataType::FLOAT, DataType::BOOLEAN});
 
   AvailableCppCommandDeclaration *pointTurn =
       new AvailableCppCommandDeclaration((void *)AutoFunction::PointTurn, "PointTurn", {DataType::FLOAT});
@@ -36,8 +42,11 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *shoot = 
           new AvailableCppCommandDeclaration((void *)AutoFunction::Shoot, "Shoot", {});
 
+  AvailableCppCommandDeclaration *waitForBall = 
+          new AvailableCppCommandDeclaration((void *)AutoFunction::WaitForBall, "WaitForBall", {});
+
   AvailableCppCommandDeclaration *runIntake = 
-          new AvailableCppCommandDeclaration((void *)AutoFunction::RunIntake, "RunIntake", {DataType::BOOLEAN});
+          new AvailableCppCommandDeclaration((void *)AutoFunction::RunIntake, "RunIntake", {DataType::INT});
 
   AvailableCppCommandDeclaration *setArmPosition = 
           new AvailableCppCommandDeclaration((void *)AutoFunction::SetArmPosition, "SetArmPosition", {DataType::INT});
@@ -48,12 +57,15 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *align =
       new AvailableCppCommandDeclaration((void *)AutoFunction::Align, "Align", {});
 
+  AvailableCppCommandDeclaration *dropBall =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DropBall, "DropBall", {});
+
   AvailableCppCommandDeclaration *setWedge =
       new AvailableCppCommandDeclaration((void *)AutoFunction::SetWedge, "SetWedge", {DataType::BOOLEAN});
   
 
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, encoderWait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge};
+      driveStraight, driveYolo, driveYoloAtAngle, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, encoderWait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge, waitForBall, dropBall};
   state.declareAvailableCppCommands(commands);
 
   try {

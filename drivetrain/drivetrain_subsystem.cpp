@@ -10,7 +10,7 @@ DrivetrainSubsystem::DrivetrainSubsystem()
       distance_controller_(
           RobotConstants::GetInstance().drivetrain_distance_gains),
       event_log_("drivetrain_subsystem"),
-      csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "pwm_left",
+      csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "goal_dist", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}),
       csv_helper_(&csv_log_) {
   event_log_.Write("Initializing drivetrain subsystem components...", "INIT",
@@ -124,7 +124,7 @@ void DrivetrainSubsystem::Update(Time dt) {
           angle_profile_->finished(t) && distance_profile_->finished(t);
       bool profile_finished_distance =
           muan::abs(distance_from_start - distance_profile_->Calculate(t)) <
-          2 * cm;
+          4 * cm;
       bool profile_finished_angle =
           muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
 
@@ -140,6 +140,8 @@ void DrivetrainSubsystem::Update(Time dt) {
            << " degrees and " << distance_from_start.to(m) << " meters in "
            << t.to(s) << " seconds";
         event_log_.Write(ss.str(), "MOTION", CODE_STAMP);
+      } else {
+        csv_log_["goal_dist"] = std::to_string((distance_profile_->Calculate(t) + encoder_offset_).to(m));
       }
     }
   }
@@ -209,7 +211,7 @@ void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
       0 * m, 10 * ft / s, 10 * ft / s / s);
   auto ap =
       std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, speed, accel);
-  FollowMotionProfile(std::move(dp), std::move(ap), highgear, false, true);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, false);
 }
 
 
@@ -221,7 +223,7 @@ void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
       0 * m, 10 * ft / s, 10 * ft / s / s);
   auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
       angle - gyro_reader_->GetAngle() - gyro_zero_offset_, speed, accel);
-  FollowMotionProfile(std::move(dp), std::move(ap), highgear, false, true);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, false);
 }
 
 void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
@@ -313,8 +315,8 @@ Voltage DrivetrainSubsystem::GetDistanceFFVoltage(Velocity velocity,
   auto c2 = decltype(V / velocity){0};
   if (highgear) {
     Velocity max_robot_velocity = 3.0 * m / s;
-    c1 = .75 * .75 / V * (m / s / s);
-    c2 = 24 * V / max_robot_velocity;
+    c1 = .60 * .75 / V * (m / s / s);
+    c2 = 22 * V / max_robot_velocity;
   } else {
     Velocity max_robot_velocity = 1.44 * m / s;
     c1 = 1 * .75 / V * (m / s / s);

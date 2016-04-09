@@ -47,10 +47,11 @@ bool CitrusVision::Update(bool enabled) {
 }
 
 bool CitrusVision::Aligned() {
-  if (isFound && hasConnection && (muan::abs(GetAngleOff()) < 1 * deg) && last_align_) {
+  Angle tolerance = 1.25 * deg;
+  if (isFound && hasConnection && (muan::abs(GetAngleOff()) < tolerance) && last_align_) {
     align_counter_++;
     last_align_ = true;
-  } else if (isFound && hasConnection && (muan::abs(GetAngleOff()) < 1 * deg) && !last_align_) {
+  } else if (isFound && hasConnection && (muan::abs(GetAngleOff()) < tolerance) && !last_align_) {
     align_counter_ = 0;
     last_align_ = true;
   } else {

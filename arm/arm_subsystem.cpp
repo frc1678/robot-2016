@@ -41,6 +41,8 @@ ArmSubsystem::ArmSubsystem()
   intake_front_ = std::make_unique<VictorSP>(RobotPorts::intake_front);
   intake_side_ = std::make_unique<VictorSP>(RobotPorts::intake_side);
 
+  ball_pinch_ = std::make_unique<Solenoid>(RobotPorts::ball_pinch);
+
   ball_sensor_ = std::make_unique<DigitalInput>(RobotPorts::ball_sensor);
 
   shot_timer_.Start();
@@ -91,8 +93,10 @@ void ArmSubsystem::Update(Time dt) {
         elevator_controller_.SetGoal(current_goal_.elevator_goal);
       }
       shooter_controller_.SetGoal(current_goal_.shooter_goal);
-      if(climbing_advance_) {
+      if(climbing_advance_ && !pivot_controller_.IsDone()) {
         pivot_voltage = 6.0 * V;
+      } else if (climbing_advance_ && pivot_controller_.IsDone()) {
+        pivot_voltage = 0.0 * V;
       }
       break;
     case ArmState::EXTENDING:
@@ -136,6 +140,7 @@ void ArmSubsystem::Update(Time dt) {
 
   Voltage shooter_voltage =
       shooter_controller_.Update(0.005 * s, shooter_encoder_->Get() * deg);
+  shooter_voltage = (ball_sensor_->Get() || proxy_shot_override_ || proxy_position_override_) ? shooter_voltage : 0;
   shooter_motor_a_->Set(
       state_ != ArmState::DISABLED ? -shooter_voltage.to(12 * V) : 0.0);
   shooter_motor_b_->Set(
@@ -246,6 +251,7 @@ void ArmSubsystem::GoToLong() {
   ArmGoal goal =
       constants
           .long_shot_goals;  // Look at robot_constants to change these values
+  proxy_position_override_ = true;
   SetGoal(goal);
   SetHoodOpen(true);
 }
@@ -254,24 +260,28 @@ void ArmSubsystem::GoToAutoShot() {
   ArmGoal goal =
       constants
           .auto_shot_goals;  // Look at robot_constants to change these values
+  proxy_position_override_ = true;
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToTuck() {
   ArmGoal goal{0 * deg, 0 * m, 0 * rev / (60 * s)};
+  proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
 }
 
 void ArmSubsystem::GoToTuckSpin() {
-  ArmGoal goal{0 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{0 * deg, 0 * m, 6500 * rev / (60 * s)};
+  proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
 }
 
 void ArmSubsystem::GoToIntakeSpin() {
-  ArmGoal goal{4.0 * deg, 0 * m, 5500 * rev / (60 * s)};
+  ArmGoal goal{2.5 * deg, 0 * m, 6500 * rev / (60 * s)};
+  proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
 }
@@ -280,22 +290,34 @@ void ArmSubsystem::GoToFender() {
   ArmGoal goal =
       constants
           .fender_shot_goals;  // Look at robot_constants to change these values
+  proxy_position_override_ = true;
   SetGoal(goal);
   SetHoodOpen(true);
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{4.0 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{2.5 * deg, 0 * m, 0 * rev / (60 * s)};
+  proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
 }
 
 void ArmSubsystem::GoToDefensive() {
   ArmGoal goal{30 * deg, 0 * m, 0 * rev / (60 * s)};
+  proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
   climbing_advance_ = false;
 }
+
+void ArmSubsystem::GoToDefensiveSpin() {
+  ArmGoal goal{30 * deg, 0 * m, 6500 * rev / (60 * s)};
+  proxy_position_override_ = false;
+  SetGoal(goal);
+  SetHoodOpen(false);
+  climbing_advance_ = false;
+}
+
 
 void ArmSubsystem::StartClimb() {
   ArmGoal goal{85 * deg, 0.58 * m, 0 * rev / (60 * s)};
@@ -305,7 +327,7 @@ void ArmSubsystem::StartClimb() {
 }
 
 void ArmSubsystem::ContinueClimb() {
-  ArmGoal goal{105 * deg, 0.58 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{97 * deg, 0.58 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   // I'm sorry, future self. I know you're disappointed in me, but I'm too
   // lazy
@@ -324,6 +346,10 @@ void ArmSubsystem::CompleteClimb() {
   climbing_advance_ = false;
 }
 
+void ArmSubsystem::DropBall() {
+  ball_pinch_->Set(true);
+}
+
 void ArmSubsystem::SetHoodOpen(bool open) { shooter_hood_->Set(open); }
 
 void ArmSubsystem::SetEnabled(bool enabled) { enabled_ = enabled; }
@@ -340,9 +366,9 @@ void ArmSubsystem::SetGoal(ArmGoal goal) {
   shooter_controller_.SetGoal(0 * rad / s);
 }
 
-void ArmSubsystem::Shoot() {
+void ArmSubsystem::Shoot(bool checkspeed) {
   shot_timer_.Reset();
-  should_shoot_ = true;
+  if(ShooterSpeeded() || !checkspeed) { should_shoot_ = true; }
 }
 
 bool ArmSubsystem::ShooterSpeeded() {

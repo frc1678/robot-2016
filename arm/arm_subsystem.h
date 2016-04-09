@@ -31,6 +31,7 @@ class ArmSubsystem : public muan::Updateable {
   void GoToFender();
   void GoToIntake();
   void GoToDefensive();
+  void GoToDefensiveSpin();
 
   void StartClimb();
   void ContinueClimb();
@@ -38,16 +39,21 @@ class ArmSubsystem : public muan::Updateable {
 
   void SetEnabled(bool enabled);
 
+  void DropBall();
+
   void SetIntake(IntakeGoal goal);
   void SetShooter(bool on);
 
-  void Shoot();
+  void Shoot(bool checkspeed = true);
   bool ShooterSpeeded();
 
   bool AllIsDone();
   bool ClimbIsDone();
   bool BallIntaked();
   bool IsShooting() { return should_shoot_; }
+
+  bool proxy_shot_override_ = false;
+  bool proxy_position_override_ = false;
 
  private:
   std::tuple<Voltage, bool, Voltage, bool> UpdateClimb(Time dt);
@@ -85,6 +91,7 @@ class ArmSubsystem : public muan::Updateable {
   std::unique_ptr<VictorSP> shooter_motor_a_, shooter_motor_b_;
 
   std::unique_ptr<Solenoid> shooter_hood_;
+  std::unique_ptr<Solenoid> ball_pinch_;
 
   std::unique_ptr<VictorSP> intake_front_;
   std::unique_ptr<VictorSP> intake_side_;
