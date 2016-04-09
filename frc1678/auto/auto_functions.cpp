@@ -253,15 +253,16 @@ bool AutoFunction::Align(CitrusRobot* robot) {
     toStartVision = false;
   }
 
-  if (robot->vision_.Aligned() ) {
+//  if (robot->vision_.Aligned() ) {
+  if (robot->subsystems_.drive.IsProfileComplete()) {
     toStartVision = true;
     return true;
   }
-
+/*
   if (robot->subsystems_.drive.IsProfileComplete()) {
     robot->vision_.Start();
   }
-
+*/
   return false;
 }
 
