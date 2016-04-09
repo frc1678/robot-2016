@@ -11,8 +11,8 @@ PointTurn: angle: -55.0
 
 Wait: 1.2
 Align
-Wait: 0.4
-Align
+//Wait: 0.4
+//Align
 Shoot
 
 Wait: 0.6
