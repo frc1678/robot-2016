@@ -80,8 +80,7 @@ std::string CitrusRobot::GetAutoRoutine() {
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
-  std::vector<std::string> robot_names = {"comp", "appa", "ssbb", "wtf"};
-  SmartDashboard::PutString("Robot", robot_names[(int)GetRobotIdentifier()]);
+  SmartDashboard::PutString("Robot", GetRobotString(GetRobotIdentifier()));
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
   SmartDashboard::PutNumber("Profiles Run", profiles_run_); 
   camera_timer_->Start();
