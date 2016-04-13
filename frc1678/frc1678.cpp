@@ -76,11 +76,6 @@ void CitrusRobot::AutonomousInit() {
   subsystems_.arm.SetEnabled(true);
   subsystems_.drive.gyro_reader_->SetOffset();
 
-  if (auto_runner != nullptr) {
-    delete auto_runner;
-  }
-  //TODO(Wesley) Move file IO out of auto init
-  auto_runner = new LemonScriptRunner("/home/lvuser/" + GetAutoRoutine(), this);
   subsystems_.arm.proxy_shot_override_ = true;
 }
 
@@ -106,6 +101,7 @@ void CitrusRobot::DisabledInit() {
 
 void CitrusRobot::DisabledPeriodic() {
   vision_.Update(false);
+  UpdateAutoRoutine();
   UpdateLights();
   ColorLights();
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
@@ -329,15 +325,14 @@ void CitrusRobot::UpdateLights() {
     j_manip_->SetRumble(Joystick::kRightRumble, 0);
     j_manip_->SetRumble(Joystick::kLeftRumble, 0);
 
-    std::string auto_routine = GetAutoRoutine();
-    SmartDashboard::PutString("auto", auto_routine);
-    if (auto_routine == "one_ball.auto") {
+    SmartDashboard::PutString("auto", auto_routine_);
+    if (auto_routine_ == "one_ball.auto") {
       lights_ = ColorLight::GREEN;
-    } else if (auto_routine == "two_ball.auto") {
+    } else if (auto_routine_ == "two_ball.auto") {
       lights_ = ColorLight::RED;
-    } else if (auto_routine == "class_d_left.auto") {
+    } else if (auto_routine_ == "class_d_left.auto") {
       lights_ = ColorLight::YELLOW;
-    } else if (auto_routine == "class_d_right.auto") {
+    } else if (auto_routine_ == "class_d_right.auto") {
       lights_ = ColorLight::PINK;
     } else {
       lights_ = ColorLight::WHITE;
@@ -388,7 +383,7 @@ void CitrusRobot::SetLightColor(int r, int g, int b) {
   l_pow_->Set(0);
 }
 
-std::string CitrusRobot::GetAutoRoutine() {
+void CitrusRobot::UpdateAutoRoutine() {
   std::map<int8_t, std::string> auto_map;
 
   auto_map[0b00000011] = "one_ball.auto";
@@ -400,7 +395,14 @@ std::string CitrusRobot::GetAutoRoutine() {
   auto_number |= (switch_one->Get() ? 0 : 1) << 0;
   auto_number |= (switch_two->Get() ? 0 : 1) << 1;
 
-  return auto_map[auto_number];
+  if (auto_routine_ != auto_map[auto_number]) { // If the routine was just changed
+    if (auto_runner != nullptr) {
+      delete auto_runner;
+    }
+    auto_runner = new LemonScriptRunner("/home/lvuser/" + auto_map[auto_number], this);
+  }
+
+  auto_routine_ = auto_map[auto_number];
 }
 
 CitrusRobot::~CitrusRobot() {}
