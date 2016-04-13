@@ -91,8 +91,6 @@ void CitrusRobot::AutonomousPeriodic() {
 }
 
 void CitrusRobot::TeleopInit() {
-  // using muan::TrapezoidalMotionProfile;
-  // subsystems_.drive.DriveDistance(2 * m);
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
   subsystems_.arm.proxy_shot_override_ = false;
@@ -107,21 +105,6 @@ void CitrusRobot::DisabledInit() {
 }
 
 void CitrusRobot::DisabledPeriodic() {
-  // TODO (Finn): Get this out of the main loop and into its own
-  // thread.
-  // DrivetrainGoal drivetrain_goal;
-
-  // if (test_flag_) {
-  // vision_.EndTest();
-  // test_flag_ = false;
-  // }
-
-  // SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
-  // SmartDashboard::PutNumber("Stick", j_stick_->GetY());
-  //  SetDriveGoal(&drivetrain_goal);
-  //  vision_done_ = vision_.Update(false);
-
-  //  subsystems_.drive.SetDriveGoal(drivetrain_goal);
   vision_.Update(false);
   UpdateLights();
   ColorLights();
@@ -159,14 +142,6 @@ void CitrusRobot::TeleopPeriodic() {
     if ( subsystems_.drive.IsProfileComplete() && shootable_ && !subsystems_.arm.IsShooting() && vision_.Aligned()){
       subsystems_.arm.Shoot();
     }
-    // Need to be NOT aligned, NOT running a profile, and NOT shooting or NOT in a shooting position
-/*    if (!vision_.InitallyAligned() && subsystems_.drive.IsProfileComplete()  && (!subsystems_.arm.IsShooting() || !shootable_) && profiles_run_ ==  0) {
-      vision_.Start();
-      profiles_run_++;
-    } else if (((vision_.Aligned() || (!vision_.Aligned() && profiles_run_ == 1)) && subsystems_.drive.IsProfileComplete()) && shootable_) {
-      subsystems_.arm.Shoot();
-      SmartDashboard::PutNumber("Profiles Run", profiles_run_);
-    }*/
   }
   if (shift_high_->ButtonClicked()) {
     subsystems_.drive.Shift(true);
@@ -259,9 +234,7 @@ void CitrusRobot::TeleopPeriodic() {
 
   // Toggle the wedge when the button is deployed
   is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
-  // if (wedge_toggle_->ButtonClicked()) {
   wedge_->Set(is_wedge_deployed_);
-  //}
 
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
 
@@ -380,12 +353,6 @@ void CitrusRobot::UpdateLights() {
   if(camera_timer_->Get() > 1.0) {
     camera_timer_->Reset();
   }
-  // if (start_climb_ && subsystems_.arm.AllIsDone()) {
-  //  lights_ = ColorLight::YELLOW;
- // if (subsystems_.arm.ClimbIsDone()) {
-  //  lights_ = ColorLight::GREEN;
-  //}
-//  lights_ = ColorLight::OFF;
 }
 
 void CitrusRobot::ColorLights() {
