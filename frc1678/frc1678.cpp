@@ -62,27 +62,12 @@ CitrusRobot::CitrusRobot()
   auto_runner = nullptr;
 }
 
-std::string CitrusRobot::GetAutoRoutine() {
-  std::map<int8_t, std::string> auto_map;
-
-  auto_map[0b00000011] = "one_ball.auto";
-  auto_map[0b00000001] = "two_ball.auto";
-  auto_map[0b00000010] = "class_d_left.auto";
-  auto_map[0b00000000] = "class_d_right.auto";
-
-  int8_t auto_number = 0b00000000;
-  auto_number |= (switch_one->Get() ? 0 : 1) << 0;
-  auto_number |= (switch_two->Get() ? 0 : 1) << 1;
-
-  return auto_map[auto_number];
-}
-
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
   SmartDashboard::PutString("Robot", GetRobotString(GetRobotIdentifier()));
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
-  SmartDashboard::PutNumber("Profiles Run", profiles_run_); 
+  SmartDashboard::PutNumber("Profiles Run", profiles_run_);
   camera_timer_->Start();
 }
 
@@ -153,15 +138,15 @@ void CitrusRobot::TeleopPeriodic() {
 
   SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   SmartDashboard::PutNumber("Stick", j_stick_->GetY());
-  SmartDashboard::PutBoolean("Aligned", vision_.Aligned()); 
-  SmartDashboard::PutNumber("Align counter", vision_.align_counter_); 
+  SmartDashboard::PutBoolean("Aligned", vision_.Aligned());
+  SmartDashboard::PutNumber("Align counter", vision_.align_counter_);
 
   if (shoot_->ButtonClicked()) {
     subsystems_.arm.Shoot();
   }
   if (align_->ButtonClicked()) {
     vision_.Start();
-  } 
+  }
   if (cancel_profile_->ButtonClicked()) {
     subsystems_.drive.CancelMotionProfile();
   }
@@ -175,12 +160,12 @@ void CitrusRobot::TeleopPeriodic() {
       subsystems_.arm.Shoot();
     }
     // Need to be NOT aligned, NOT running a profile, and NOT shooting or NOT in a shooting position
-/*    if (!vision_.InitallyAligned() && subsystems_.drive.IsProfileComplete()  && (!subsystems_.arm.IsShooting() || !shootable_) && profiles_run_ ==  0) { 
+/*    if (!vision_.InitallyAligned() && subsystems_.drive.IsProfileComplete()  && (!subsystems_.arm.IsShooting() || !shootable_) && profiles_run_ ==  0) {
       vision_.Start();
-      profiles_run_++;            
-    } else if (((vision_.Aligned() || (!vision_.Aligned() && profiles_run_ == 1)) && subsystems_.drive.IsProfileComplete()) && shootable_) { 
+      profiles_run_++;
+    } else if (((vision_.Aligned() || (!vision_.Aligned() && profiles_run_ == 1)) && subsystems_.drive.IsProfileComplete()) && shootable_) {
       subsystems_.arm.Shoot();
-      SmartDashboard::PutNumber("Profiles Run", profiles_run_); 
+      SmartDashboard::PutNumber("Profiles Run", profiles_run_);
     }*/
   }
   if (shift_high_->ButtonClicked()) {
@@ -434,6 +419,21 @@ void CitrusRobot::SetLightColor(int r, int g, int b) {
   l_green_->Set(g);
   l_blue_->Set(b);
   l_pow_->Set(0);
+}
+
+std::string CitrusRobot::GetAutoRoutine() {
+  std::map<int8_t, std::string> auto_map;
+
+  auto_map[0b00000011] = "one_ball.auto";
+  auto_map[0b00000001] = "two_ball.auto";
+  auto_map[0b00000010] = "class_d_left.auto";
+  auto_map[0b00000000] = "class_d_right.auto";
+
+  int8_t auto_number = 0b00000000;
+  auto_number |= (switch_one->Get() ? 0 : 1) << 0;
+  auto_number |= (switch_two->Get() ? 0 : 1) << 1;
+
+  return auto_map[auto_number];
 }
 
 CitrusRobot::~CitrusRobot() {}
