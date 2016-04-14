@@ -16,6 +16,7 @@ class CitrusPOV;
 class CitrusRobot : public IterativeRobot {
  private:
   LemonScriptRunner* auto_runner;
+  std::string auto_routine_;
   std::unique_ptr<Solenoid> wedge_;
 
   // Avery's buttons
@@ -57,7 +58,7 @@ class CitrusRobot : public IterativeRobot {
 
   CitrusRobot();
   void RobotInit();
-  std::string GetAutoRoutine();
+  void UpdateAutoRoutine();
   void AutonomousInit();
   void AutonomousPeriodic();
   void TeleopInit();
