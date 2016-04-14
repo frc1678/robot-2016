@@ -19,7 +19,6 @@ CitrusVision::CitrusVision(RobotSubsystems &subs, RobotConstants constants)
 
 Angle CitrusVision::GetAngleOff() {
   const double camera_angle = constants_.camera_scaling_factor;
-// Axis camera      1.136;  // multiply by this to turn camera angles into gyro angles
 
   Angle camera_diff =
       (-angleReceived + constants_.camera_offset * deg) * camera_angle;
@@ -31,8 +30,9 @@ void CitrusVision::Start() {
   align_counter_ = 0;
 }
 
-bool CitrusVision::Update(bool enabled) {
+void CitrusVision::Update() {
   ReadPosition();
+  UpdateAligned();
   angle_log_["cameraAngle"] = std::to_string(angleReceived.to(deg));
   angle_log_["gyroHistory"] =
       std::to_string(subsystems_.drive.GetGyroAngle().to(deg));
@@ -43,10 +43,10 @@ bool CitrusVision::Update(bool enabled) {
     hasNewImage = false;
   } else { hasNewImage = true; }
   last_angle_ = angleReceived;
-  return subsystems_.drive.IsProfileComplete();
 }
 
-bool CitrusVision::Aligned() {
+//TODO(Wesley) make this work at any frequency
+void CitrusVision::UpdateAligned() {
   Angle tolerance = 1.25 * deg;
   if (isFound && hasConnection && (muan::abs(GetAngleOff()) < tolerance) && last_align_) {
     align_counter_++;
@@ -58,18 +58,12 @@ bool CitrusVision::Aligned() {
     last_align_ = false;
     align_counter_ = 0;
   }
-  
-          
-  if (align_counter_ > 10){
-    return true;
-  } else {
-    return false;
-  }
+
+  aligned_ = align_counter_ > 10;
 }
 
-void CitrusVision::EndTest() {
-  // test_log_["end"] = std::to_string(table_->GetNumber("angleToTarget", 0));
-  // test_log_.EndTest();
+bool CitrusVision::GetAligned() {
+  return aligned_;
 }
 
 void CitrusVision::ReadPosition() {

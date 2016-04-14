@@ -2,7 +2,7 @@
 #define FRC1678_H
 
 #include "frc1678/auto/auto_routines.h"
-#include "vision/vision.h"
+#include "vision/robot/vision.h"
 #include "robot_subsystems.h"
 
 // class LemonScriptRunner { };

@@ -6,7 +6,7 @@
 #include "muan/control/trapezoidal_motion_profile.h"
 #include "utils/citrus_button.h"
 #include "frc1678/auto/auto_routines.h"
-#include "vision/vision.h"
+#include "vision/robot/vision.h"
 #include "robot_subsystems.h"
 #include "frc1678/frc1678.h"
 #include "robot_constants/robot_constants.h"
@@ -81,7 +81,7 @@ void CitrusRobot::AutonomousInit() {
 
 void CitrusRobot::AutonomousPeriodic() {
   auto_runner->Update();
-  vision_.Update(true);
+  vision_.Update();
   wedge_->Set(is_wedge_deployed_);
 }
 
@@ -100,7 +100,7 @@ void CitrusRobot::DisabledInit() {
 }
 
 void CitrusRobot::DisabledPeriodic() {
-  vision_.Update(false);
+  vision_.Update();
   UpdateAutoRoutine();
   UpdateLights();
   ColorLights();
@@ -112,19 +112,18 @@ void CitrusRobot::DisabledPeriodic() {
 void CitrusRobot::TeleopPeriodic() {
   // TODO (Finn): Get this out of the main loop and into its own
   // thread.
-  vision_.Update(true);
+  vision_.Update();
   DrivetrainGoal drivetrain_goal;
 
   SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   SmartDashboard::PutNumber("Stick", j_stick_->GetY());
-  SmartDashboard::PutBoolean("Aligned", vision_.Aligned());
-  SmartDashboard::PutNumber("Align counter", vision_.align_counter_);
+  SmartDashboard::PutBoolean("Aligned", vision_.GetAligned());
 
   if (shoot_->ButtonClicked()) {
     subsystems_.arm.Shoot();
   }
   if (align_->ButtonPressed()) {
-    if (vision_.Aligned()) {
+    if (vision_.GetAligned()) {
       subsystems_.arm.Shoot();
     } else if (!subsystems_.arm.IsShooting()) {
       subsystems_.drive.RunVisionTracking(true);
@@ -144,7 +143,7 @@ void CitrusRobot::TeleopPeriodic() {
       vision_.Start();
     }
 
-    if ( subsystems_.drive.IsProfileComplete() && shootable_ && !subsystems_.arm.IsShooting() && vision_.Aligned()){
+    if ( subsystems_.drive.IsProfileComplete() && shootable_ && !subsystems_.arm.IsShooting() && vision_.GetAligned()){
       subsystems_.arm.Shoot();
     }
   }
@@ -294,7 +293,7 @@ void CitrusRobot::UpdateLights() {
     lights_ = ColorLight::YELLOW;
   }
 
-  if (vision_.Aligned() && shootable_ && !tuck_def_ &&
+  if (vision_.GetAligned() && shootable_ && !tuck_def_ &&
       subsystems_.arm.AllIsDone()  &&
       subsystems_.arm.ShooterSpeeded()) {  // if aligned and ready to shoot
     lights_ = ColorLight::GREEN;

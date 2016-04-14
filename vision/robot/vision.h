@@ -11,17 +11,15 @@ class CitrusVision {
  public:
   CitrusVision(RobotSubsystems& subsystems, RobotConstants constants);
   void Start();
-  bool Update(bool enable);
-  void EndTest();
-  bool Aligned();
-  bool InitallyAligned() { return (!Aligned() && align_counter_ >= 1); }
+  void Update();
+  bool GetAligned();
   bool IsSeeing() { return isFound; }
   bool HasConnection() {return hasConnection; }
   bool HasNewImage() { return hasNewImage; }
-  int align_counter_ = 0;
   Angle GetAngleOff();
  private:
   void ReadPosition();
+  void UpdateAligned();
 
   RobotConstants constants_;
   RobotSubsystems& subsystems_;
@@ -30,6 +28,8 @@ class CitrusVision {
   muan::Timer test_timer;
   muan::CSVLog angle_log_;
   SmartDashboardHelper angle_helper_;
+  bool aligned_ = false;
+  int align_counter_ = 0;
 
   bool isFound, hasConnection, hasNewImage;
   bool last_align_ = false;

@@ -1,9 +1,14 @@
-cc_library(
-  name = "robot_side",
-  srcs = ["vision.cpp"],
-  hdrs = ["vision.h"],
-  deps = ["//frc1678:robot_subsystems", "//muan", "//muan/unitscpp", "//citrus_socket"],
-  visibility = ["//visibility:public"]
+cc_binary(
+  name = "main",
+  srcs = ["vision_main.cpp"],
+  deps = ["object_detector", "vision_sender", "//unitscpp", "//muan", ":vision_utils", "@opencv//:main"],
+  linkopts = ["-lpthread"]
+)
+
+cc_binary(
+  name = "calibration",
+  srcs = ["calibration_main.cpp"],
+  deps = ["@opencv//:main", ":image_calibration", ":vision_utils"]
 )
 
 cc_library(
@@ -20,13 +25,6 @@ cc_library(
   deps = [":object_detector", "//unitscpp", "//muan", "@opencv//:main", "//citrus_socket"]
 )
 
-cc_binary(
-  name = "coprocessor_side",
-  srcs = ["vision_main.cpp"],
-  deps = ["object_detector", "vision_sender", "//unitscpp", "//muan", ":vision_utils", "@opencv//:main"],
-  linkopts = ["-lpthread"]
-)
-
 cc_library(
   name = "vision_utils",
   srcs = ["vision_utils.cpp", "maximization.cpp", "in_range_instructions.cpp"],
@@ -39,12 +37,6 @@ cc_library(
   srcs = ["calibration.cpp", "score_range_vals.cpp", "img_score_calculator.cpp", "score_rules.cpp"],
   hdrs = ["calibration.h", "score_range_vals.h", "img_score_calculator.h", "score_rules.h"],
   deps = ["@opencv//:main", ":vision_utils"]
-)
-
-cc_binary(
-  name = "calibration_main",
-  srcs = ["calibration_main.cpp"],
-  deps = ["@opencv//:main", ":image_calibration", ":vision_utils"]
 )
 
 cc_test(
