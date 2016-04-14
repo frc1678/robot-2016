@@ -43,7 +43,10 @@ int main() {
     // exit if camera has lost connection
     // This does not work with normal OpenCV because of issue 5746.
     // Using https://github.com/amannababanana/opencv for fix.
-    if(!camera.read(image)) return 0;
+    if(!camera.read(image)) {
+      std::cout << "got here" <<std::endl;
+      return 0;
+    }
 
     cv::resize(image, image, cv::Size(image.cols / 3, image.rows / 3));
     TrackerResults position = tracker.Update(image);

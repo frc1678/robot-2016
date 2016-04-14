@@ -15,10 +15,6 @@ class ShapeDetector {
 
  private:
   std::vector<std::vector<cv::Point>> getAllContours(cv::Mat m);
-  std::vector<cv::Point> convertToPolygon(std::vector<cv::Point> points, const cv::Mat &image);
-  double getTargetCertainty(std::vector<cv::Point> points,
-                            bool isClosestToPrevious);
-  double getAngleDiff(std::vector<cv::Point> points, int offset);
 
   std::vector<Angle> angles_;
   std::vector<cv::Point> points_;
