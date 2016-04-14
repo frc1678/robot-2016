@@ -371,6 +371,10 @@ void ArmSubsystem::Shoot(bool checkspeed) {
   if(ShooterSpeeded() || !checkspeed) { should_shoot_ = true; }
 }
 
+bool ArmSubsystem::IsShooting() {
+  return should_shoot_;
+}
+
 bool ArmSubsystem::ShooterSpeeded() {
   return shooter_controller_.IsAtVelocity();
 }

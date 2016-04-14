@@ -45,12 +45,12 @@ class ArmSubsystem : public muan::Updateable {
   void SetShooter(bool on);
 
   void Shoot(bool checkspeed = true);
+  bool IsShooting();
   bool ShooterSpeeded();
 
   bool AllIsDone();
   bool ClimbIsDone();
   bool BallIntaked();
-  bool IsShooting() { return should_shoot_; }
 
   bool proxy_shot_override_ = false;
   bool proxy_position_override_ = false;

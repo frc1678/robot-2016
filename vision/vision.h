@@ -19,9 +19,9 @@ class CitrusVision {
   bool HasConnection() {return hasConnection; }
   bool HasNewImage() { return hasNewImage; }
   int align_counter_ = 0;
+  Angle GetAngleOff();
  private:
   void ReadPosition();
-  Angle GetAngleOff();
 
   RobotConstants constants_;
   RobotSubsystems& subsystems_;

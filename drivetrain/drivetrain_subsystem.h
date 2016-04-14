@@ -24,6 +24,12 @@ using drivetrain::control_loops::DrivetrainOutput;
 using drivetrain::control_loops::DrivetrainStatus;
 using drivetrain::control_loops::DrivetrainLoop;
 
+enum DriveMode {
+  OPERATOR = 0,
+  MOTION_PROFILE,
+  VISION
+};
+
 class DrivetrainSubsystem : public muan::Updateable {
  public:
   DrivetrainSubsystem();
@@ -31,6 +37,8 @@ class DrivetrainSubsystem : public muan::Updateable {
 
   void Update(Time dt) override;
   void Start();
+  void SetVisionTargetAngle(Angle vision_target_angle);
+  void RunVisionTracking(bool vision);
   void UpdateConstants();
   void SetDriveGoal(const DrivetrainGoal& goal);
   Length GetDistanceDriven();
@@ -68,7 +76,7 @@ class DrivetrainSubsystem : public muan::Updateable {
   std::unique_ptr<Encoder> left_encoder_, right_encoder_;
   std::unique_ptr<Solenoid> shifting_;
 
-  bool is_operator_controlled_ = true;
+  DriveMode mode_ = OPERATOR;
   bool is_loop_highgear = true;
 
   bool is_enabled_ = false;
@@ -84,6 +92,9 @@ class DrivetrainSubsystem : public muan::Updateable {
 
   muan::PidController<Angle, Voltage> angle_controller_;
   muan::PidController<Length, Voltage> distance_controller_;
+  muan::PidController<Angle, Voltage> vision_angle_controller_;
+
+  Angle vision_target_angle_ = 0 * deg;
 
   Length encoder_offset_ = 0 * m;
   Angle gyro_offset_ = 0 * rad;
