@@ -57,10 +57,6 @@ void CitrusVision::UpdateAligned() {
   aligned_ = align_counter_ > 10;
 }
 
-bool CitrusVision::GetAligned() {
-  return aligned_;
-}
-
 void CitrusVision::ReadPosition() {
   bool got_packets = false;
   try {

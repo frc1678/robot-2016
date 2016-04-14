@@ -12,7 +12,7 @@ class CitrusVision {
   CitrusVision(RobotSubsystems& subsystems, RobotConstants constants);
   void Start();
   void Update();
-  bool GetAligned();
+  bool GetAligned() { return aligned_; }
   bool IsSeeing() { return is_found_; }
   bool HasConnection() {return has_connection_; }
   bool HasNewImage() { return has_new_image_; }
