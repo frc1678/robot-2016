@@ -67,7 +67,6 @@ void CitrusRobot::RobotInit() {
   subsystems_.arm.Start();
   SmartDashboard::PutString("Robot", GetRobotString(GetRobotIdentifier()));
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
-  SmartDashboard::PutNumber("Profiles Run", profiles_run_);
   camera_timer_->Start();
 }
 
@@ -123,7 +122,7 @@ void CitrusRobot::TeleopPeriodic() {
     subsystems_.arm.Shoot();
   }
   if (align_->ButtonPressed()) {
-    if (vision_.GetAligned()) {
+    if (vision_.GetAligned() && shootable_ && !subsystems_.arm.IsShooting()) {
       subsystems_.arm.Shoot();
     } else if (!subsystems_.arm.IsShooting()) {
       subsystems_.drive.RunVisionTracking(true);
@@ -136,16 +135,6 @@ void CitrusRobot::TeleopPeriodic() {
   }
   if (cancel_profile_->ButtonClicked()) {
     subsystems_.drive.CancelMotionProfile();
-  }
-  if (align_->ButtonPressed()) {
-    if (align_->ButtonClicked()) {
-      profiles_run_ = 0;
-      vision_.Start();
-    }
-
-    if ( subsystems_.drive.IsProfileComplete() && shootable_ && !subsystems_.arm.IsShooting() && vision_.GetAligned()){
-      subsystems_.arm.Shoot();
-    }
   }
   if (shift_high_->ButtonClicked()) {
     subsystems_.drive.Shift(true);
@@ -196,7 +185,6 @@ void CitrusRobot::TeleopPeriodic() {
     start_climb_ = false;
     intaking_ = false;
     tuck_def_ = false;
-    profiles_run_ = 0;
   }
   if (run_intake_until_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
