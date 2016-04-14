@@ -6,6 +6,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
+      gyro_history_(5 * ms),
       angle_controller_(RobotConstants::GetInstance().drivetrain_angle_gains),
       distance_controller_(RobotConstants::GetInstance().drivetrain_distance_gains),
       vision_angle_controller_(RobotConstants::GetInstance().vision_angle_gains),
@@ -141,11 +142,12 @@ void DrivetrainSubsystem::Update(Time dt) {
     } else if (mode_ == DriveMode::VISION) {
       t += dt;
 
-      Voltage pid_voltage = vision_angle_controller_.Calculate(t,
-          vision_target_angle_ - gyro_reader_->GetAngle());
+      Angle turn_angle = vision_target_angle_ - gyro_history_.GoBack(230*ms);
 
-      if (muan::abs(pid_voltage) < 2 * V ) {
-        pid_voltage = 2 * V * (pid_voltage > 0 ? 1 : -1);
+      Voltage pid_voltage = vision_angle_controller_.Calculate(t, turn_angle);
+
+      if (muan::abs(pid_voltage) < 3 * V/* || muan::abs(turn_angle) < 4 * deg*/) {
+        pid_voltage = 3 * V * (pid_voltage > 0 ? 1 : -1);
       }
 
       out.left_voltage = pid_voltage.to(V);
@@ -156,6 +158,8 @@ void DrivetrainSubsystem::Update(Time dt) {
   // TODO (Finn): Also deal with shifting output and with logging
   // from the status.
   drive_->TankDrive(-out.left_voltage / 12.0, -out.right_voltage / 12.0, false);
+
+  gyro_history_.Update(gyro_reader_->GetAngle());
 
   csv_log_["enc_left"] = std::to_string(pos.left_encoder);
   csv_log_["enc_right"] = std::to_string(pos.right_encoder);

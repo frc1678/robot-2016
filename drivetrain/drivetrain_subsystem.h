@@ -12,6 +12,7 @@
 #include "muan/logging/text_log.h"
 #include "muan/logging/csv_log.h"
 #include "muan/utils/math_utils.h"
+#include "muan/utils/history.h"
 #include "frc1678/robot_ports.h"
 #include "drivetrain/drivetrain.h"
 #include "gyro/gyro_reader.h"
@@ -75,6 +76,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   std::unique_ptr<DrivetrainLoop> drive_loop_;
   std::unique_ptr<Encoder> left_encoder_, right_encoder_;
   std::unique_ptr<Solenoid> shifting_;
+
+  muan::History<Angle, 100> gyro_history_;
 
   DriveMode mode_ = OPERATOR;
   bool is_loop_highgear = true;
