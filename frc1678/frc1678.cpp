@@ -62,28 +62,12 @@ CitrusRobot::CitrusRobot()
   auto_runner = nullptr;
 }
 
-std::string CitrusRobot::GetAutoRoutine() {
-  std::map<int8_t, std::string> auto_map;
-
-  auto_map[0b00000011] = "one_ball.auto";
-  auto_map[0b00000001] = "two_ball.auto";
-  auto_map[0b00000010] = "class_d_left.auto";
-  auto_map[0b00000000] = "class_d_right.auto";
-
-  int8_t auto_number = 0b00000000;
-  auto_number |= (switch_one->Get() ? 0 : 1) << 0;
-  auto_number |= (switch_two->Get() ? 0 : 1) << 1;
-
-  return auto_map[auto_number];
-}
-
 void CitrusRobot::RobotInit() {
   subsystems_.drive.Start();
   subsystems_.arm.Start();
-  std::vector<std::string> robot_names = {"comp", "appa", "ssbb", "wtf"};
-  SmartDashboard::PutString("Robot", robot_names[(int)GetRobotIdentifier()]);
+  SmartDashboard::PutString("Robot", GetRobotString(GetRobotIdentifier()));
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
-  SmartDashboard::PutNumber("Profiles Run", profiles_run_); 
+  SmartDashboard::PutNumber("Profiles Run", profiles_run_);
   camera_timer_->Start();
 }
 
@@ -92,11 +76,6 @@ void CitrusRobot::AutonomousInit() {
   subsystems_.arm.SetEnabled(true);
   subsystems_.drive.gyro_reader_->SetOffset();
 
-  if (auto_runner != nullptr) {
-    delete auto_runner;
-  }
-  //TODO(Wesley) Move file IO out of auto init
-  auto_runner = new LemonScriptRunner("/home/lvuser/" + GetAutoRoutine(), this);
   subsystems_.arm.proxy_shot_override_ = true;
 }
 
@@ -107,8 +86,6 @@ void CitrusRobot::AutonomousPeriodic() {
 }
 
 void CitrusRobot::TeleopInit() {
-  // using muan::TrapezoidalMotionProfile;
-  // subsystems_.drive.DriveDistance(2 * m);
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
   subsystems_.arm.proxy_shot_override_ = false;
@@ -123,22 +100,8 @@ void CitrusRobot::DisabledInit() {
 }
 
 void CitrusRobot::DisabledPeriodic() {
-  // TODO (Finn): Get this out of the main loop and into its own
-  // thread.
-  // DrivetrainGoal drivetrain_goal;
-
-  // if (test_flag_) {
-  // vision_.EndTest();
-  // test_flag_ = false;
-  // }
-
-  // SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
-  // SmartDashboard::PutNumber("Stick", j_stick_->GetY());
-  //  SetDriveGoal(&drivetrain_goal);
-  //  vision_done_ = vision_.Update(false);
-
-  //  subsystems_.drive.SetDriveGoal(drivetrain_goal);
   vision_.Update(false);
+  UpdateAutoRoutine();
   UpdateLights();
   ColorLights();
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
@@ -154,15 +117,15 @@ void CitrusRobot::TeleopPeriodic() {
 
   SmartDashboard::PutNumber("Wheel", j_wheel_->GetX());
   SmartDashboard::PutNumber("Stick", j_stick_->GetY());
-  SmartDashboard::PutBoolean("Aligned", vision_.Aligned()); 
-  SmartDashboard::PutNumber("Align counter", vision_.align_counter_); 
+  SmartDashboard::PutBoolean("Aligned", vision_.Aligned());
+  SmartDashboard::PutNumber("Align counter", vision_.align_counter_);
 
   if (shoot_->ButtonClicked()) {
     subsystems_.arm.Shoot();
   }
   if (align_->ButtonClicked()) {
     vision_.Start();
-  } 
+  }
   if (cancel_profile_->ButtonClicked()) {
     subsystems_.drive.CancelMotionProfile();
   }
@@ -175,14 +138,6 @@ void CitrusRobot::TeleopPeriodic() {
     if ( subsystems_.drive.IsProfileComplete() && shootable_ && !subsystems_.arm.IsShooting() && vision_.Aligned()){
       subsystems_.arm.Shoot();
     }
-    // Need to be NOT aligned, NOT running a profile, and NOT shooting or NOT in a shooting position
-/*    if (!vision_.InitallyAligned() && subsystems_.drive.IsProfileComplete()  && (!subsystems_.arm.IsShooting() || !shootable_) && profiles_run_ ==  0) { 
-      vision_.Start();
-      profiles_run_++;            
-    } else if (((vision_.Aligned() || (!vision_.Aligned() && profiles_run_ == 1)) && subsystems_.drive.IsProfileComplete()) && shootable_) { 
-      subsystems_.arm.Shoot();
-      SmartDashboard::PutNumber("Profiles Run", profiles_run_); 
-    }*/
   }
   if (shift_high_->ButtonClicked()) {
     subsystems_.drive.Shift(true);
@@ -275,9 +230,7 @@ void CitrusRobot::TeleopPeriodic() {
 
   // Toggle the wedge when the button is deployed
   is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
-  // if (wedge_toggle_->ButtonClicked()) {
   wedge_->Set(is_wedge_deployed_);
-  //}
 
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
 
@@ -372,15 +325,14 @@ void CitrusRobot::UpdateLights() {
     j_manip_->SetRumble(Joystick::kRightRumble, 0);
     j_manip_->SetRumble(Joystick::kLeftRumble, 0);
 
-    std::string auto_routine = GetAutoRoutine();
-    SmartDashboard::PutString("auto", auto_routine);
-    if (auto_routine == "one_ball.auto") {
+    SmartDashboard::PutString("auto", auto_routine_);
+    if (auto_routine_ == "one_ball.auto") {
       lights_ = ColorLight::GREEN;
-    } else if (auto_routine == "two_ball.auto") {
+    } else if (auto_routine_ == "two_ball.auto") {
       lights_ = ColorLight::RED;
-    } else if (auto_routine == "class_d_left.auto") {
+    } else if (auto_routine_ == "class_d_left.auto") {
       lights_ = ColorLight::YELLOW;
-    } else if (auto_routine == "class_d_right.auto") {
+    } else if (auto_routine_ == "class_d_right.auto") {
       lights_ = ColorLight::PINK;
     } else {
       lights_ = ColorLight::WHITE;
@@ -396,12 +348,6 @@ void CitrusRobot::UpdateLights() {
   if(camera_timer_->Get() > 1.0) {
     camera_timer_->Reset();
   }
-  // if (start_climb_ && subsystems_.arm.AllIsDone()) {
-  //  lights_ = ColorLight::YELLOW;
- // if (subsystems_.arm.ClimbIsDone()) {
-  //  lights_ = ColorLight::GREEN;
-  //}
-//  lights_ = ColorLight::OFF;
 }
 
 void CitrusRobot::ColorLights() {
@@ -435,6 +381,28 @@ void CitrusRobot::SetLightColor(int r, int g, int b) {
   l_green_->Set(g);
   l_blue_->Set(b);
   l_pow_->Set(0);
+}
+
+void CitrusRobot::UpdateAutoRoutine() {
+  std::map<int8_t, std::string> auto_map;
+
+  auto_map[0b00000011] = "one_ball.auto";
+  auto_map[0b00000001] = "two_ball.auto";
+  auto_map[0b00000010] = "class_d_left.auto";
+  auto_map[0b00000000] = "class_d_right.auto";
+
+  int8_t auto_number = 0b00000000;
+  auto_number |= (switch_one->Get() ? 0 : 1) << 0;
+  auto_number |= (switch_two->Get() ? 0 : 1) << 1;
+
+  if (auto_routine_ != auto_map[auto_number]) { // If the routine was just changed
+    if (auto_runner != nullptr) {
+      delete auto_runner;
+    }
+    auto_runner = new LemonScriptRunner("/home/lvuser/" + auto_map[auto_number], this);
+  }
+
+  auto_routine_ = auto_map[auto_number];
 }
 
 CitrusRobot::~CitrusRobot() {}

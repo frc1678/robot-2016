@@ -64,12 +64,8 @@ void DrivetrainSubsystem::Update(Time dt) {
                                  is_enabled_ ? &out : nullptr, &status); 
       out.left_voltage = -out.left_voltage;
       out.right_voltage = -out.right_voltage;
-      // TODO(Wesley) Find out why this is giving 12V and 0V as output
-    
     }
     else {
-
-      // TODO(Wesley) Reset the PID controller if we went from tele to auto
       // TODO(Wesley) Add operator control to exit auto mode
       t += dt;
 
