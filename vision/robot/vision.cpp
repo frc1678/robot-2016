@@ -6,22 +6,17 @@
 
 CitrusVision::CitrusVision(RobotSubsystems &subs, RobotConstants constants)
     : subsystems_(subs),
-      gyro_history_(.02 * s),
       angle_log_("angles", {"cameraAngle", "gyroHistory", "cameraProfileRunning"}),
       angle_helper_(&angle_log_),
-      connection(CitrusSocket(1678)) {
+      connection_(CitrusSocket(1678)) {
   constants_ = constants;
-  isFound = false;
-  hasConnection = false;
-  angleReceived = 0 * deg;
-  last_angle_ = 0 * deg; lag = 0 * s;
 }
 
 Angle CitrusVision::GetAngleOff() {
   const double camera_angle = constants_.camera_scaling_factor;
 
   Angle camera_diff =
-      (-angleReceived + constants_.camera_offset * deg) * camera_angle;
+      (-angle_received_ + constants_.camera_offset * deg) * camera_angle;
   return camera_diff;
 }
 
@@ -33,25 +28,25 @@ void CitrusVision::Start() {
 void CitrusVision::Update() {
   ReadPosition();
   UpdateAligned();
-  angle_log_["cameraAngle"] = std::to_string(angleReceived.to(deg));
+
+  has_new_image_ = (last_angle_ != angle_received_);
+  last_angle_ = angle_received_;
+
+  angle_log_["cameraAngle"] = std::to_string(angle_received_.to(deg));
   angle_log_["gyroHistory"] =
       std::to_string(subsystems_.drive.GetGyroAngle().to(deg));
   angle_log_["cameraProfileRunning"] = std::to_string(subsystems_.drive.IsProfileComplete());
   angle_helper_.Update();
   angle_log_.EndLine();
-  if( last_angle_ == angleReceived) {
-    hasNewImage = false;
-  } else { hasNewImage = true; }
-  last_angle_ = angleReceived;
 }
 
 //TODO(Wesley) make this work at any frequency
 void CitrusVision::UpdateAligned() {
   Angle tolerance = 1.25 * deg;
-  if (isFound && hasConnection && (muan::abs(GetAngleOff()) < tolerance) && last_align_) {
+  if (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < tolerance) && last_align_) {
     align_counter_++;
     last_align_ = true;
-  } else if (isFound && hasConnection && (muan::abs(GetAngleOff()) < tolerance) && !last_align_) {
+  } else if (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < tolerance) && !last_align_) {
     align_counter_ = 0;
     last_align_ = true;
   } else {
@@ -67,17 +62,17 @@ bool CitrusVision::GetAligned() {
 }
 
 void CitrusVision::ReadPosition() {
-  bool gotPackets = false;
+  bool got_packets = false;
   try {
     nlohmann::json json_recv;
-    while (connection.HasPackets()) {
-      json_recv = to_json(connection.Receive());
+    while (connection_.HasPackets()) {
+      json_recv = to_json(connection_.Receive());
     }
-    isFound = json_recv["found"];
-    angleReceived = json_recv["angle"] * deg;
-    lag = json_recv["lag"] * s;
-    gotPackets = true;
+    is_found_ = json_recv["found"];
+    angle_received_ = json_recv["angle"] * deg;
+    lag_ = json_recv["lag"] * s;
+    got_packets = true;
   } catch (...) {
   }
-  hasConnection = gotPackets;
+  has_connection_ = got_packets;
 }
