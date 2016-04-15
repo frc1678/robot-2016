@@ -142,7 +142,7 @@ void DrivetrainSubsystem::Update(Time dt) {
     } else if (mode_ == DriveMode::VISION) {
       t += dt;
 
-      Angle turn_angle = vision_target_angle_ - gyro_history_.GoBack(230*ms);
+      Angle turn_angle = vision_target_angle_ - gyro_history_.GoBack(150*ms);
 
       Voltage pid_voltage = vision_angle_controller_.Calculate(t, turn_angle);
 
