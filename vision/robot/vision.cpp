@@ -20,14 +20,8 @@ Angle CitrusVision::GetAngleOff() {
   return camera_diff;
 }
 
-void CitrusVision::Start() {
-  subsystems_.drive.PointTurn(GetAngleOff(), false);
-  align_counter_ = 0;
-}
-
 void CitrusVision::Update() {
   ReadPosition();
-  UpdateAligned();
 
   has_new_image_ = (last_angle_ != angle_received_);
   last_angle_ = angle_received_;
@@ -40,21 +34,8 @@ void CitrusVision::Update() {
   angle_log_.EndLine();
 }
 
-//TODO(Wesley) make this work at any frequency
-void CitrusVision::UpdateAligned() {
-  Angle tolerance = 1.25 * deg;
-  if (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < tolerance) && last_align_) {
-    align_counter_++;
-    last_align_ = true;
-  } else if (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < tolerance) && !last_align_) {
-    align_counter_ = 0;
-    last_align_ = true;
-  } else {
-    last_align_ = false;
-    align_counter_ = 0;
-  }
-
-  aligned_ = align_counter_ > 10;
+bool CitrusVision::GetAligned() {
+  return (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < 1.25 * deg));
 }
 
 void CitrusVision::ReadPosition() {

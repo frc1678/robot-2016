@@ -123,7 +123,7 @@ void CitrusRobot::TeleopPeriodic() {
   }
   if (align_->ButtonPressed()) {
     if (vision_.GetAligned() && shootable_ && !subsystems_.arm.IsShooting()) {
-      subsystems_.arm.Shoot();
+      subsystems_.arm.Shoot(false);
     } else if (!subsystems_.arm.IsShooting()) {
       subsystems_.drive.RunVisionTracking(true);
       subsystems_.drive.SetVisionTargetAngle(vision_.GetAngleOff());

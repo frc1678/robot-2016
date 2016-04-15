@@ -146,8 +146,8 @@ void DrivetrainSubsystem::Update(Time dt) {
 
       Voltage pid_voltage = vision_angle_controller_.Calculate(t, turn_angle);
 
-      if (muan::abs(pid_voltage) < 3 * V/* || muan::abs(turn_angle) < 4 * deg*/) {
-        pid_voltage = 3 * V * (pid_voltage > 0 ? 1 : -1);
+      if (muan::abs(pid_voltage) < 5 * V) {
+        pid_voltage = 5 * V * (pid_voltage > 0 ? 1 : -1);
       }
 
       out.left_voltage = pid_voltage.to(V);
