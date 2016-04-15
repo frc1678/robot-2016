@@ -9,8 +9,11 @@
 class ShapeDetector {
  public:
   ShapeDetector(std::vector<Angle> angles);
+  // run detection on a black and white image
   void setData(cv::Mat image);
+  // get the detected target
   std::vector<cv::Point> getPoints();
+  // get the score of the target
   double getScore();
 
  private:
