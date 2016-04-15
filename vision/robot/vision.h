@@ -10,32 +10,28 @@
 class CitrusVision {
  public:
   CitrusVision(RobotSubsystems& subsystems, RobotConstants constants);
-  void Start();
-  bool Update(bool enable);
-  void EndTest();
-  bool Aligned();
-  bool InitallyAligned() { return (!Aligned() && align_counter_ >= 1); }
-  bool IsSeeing() { return isFound; }
-  bool HasConnection() {return hasConnection; }
-  bool HasNewImage() { return hasNewImage; }
-  int align_counter_ = 0;
+  void Update();
+  bool GetAligned();
+  bool IsSeeing() { return is_found_; }
+  bool HasConnection() {return has_connection_; }
+  bool HasNewImage() { return has_new_image_; }
   Angle GetAngleOff();
  private:
   void ReadPosition();
 
   RobotConstants constants_;
   RobotSubsystems& subsystems_;
-  CitrusSocket connection;
-  muan::History<Angle, 100> gyro_history_;
-  muan::Timer test_timer;
+  CitrusSocket connection_;
   muan::CSVLog angle_log_;
   SmartDashboardHelper angle_helper_;
 
-  bool isFound, hasConnection, hasNewImage;
+  bool is_found_ = false;
+  bool has_connection_ = false;
+  bool has_new_image_ = false;
   bool last_align_ = false;
-  Angle angleReceived;
-  Angle last_angle_;
-  Time lag;
+  Angle angle_received_ = 0*deg;
+  Angle last_angle_ = 0*deg;
+  Time lag_ = 0*s;
 };
 
 #endif

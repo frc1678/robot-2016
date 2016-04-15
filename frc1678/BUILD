@@ -16,7 +16,7 @@ cc_library(
 cc_library(
   name = "declarations",
   hdrs = ["frc1678.h"],
-  deps = [":robot_subsystems", "//vision:robot_side"],
+  deps = [":robot_subsystems", "//vision/robot:main"],
   visibility = ["//visibility:public"]
 )
 
@@ -27,7 +27,7 @@ cc_binary(
     ":robot_subsystems",
     "//muan/unitscpp",
     "//muan:multithreading",
-    "//vision:robot_side",
+    "//vision/robot:main",
     "//frc1678/auto",
     "//robot_constants",
     "//utils:citrus_button",

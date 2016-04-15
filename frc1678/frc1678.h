@@ -2,7 +2,7 @@
 #define FRC1678_H
 
 #include "frc1678/auto/auto_routines.h"
-#include "vision/vision.h"
+#include "vision/robot/vision.h"
 #include "robot_subsystems.h"
 
 // class LemonScriptRunner { };
@@ -54,7 +54,6 @@ class CitrusRobot : public IterativeRobot {
   bool tuck_def_ = false;
   bool disabled_;
   Time time = 0 * s;
-  int profiles_run_ = 0;
 
   CitrusRobot();
   void RobotInit();
