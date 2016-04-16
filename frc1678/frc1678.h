@@ -45,15 +45,14 @@ class CitrusRobot : public IterativeRobot {
   Timer *camera_timer_ = new Timer();
 
   bool is_wedge_deployed_ = false;
-  bool test_flag_;
   bool in_highgear_;
-  bool vision_done_ = false;  // UGLY HACK
   bool shootable_ = false;    // ALSO UGLY HACK
   bool start_climb_ = false;  // ANOTHER UGLY HACK
   bool intaking_ = false;
   bool tuck_def_ = false;
   bool disabled_;
   bool has_shot_ball_ = false;
+  bool was_running_vision_ = false;
   Time time = 0 * s;
 
   CitrusRobot();
