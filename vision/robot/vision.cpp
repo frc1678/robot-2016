@@ -34,6 +34,23 @@ void CitrusVision::Update() {
   angle_log_.EndLine();
 }
 
+bool CitrusVision::RunVision(bool run) {
+  if (run) {
+    if (!subsystems_.drive.IsProfileComplete()) {
+      return false;
+    } else {
+      if (!GetAligned()) {
+        subsystems_.drive.PointTurn(GetAngleOff());
+        return false;
+      } else {
+        return true;
+      }
+    }
+  } else {
+    return false;
+  }
+}
+
 bool CitrusVision::GetAligned() {
   return (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < 1.25 * deg));
 }

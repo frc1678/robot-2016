@@ -53,6 +53,7 @@ class CitrusRobot : public IterativeRobot {
   bool intaking_ = false;
   bool tuck_def_ = false;
   bool disabled_;
+  bool has_shot_ball_ = false;
   Time time = 0 * s;
 
   CitrusRobot();
