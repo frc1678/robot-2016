@@ -27,8 +27,7 @@ using drivetrain::control_loops::DrivetrainLoop;
 
 enum DriveMode {
   OPERATOR = 0,
-  MOTION_PROFILE,
-  VISION
+  MOTION_PROFILE
 };
 
 class DrivetrainSubsystem : public muan::Updateable {
@@ -80,7 +79,6 @@ class DrivetrainSubsystem : public muan::Updateable {
   muan::History<Angle, 100> gyro_history_;
 
   DriveMode mode_ = OPERATOR;
-  bool is_loop_highgear = true;
 
   bool is_enabled_ = false;
 
@@ -95,9 +93,6 @@ class DrivetrainSubsystem : public muan::Updateable {
 
   muan::PidController<Angle, Voltage> angle_controller_;
   muan::PidController<Length, Voltage> distance_controller_;
-  muan::PidController<Angle, Voltage> vision_angle_controller_;
-
-  Angle vision_target_angle_ = 0 * deg;
 
   Length encoder_offset_ = 0 * m;
   Angle gyro_offset_ = 0 * rad;

@@ -9,7 +9,6 @@ DrivetrainSubsystem::DrivetrainSubsystem()
       gyro_history_(5 * ms),
       angle_controller_(RobotConstants::GetInstance().drivetrain_angle_gains),
       distance_controller_(RobotConstants::GetInstance().drivetrain_distance_gains),
-      vision_angle_controller_(RobotConstants::GetInstance().vision_angle_gains),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "goal_dist", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}),
@@ -139,19 +138,6 @@ void DrivetrainSubsystem::Update(Time dt) {
       } else {
         csv_log_["goal_dist"] = std::to_string((distance_profile_->Calculate(t) + encoder_offset_).to(m));
       }
-    } else if (mode_ == DriveMode::VISION) {
-      t += dt;
-
-      Angle turn_angle = vision_target_angle_ - gyro_history_.GoBack(150*ms);
-
-      Voltage pid_voltage = vision_angle_controller_.Calculate(t, turn_angle);
-
-      if (muan::abs(pid_voltage) < 5 * V) {
-        pid_voltage = 5 * V * (pid_voltage > 0 ? 1 : -1);
-      }
-
-      out.left_voltage = pid_voltage.to(V);
-      out.right_voltage = -pid_voltage.to(V);
     }
   }
 
@@ -169,21 +155,6 @@ void DrivetrainSubsystem::Update(Time dt) {
   csv_log_["gear"] = current_goal_.highgear ? "high" : "low";
   csv_helper_.Update();
   csv_log_.EndLine();  // Flush the current row of the log
-}
-
-void DrivetrainSubsystem::SetVisionTargetAngle(Angle vision_target_angle) {
-  vision_target_angle_ = gyro_reader_->GetAngle() - vision_target_angle;
-}
-
-void DrivetrainSubsystem::RunVisionTracking(bool vision) {
-  if (mode_ != VISION && vision) {
-    vision_angle_controller_.Reset();
-  }
-  if (vision) {
-    mode_ = VISION;
-  } else {
-    mode_ = OPERATOR;
-  }
 }
 
 void DrivetrainSubsystem::UpdateConstants() {
@@ -229,7 +200,7 @@ void DrivetrainSubsystem::SetDrivePosition(
 // TODO(Wesley) Add generate motion profile functions so I don't repeat as much
 // code
 
-void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) { 
+void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
   AngularVelocity speed = (highgear ? 380 : 240) * deg / s;
   AngularAcceleration accel = (highgear ? 250 : 500) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
@@ -237,7 +208,7 @@ void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
       0 * m, 10 * ft / s, 10 * ft / s / s);
   auto ap =
       std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, speed, accel);
-  FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, false);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear, false, true);
 }
 
 
@@ -249,7 +220,7 @@ void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
       0 * m, 10 * ft / s, 10 * ft / s / s);
   auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
       angle - gyro_reader_->GetAngle() - gyro_zero_offset_, speed, accel);
-  FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, false);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear, false, true);
 }
 
 void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
@@ -294,7 +265,6 @@ void DrivetrainSubsystem::FollowMotionProfile(
   gyro_offset_ = gyro_reader_->GetAngle();
   angle_controller_.Reset();
   distance_controller_.Reset();
-  is_loop_highgear = highgear;
 }
 
 bool DrivetrainSubsystem::IsProfileComplete() {

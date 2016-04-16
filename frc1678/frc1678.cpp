@@ -125,13 +125,13 @@ void CitrusRobot::TeleopPeriodic() {
     if (vision_.GetAligned() && shootable_ && !subsystems_.arm.IsShooting()) {
       subsystems_.arm.Shoot(false);
     } else if (!subsystems_.arm.IsShooting()) {
-      subsystems_.drive.RunVisionTracking(true);
-      subsystems_.drive.SetVisionTargetAngle(vision_.GetAngleOff());
+      //subsystems_.drive.RunVisionTracking(true);
+      //subsystems_.drive.SetVisionTargetAngle(vision_.GetAngleOff());
     } else {
-      subsystems_.drive.RunVisionTracking(false);
+      //subsystems_.drive.RunVisionTracking(false);
     }
   } else {
-    subsystems_.drive.RunVisionTracking(false);
+    //subsystems_.drive.RunVisionTracking(false);
   }
   if (cancel_profile_->ButtonClicked()) {
     subsystems_.drive.CancelMotionProfile();
