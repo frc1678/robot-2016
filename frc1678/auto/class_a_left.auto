@@ -1,0 +1,31 @@
+CheckArmCalibration
+SetWedge: false
+Shift: false
+
+//Saves time by going to position while driving
+COMPLETE ALL:
+  SetArmPosition: INTAKE: 2
+  DriveStraight: 10.5, false
+
+//Inital turn for shot
+SetArmPosition: AUTO: 3
+PointTurn: angle: -25.0
+
+//Raise wedge up
+SetWedge: true
+Wait: seconds: 1.5
+//Align
+Wait: 0.3
+//Align
+Shoot
+
+Wait: 1.0
+
+//Go to the side
+AbsolutePointTurn: -90.0
+DriveStraight: 5.5, false
+PointTurn: angle: 80.0
+
+//Drive over defense on right
+Shift: false
+DriveStraight: -11.0, false
