@@ -37,6 +37,6 @@ new_git_repository(
 new_http_archive(
   name = 'opencv',
   build_file = 'opencv.BUILD',
-  sha256 = '04c19537145e6876f7e3e4f83e060bf4cfb9898a014686e2e2dfbf747c0ca997',
+  sha256 = '',
   url = 'https://www.dropbox.com/s/t00zz2wtqmabum9/opencv.zip?dl=0&raw=1'
 )
