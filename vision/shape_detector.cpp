@@ -16,11 +16,6 @@ std::vector<cv::Point> ShapeDetector::getPoints() { return points_; }
 double ShapeDetector::getScore() { return score_; }
 
 void ShapeDetector::setData(cv::Mat image) {
-  // constants for detection weight
-  double distanceWeight = 1;
-  double areaWeight = 0.1;
-  double numSidesWeight = 0;
-
   std::vector<std::vector<cv::Point>> contours = getAllContours(image);
 
   // index of best target
@@ -30,20 +25,8 @@ void ShapeDetector::setData(cv::Mat image) {
   for (unsigned int i = 0; i < contours.size(); i++) {
     // it isn't a shape if it has 2 points
     if (contours[i].size() >= 2) {
-      // get distance from previous x and y
-      cv::Rect bounds = cv::boundingRect(contours[i]);
-      double x = (bounds.br().x + bounds.tl().x) / 2;
-      double y = (bounds.br().y + bounds.tl().y) / 2;
-      double distanceFromPrevious =
-            (x - best_x) * (x - best_x) + (y - best_y) * (y - best_y);
-      // because it can't be 0
-      if (distanceFromPrevious == 0) distanceFromPrevious = 0.01;
-      // a weight of 1/distance, sqrt(area), and difference between number of sides
-      double score = distanceWeight / distanceFromPrevious +
-              areaWeight * std::sqrt(cv::boundingRect(contours[i]).area()) +
-              numSidesWeight * (angles_.size() - contours[i].size() > 0 ?
-                      angles_.size() - contours[i].size() :
-                      contours[i].size() - angles_.size());
+      cv::approxPolyDP(contours[i], contours[i], 2, true);
+      double score = ScoreContour(contours[i], cv::Size(image.cols, image.rows));
       if(score > bestScore) {
         bestScore = score;
         bestTarget = i;
@@ -54,6 +37,8 @@ void ShapeDetector::setData(cv::Mat image) {
   if (bestScore == 0) points_.clear();
   else points_ = contours[bestTarget];
 
+  was_found = bestScore != 0;
+
   // update coordinates of best target
   if (points_.size() >= 2) {
     cv::Rect bounds = cv::boundingRect(points_);
@@ -62,6 +47,29 @@ void ShapeDetector::setData(cv::Mat image) {
   }
 
   score_=bestScore;
+}
+
+double ShapeDetector::ScoreContour(const std::vector<cv::Point>& contour, cv::Size image_size) const {
+  // get distance from previous x and y
+  cv::Rect bounding_box = cv::boundingRect(contour);
+  double x = (bounding_box.br().x + bounding_box.tl().x) / 2.0;
+  double y = (bounding_box.br().y + bounding_box.tl().y) / 2.0;
+
+  double dx = x - best_x, dy = y - best_y;
+  double distance_from_previous = std::sqrt(dx*dx + dy*dy) / bounding_box.width;
+
+  double contour_width = static_cast<double>(bounding_box.width) / image_size.width;
+  double contour_height = static_cast<double>(bounding_box.height) / image_size.height;
+
+  double score_shape = kShapeWeight * ( - std::abs(contour.size() - 8.0));
+
+  // Distance being 0 breaks calculations
+  distance_from_previous = std::max(distance_from_previous, .01);
+
+  double score_distance = was_found ? kDistanceWeight * (1 - distance_from_previous) : 0;
+  double score_width = kWidthWeight * contour_width;
+
+  return std::max(score_width + score_distance + score_shape, .01);
 }
 
 std::vector<std::vector<cv::Point>> ShapeDetector::getAllContours(cv::Mat m) {

@@ -10,11 +10,11 @@ int main() {
   cv::VideoCapture camera;
 
   // open last camera index
-  int cameraIndex=0;
-  for(int i=0; i<8; i++) {
+  int cameraIndex=1;
+  /*for(int i=1; i<8; i++) {
     camera.open(i);
     if(camera.isOpened()) cameraIndex = i;
-  }
+  }*/
 
   // exit if no camera can be opened
   camera.open(cameraIndex);

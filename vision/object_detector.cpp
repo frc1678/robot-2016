@@ -2,7 +2,7 @@
 #include <iostream>
 
 ObjectTracker::ObjectTracker()
-    : range(InRangeInstructions("/home/citrus/PARAMS.txt")),
+    : range(InRangeInstructions("PARAMS.txt")),
       detector(ShapeDetector(std::vector<Angle>(
           {90 * deg, -90 * deg, -90 * deg, 90 * deg, 90 * deg, 90 * deg, 90 * deg, 90 * deg}))) {}
 
@@ -13,7 +13,7 @@ TrackerResults ObjectTracker::Update(cv::Mat& image) {
   range.Thresh(image);
 
   // erode and dilate to remove noise
-  int erodeWidth = image.cols * .006;
+  int erodeWidth = image.cols * .003;
   cv::erode(image, image, cv::getStructuringElement(cv::MORPH_ELLIPSE,
       cv::Size(erodeWidth*2+1, erodeWidth*2+1), cv::Point(erodeWidth/2, erodeWidth/2)));
   cv::dilate(image, image, cv::getStructuringElement(cv::MORPH_ELLIPSE,

@@ -19,9 +19,18 @@ class ShapeDetector {
  private:
   std::vector<std::vector<cv::Point>> getAllContours(cv::Mat m);
 
+  double ScoreContour(const std::vector<cv::Point>& contour, cv::Size image_size) const;
+
   std::vector<Angle> angles_;
   std::vector<cv::Point> points_;
   double score_;
   double best_x, best_y;
+
+  // Contour weighting constants
+  const double kDistanceWeight = .2;
+  const double kWidthWeight = 1;
+  const double kShapeWeight = .1
+
+  bool was_found;
 };
 #endif
