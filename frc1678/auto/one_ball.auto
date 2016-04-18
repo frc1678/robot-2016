@@ -10,7 +10,7 @@ SetArmPosition: AUTO: 3
 PointTurn: angle: -55.0
 
 Wait: 1.2
-Align
+//Align
 //Wait: 0.4
 //Align
 Shoot
