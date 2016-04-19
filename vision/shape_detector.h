@@ -29,7 +29,7 @@ class ShapeDetector {
   // Contour weighting constants
   const double kDistanceWeight = .2;
   const double kWidthWeight = 1;
-  const double kShapeWeight = .1
+  const double kShapeWeight = .1;
 
   bool was_found;
 };

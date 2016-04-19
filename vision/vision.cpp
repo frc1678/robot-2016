@@ -9,7 +9,7 @@ CitrusVision::CitrusVision(RobotSubsystems &subs, RobotConstants constants)
       gyro_history_(.02 * s),
       angle_log_("angles", {"cameraAngle", "gyroHistory", "cameraProfileRunning"}),
       angle_helper_(&angle_log_),
-      connection(CitrusSocket(1678)) {
+      connection(CitrusSocket(9999)) {
   constants_ = constants;
   isFound = false;
   hasConnection = false;

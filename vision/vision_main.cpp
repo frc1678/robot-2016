@@ -10,7 +10,7 @@ int main() {
   cv::VideoCapture camera;
 
   // open last camera index
-  int cameraIndex=1;
+  int cameraIndex=-1;
   /*for(int i=1; i<8; i++) {
     camera.open(i);
     if(camera.isOpened()) cameraIndex = i;
@@ -24,8 +24,7 @@ int main() {
   camera.set(CV_CAP_PROP_BRIGHTNESS, 0); // minimum
   camera.set(CV_CAP_PROP_CONTRAST, 1); // maximun
   camera.set(CV_CAP_PROP_SATURATION, 1); // maximun
-  std::string command="v4l2-ctl -d /dev/video" + std::to_string(cameraIndex) +
-          " -c exposure_auto=1 -c exposure_absolute=5"; // manual, minimum
+  std::string command="v4l2-ctl -c exposure_auto=1 -c exposure_absolute=5"; // manual, minimum
   system(command.c_str()); // not best way, but it keeps the settings together
 
   ObjectTracker tracker = ObjectTracker();
