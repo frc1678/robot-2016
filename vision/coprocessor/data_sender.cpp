@@ -40,7 +40,7 @@ void sendData() {
   position_mutex.unlock();
   // Send the data
   try {
-    connection.Send(data, Destination("roborio-1678-frc.local", 9999));
+    connection.Send(to_json(data).dump().c_str(), Destination("roborio-1678-frc.local", 9999));
   } catch (...) {
     std::cout<<"no connection"<<std::endl;
   }
