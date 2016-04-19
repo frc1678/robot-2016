@@ -46,7 +46,7 @@ SerializedData& operator>>(SerializedData& lhs, uint32_t& rhs) {
   return lhs;
 }
 
-std::string from_json(const nlohmann::json& json) { return json.dump(); }
+std::string from_json(const nlohmann::json& json) { return json.dump() + '\n'; }
 
 nlohmann::json to_json(const SerializedData& from) {
   return nlohmann::json::parse(from.out.str());

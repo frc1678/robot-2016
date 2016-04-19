@@ -1,6 +1,6 @@
-colorspace: 4 (RGB)
-low: (0, 40, 0)
-high: (30, 255, 100) 
+colorspace: 40 (RGB)
+low: (40, 140, 30)
+high: (100, 255, 255) 
 
 colorspaces: 
   fifty two: HLS

@@ -8,7 +8,7 @@
 
 void sendData();
 
-CitrusSocket connection(1678);
+CitrusSocket connection(9999);
 std::mutex position_mutex;
 TrackerResults position_;
 
@@ -20,6 +20,7 @@ void vision::startSending() {
 }
 
 void sendData() {
+  // Set the contents of what is being sent over
   position_mutex.lock();
   SerializedData data;
   if (position_.is_found) {
@@ -37,8 +38,9 @@ void sendData() {
               << std::endl;
   }
   position_mutex.unlock();
+  // Send the data
   try {
-    connection.Send(data, Destination("roborio-1678-frc.local", 1678));
+    connection.Send(data, Destination("roborio-1678-frc.local", 9999));
   } catch (...) {
     std::cout<<"no connection"<<std::endl;
   }

@@ -9,20 +9,28 @@
 class ShapeDetector {
  public:
   ShapeDetector(std::vector<Angle> angles);
+  // run detection on a black and white image
   void setData(cv::Mat image);
+  // get the detected target
   std::vector<cv::Point> getPoints();
+  // get the score of the target
   double getScore();
 
  private:
   std::vector<std::vector<cv::Point>> getAllContours(cv::Mat m);
-  std::vector<cv::Point> convertToPolygon(std::vector<cv::Point> points, const cv::Mat &image);
-  double getTargetCertainty(std::vector<cv::Point> points,
-                            bool isClosestToPrevious);
-  double getAngleDiff(std::vector<cv::Point> points, int offset);
+
+  double ScoreContour(const std::vector<cv::Point>& contour, cv::Size image_size) const;
 
   std::vector<Angle> angles_;
   std::vector<cv::Point> points_;
   double score_;
   double best_x, best_y;
+
+  // Contour weighting constants
+  const double kDistanceWeight = .2;
+  const double kWidthWeight = 1;
+  const double kShapeWeight = .1;
+
+  bool was_found;
 };
 #endif
