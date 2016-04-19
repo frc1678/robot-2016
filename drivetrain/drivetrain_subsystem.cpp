@@ -153,6 +153,7 @@ void DrivetrainSubsystem::Update(Time dt) {
   csv_log_["pwm_left"] = std::to_string(out.left_voltage);
   csv_log_["pwm_right"] = std::to_string(out.right_voltage);
   csv_log_["gyro_angle"] = std::to_string(pos.gyro_angle);
+  csv_log_["gyro_reader"] = std::to_string(gyro_reader_->GetAngle().to(rad));
   csv_log_["gear"] = current_goal_.highgear ? "high" : "low";
   csv_helper_.Update();
   csv_log_.EndLine();  // Flush the current row of the log

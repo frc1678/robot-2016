@@ -1,5 +1,5 @@
 // Init
-DropBall
+//DropBall
 SetWedge: false
 RunIntake: 1
 Shift: false
@@ -11,18 +11,18 @@ SetArmPosition: 6
 Wait: 0.1
 
 // I can't believe it's not splines!(TM)
-DriveStraightAtAngle: 2.1, 20.0, false
+DriveStraightAtAngle: 3.1, 20.0, false
 Shift: true
 DriveStraightAtAngle: 10.0, 0.0, true
 
 // Turn towards goal
 Shift: false
 COMPLETE ALL:
-  AbsolutePointTurn: -30.0
+  AbsolutePointTurn: -40.0
   SetArmPosition: 3
 
 Wait: 0.65
-Align
+//Align
 Shoot
 
 Wait: 0.1
@@ -48,14 +48,14 @@ WaitForBall
 WHILE:
   DriveStraightAtAngle: 12.0, -4.5, true
 ALSO:
-  Wait: 0.75
+  Wait: 0.25
   RunIntake: 0
 
 Shift: false
 COMPLETE ALL:
-  AbsolutePointTurn: -30.0
+  AbsolutePointTurn: -40.0
   SetArmPosition: 3
 
 Wait: 0.65
-Align
+//Align
 Shoot

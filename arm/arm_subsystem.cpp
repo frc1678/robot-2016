@@ -217,8 +217,9 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
       pivot_brake = true;
       elevator_brake = elevator_controller_.ShouldFireBrake();
       if (elevator_controller_.IsDone()) {
-        pivot_controller_.SetGoal(85 * deg, thresh_);
-        climb_state_ = ClimbState::PIVOTING_ROBOT;
+        //pivot_controller_.SetGoal(85 * deg, thresh_);
+        //climb_state_ = ClimbState::PIVOTING_ROBOT;
+        climb_state_ = ClimbState::DONE;
       }
       climbing_done_ = false;
       break;
@@ -231,7 +232,8 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
       //    enabled_);
       if (pivot_controller_.IsDone()) {
         elevator_controller_.SetGoal(0 * m);
-        climb_state_ = ClimbState::DONE;
+        //climb_state_ = ClimbState::DONE;
+        climb_state_ = ClimbState::PULLING_UP;
       }
       climbing_done_ = false;
       break;
@@ -341,8 +343,10 @@ void ArmSubsystem::ContinueClimb() {
 
 void ArmSubsystem::CompleteClimb() {
   state_ = ArmState::CLIMBING;
-  climb_state_ = ClimbState::PULLING_UP;
-  elevator_controller_.SetGoal(0 * m);
+  //climb_state_ = ClimbState::PULLING_UP;
+  //elevator_controller_.SetGoal(0 * m);
+  climb_state_ = ClimbState::PIVOTING_ROBOT;
+  pivot_controller_.SetGoal(85 * deg, thresh_);
   climbing_advance_ = false;
 }
 

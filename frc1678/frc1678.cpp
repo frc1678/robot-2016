@@ -324,7 +324,7 @@ void CitrusRobot::UpdateLights() {
     j_manip_->SetRumble(Joystick::kLeftRumble, 0);
 
     SmartDashboard::PutString("auto", auto_routine_);
-    if (auto_routine_ == "one_ball.auto") {
+    if (auto_routine_ == "class_a_left.auto") {
       lights_ = ColorLight::GREEN;
     } else if (auto_routine_ == "two_ball.auto") {
       lights_ = ColorLight::RED;
@@ -384,10 +384,10 @@ void CitrusRobot::SetLightColor(int r, int g, int b) {
 void CitrusRobot::UpdateAutoRoutine() {
   std::map<int8_t, std::string> auto_map;
 
-  auto_map[0b00000011] = "one_ball.auto";
-  auto_map[0b00000010] = "one_ball.auto";
-  auto_map[0b00000000] = "one_ball.auto";
-  auto_map[0b00000001] = "one_ball.auto";
+  auto_map[0b00000011] = "class_a_left.auto";
+  auto_map[0b00000010] = "class_a_left.auto";
+  auto_map[0b00000000] = "class_a_left.auto";
+  auto_map[0b00000001] = "two_ball.auto";
   //auto_map[0b00000001] = "two_ball.auto";
   //auto_map[0b00000010] = "class_d_left.auto";
   //auto_map[0b00000000] = "class_d_right.auto";

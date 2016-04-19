@@ -1,3 +1,5 @@
-Shift: false
-PointTurn: 45.0
-RunIntake: 2
+Shift: true
+CheckArmCalibration
+SetArmPosition: 3
+DriveStraightAtAngle: 10.0, 0.0, true
+SetArmPosition: 6
