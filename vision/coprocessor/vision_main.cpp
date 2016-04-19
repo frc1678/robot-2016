@@ -32,7 +32,8 @@ int main() {
   // for accurate lag measurements, run sender in another thread
   std::thread sender(vision::startSending);
 
-  cv::namedWindow("detected", cv::WINDOW_AUTOSIZE);
+  cv::namedWindow("proceced", cv::WINDOW_AUTOSIZE);
+  cv::namedWindow("raw", cv::WINDOW_AUTOSIZE);
   while (true) {
     cv::Mat image;
 
@@ -48,11 +49,12 @@ int main() {
     }
 
     cv::resize(image, image, cv::Size(image.cols / 3, image.rows / 3));
+    cv::imshow("raw", image);
     TrackerResults position = tracker.Update(image);
     position.time_captured = captureTime;
     vision::updateData(position);
     if (image.data) {
-      cv::imshow("detected", image);
+      cv::imshow("processed", image);
       cv::waitKey(1);
     }
     image.release();
