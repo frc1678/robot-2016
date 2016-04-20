@@ -11,7 +11,7 @@ SetArmPosition: 6
 Wait: 0.1
 
 // I can't believe it's not splines!(TM)
-DriveStraightAtAngle: 2.1, 20.0, false
+DriveStraightAtAngle: 2.1, 28.0, false
 Shift: true
 DriveStraightAtAngle: 10.0, 0.0, true
 
