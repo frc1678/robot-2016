@@ -246,22 +246,11 @@ bool AutoFunction::DropBall(CitrusRobot* robot) {
   return true;
 }
 
-//TODO(Wesley) FIX
 bool toStartVision = true;
 bool AutoFunction::Align(CitrusRobot* robot) {
-  /*if (toStartVision) {
-    robot->vision_.Start();
-    toStartVision = false;
-  }
-
-  if (robot->vision_.GetAligned() && robot->subsystems_.drive.IsProfileComplete()) {
-    toStartVision = true;
+  if (robot->vision_.RunVision(true)) {
     return true;
   }
-
-  if (robot->subsystems_.drive.IsProfileComplete()) {
-    robot->vision_.Start();
-  }*/
 
   return false;
 }
