@@ -8,14 +8,16 @@ NC='\033[0m'
 rio_addr='roboRIO-1678-FRC.local'
 auto_only=''
 constants_only=''
+vision_only=''
 help_flag=''
 
 # Use getopts to set variables according to args
-while getopts 'i:ach' opt; do
+while getopts 'i:acvh' opt; do
   case "${opt}" in
     i) rio_addr=$OPTARG ;;
     a) auto_only='true' ;;
     c) constants_only='true' ;;
+    v) vision_only='true' ;;
     h) help_flag='true' ;;
     *) exit 1 ;;
   esac
@@ -46,6 +48,20 @@ deploy_constants() {
   sshpass -p '' scp -r constants admin@$rio_addr:/home/lvuser/
 }
 
+deploy_vision() {
+  user_print "Deploying vision..."
+  sshpass -p '' ssh citrus@citrus-vision.local <<'ENDSSH'
+kill -9 $(pidof coprocessor_side)
+rm ~/coprocessor_side
+ENDSSH
+  sleep 1.0
+  sshpass -p '' scp bazel-bin/vision/coprocessor/main citrus@citrus-vision.local:/home/citrus/coprocessor_side
+  sshpass -p '' scp PARAMS.txt citrus@citrus-vision.local:/home/citrus/
+  sshpass -p '' ssh citrus@citrus-vision.local <<'ENDSSH'
+  sudo reboot
+ENDSSH
+}
+
 start_code() {
   user_print "Starting code..."
   sshpass -p '' ssh admin@$rio_addr <<'ENDSSH'
@@ -59,6 +75,7 @@ show_help() {
   echo "                Default: roborio-1678-frc.local"
   echo "-a              Upload auto files without redeploying code"
   echo "-c              Upload PID constants without redeploying code"
+  echo "-v              Upload vision code. This will not deploy robot code"
   echo "-h              That's me!"
   exit
 }
@@ -81,7 +98,12 @@ then
   deploy_constants
 fi
 
-if [[ $auto_only ]] || [[ $constants_only ]]
+if [ $vision_only ]
+then
+  deploy_vision
+fi
+
+if [[ $auto_only ]] || [[ $constants_only ]] || [[ $vision_only ]]
 then
   exit
 fi

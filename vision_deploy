@@ -1,7 +1,0 @@
-#!/bin/bash
-# TODO(Lucas) update this for coprocessor
-scp bazel-bin/vision/coprocessor_side admin@10.16.78.254:/home/citrus-vision/
-scp PARAMS.txt admin@10.16.78.254:/home/citrus-vision/
-ssh admin@10.16.78.254 << 'ENDSSH'
-    /home/citrus-vision/restart_coprocessor_side
-ENDSSH
