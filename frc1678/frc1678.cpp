@@ -124,7 +124,6 @@ void CitrusRobot::TeleopPeriodic() {
   if (align_->ButtonPressed()) {
     if (vision_.RunVision(true) && shootable_ && !subsystems_.arm.IsShooting()) {
       subsystems_.arm.Shoot(false);
-      has_shot_ball_ = true;
     }
     was_running_vision_ = true;
   } else {
@@ -133,7 +132,6 @@ void CitrusRobot::TeleopPeriodic() {
       was_running_vision_ = false;
     }
     vision_.RunVision(false);
-    has_shot_ball_ = false;
   }
   if (cancel_profile_->ButtonClicked()) {
     subsystems_.drive.CancelMotionProfile();
