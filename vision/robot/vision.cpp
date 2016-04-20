@@ -8,6 +8,7 @@ CitrusVision::CitrusVision(RobotSubsystems &subs, RobotConstants constants)
     : subsystems_(subs),
       angle_log_("angles", {"cameraAngle", "gyroHistory", "cameraProfileRunning"}),
       angle_helper_(&angle_log_),
+      gyro_history_(20 * ms),
       connection_(CitrusSocket(9999)) {
   constants_ = constants;
 }
@@ -26,6 +27,8 @@ void CitrusVision::Update() {
   has_new_image_ = (last_angle_ != angle_received_);
   last_angle_ = angle_received_;
 
+  gyro_history_.Update(subsystems_.drive.GetGyroAngle());
+
   angle_log_["cameraAngle"] = std::to_string(angle_received_.to(deg));
   angle_log_["gyroHistory"] =
       std::to_string(subsystems_.drive.GetGyroAngle().to(deg));
@@ -40,7 +43,7 @@ bool CitrusVision::RunVision(bool run) {
       return false;
     } else {
       if (!GetAligned()) {
-        subsystems_.drive.PointTurn(GetAngleOff());
+        subsystems_.drive.PointTurn(GetAngleOff() + (subsystems_.drive.GetGyroAngle() - gyro_history_.GoBack(160*ms)));
         return false;
       } else {
         return true;

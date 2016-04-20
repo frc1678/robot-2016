@@ -25,6 +25,7 @@ class CitrusVision {
   CitrusSocket connection_;
   muan::CSVLog angle_log_;
   SmartDashboardHelper angle_helper_;
+  muan::History<Angle, 100> gyro_history_;
 
   bool is_found_ = false;
   bool has_connection_ = false;
