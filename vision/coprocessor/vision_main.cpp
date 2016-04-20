@@ -24,7 +24,7 @@ int main() {
   camera.set(CV_CAP_PROP_BRIGHTNESS, 0); // minimum
   camera.set(CV_CAP_PROP_CONTRAST, 1); // maximun
   camera.set(CV_CAP_PROP_SATURATION, 1); // maximun
-  std::string command="v4l2-ctl -c exposure_auto=1 -c exposure_absolute=5"; // manual, minimum
+  std::string command="v4l2-ctl -c exposure_auto=1,exposure_absolute=5,white_balance_temperature_auto=0,white_balance_temperature=8000";
   system(command.c_str()); // not best way, but it keeps the settings together
 
   ObjectTracker tracker = ObjectTracker();
