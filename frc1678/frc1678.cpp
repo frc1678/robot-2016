@@ -385,12 +385,9 @@ void CitrusRobot::UpdateAutoRoutine() {
   std::map<int8_t, std::string> auto_map;
 
   auto_map[0b00000011] = "one_ball.auto";
-  auto_map[0b00000010] = "one_ball.auto";
-  auto_map[0b00000000] = "one_ball.auto";
-  auto_map[0b00000001] = "one_ball.auto";
-  //auto_map[0b00000001] = "two_ball.auto";
-  //auto_map[0b00000010] = "class_d_left.auto";
-  //auto_map[0b00000000] = "class_d_right.auto";
+  auto_map[0b00000001] = "two_ball.auto";
+  auto_map[0b00000010] = "class_d_left.auto";
+  auto_map[0b00000000] = "class_d_right.auto";
 
   int8_t auto_number = 0b00000000;
   auto_number |= (switch_one->Get() ? 0 : 1) << 0;
