@@ -11,7 +11,7 @@ DrivetrainSubsystem::DrivetrainSubsystem()
       distance_controller_(RobotConstants::GetInstance().drivetrain_distance_gains),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "goal_dist", "pwm_left",
-                                        "pwm_right", "gyro_angle", "goal_angle", "gear"}),
+                                        "pwm_right", "gyro_angle", "goal_angle", "gear", "dist"}),
       csv_helper_(&csv_log_) {
   event_log_.Write("Initializing drivetrain subsystem components...", "INIT",
                    CODE_STAMP);
@@ -137,7 +137,8 @@ void DrivetrainSubsystem::Update(Time dt) {
         event_log_.Write(ss.str(), "MOTION", CODE_STAMP);
       } else {
         csv_log_["goal_dist"] = std::to_string((distance_profile_->Calculate(t) + encoder_offset_).to(m));
-  	csv_log_["goal_angle"] = std::to_string(angle_profile_->Calculate(t).to(rad));
+      	csv_log_["goal_angle"] = std::to_string(angle_profile_->Calculate(t).to(rad));
+        csv_log_["dist"] = std::to_string(distance_from_start.to(m));
       }
     }
   }
@@ -317,8 +318,8 @@ Voltage DrivetrainSubsystem::GetDistanceFFVoltage(Velocity velocity,
     c2 = 22 * V / max_robot_velocity;
   } else {
     Velocity max_robot_velocity = 1.44 * m / s;
-    c1 = 1 * .75 / V * (m / s / s);
-    c2 = 24 * V / max_robot_velocity;
+    c1 = 0.35  / V * (m / s / s);
+    c2 = 11 * V / max_robot_velocity;
   }
   Voltage total_output = c2 * velocity + acceleration / c1;
   return total_output / 2;

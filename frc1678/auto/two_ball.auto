@@ -2,7 +2,7 @@
 //DropBall
 SetWedge: false
 RunIntake: 1
-Shift: false
+Shift: true
 
 // Move arm to intake
 CheckArmCalibration
@@ -11,7 +11,7 @@ SetArmPosition: 6
 Wait: 0.1
 
 // I can't believe it's not splines!(TM)
-DriveStraightAtAngle: 3.1, 20.0, false
+DriveStraightAtAngle: 3.1, 28.0, true
 Shift: true
 DriveStraightAtAngle: 10.0, 0.0, true
 
