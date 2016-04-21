@@ -122,6 +122,8 @@ void DrivetrainSubsystem::Update(Time dt) {
       bool profile_finished_angle =
           muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
 
+      // Use a different set of PID gains if we have already finished the
+      // motion profile. This is a hack, but it seems to work well.
       if (profiles_finished_time) {
         angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_hella_gains);
       } else {

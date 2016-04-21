@@ -49,6 +49,7 @@ bool CitrusVision::RunVision(bool run) {
       }
       if (!GetAligned()) {
         if (align_timer_.Get() > 0.2*s) {
+          // There is usually 160 ms of lag between the image capture and being received by the robot code
           subsystems_.drive.PointTurn(
             GetAngleOff() + (subsystems_.drive.GetGyroAngle() - gyro_history_.GoBack(160*ms)));
         }
