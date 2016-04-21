@@ -27,6 +27,9 @@ class CitrusVision {
   SmartDashboardHelper angle_helper_;
   muan::History<Angle, 100> gyro_history_;
 
+  bool was_running_profile_;
+  muan::Timer align_timer_;
+
   bool is_found_ = false;
   bool has_connection_ = false;
   bool has_new_image_ = false;

@@ -40,10 +40,18 @@ void CitrusVision::Update() {
 bool CitrusVision::RunVision(bool run) {
   if (run) {
     if (!subsystems_.drive.IsProfileComplete()) {
+      was_running_profile_ = true;
       return false;
     } else {
+      if (was_running_profile_) {
+        align_timer_.Reset();
+        was_running_profile_ = false;
+      }
       if (!GetAligned()) {
-        subsystems_.drive.PointTurn(GetAngleOff() + (subsystems_.drive.GetGyroAngle() - gyro_history_.GoBack(160*ms)));
+        if (align_timer_.Get() > 0.2*s) {
+          subsystems_.drive.PointTurn(
+            GetAngleOff() + (subsystems_.drive.GetGyroAngle() - gyro_history_.GoBack(160*ms)));
+        }
         return false;
       } else {
         return true;
