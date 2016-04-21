@@ -122,8 +122,10 @@ void CitrusRobot::TeleopPeriodic() {
     subsystems_.arm.Shoot();
   }
   if (align_->ButtonPressed()) {
-    if (vision_.RunVision(true) && shootable_ && !subsystems_.arm.IsShooting()) {
+    // !button_was_pressed needs to be first due to short-circuiting logic
+    if (!button_was_pressed_ && vision_.RunVision(true) && shootable_ && !subsystems_.arm.IsShooting()) {
       subsystems_.arm.Shoot(false);
+      button_was_pressed_ = true;
     }
     was_running_vision_ = true;
   } else {
@@ -131,6 +133,7 @@ void CitrusRobot::TeleopPeriodic() {
       subsystems_.drive.CancelMotionProfile();
       was_running_vision_ = false;
     }
+    button_was_pressed_ = false;
     vision_.RunVision(false);
   }
   if (cancel_profile_->ButtonClicked()) {

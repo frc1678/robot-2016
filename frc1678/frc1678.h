@@ -52,6 +52,7 @@ class CitrusRobot : public IterativeRobot {
   bool tuck_def_ = false;
   bool disabled_;
   bool was_running_vision_ = false;
+  bool button_was_pressed_ = false;
   Time time = 0 * s;
 
   CitrusRobot();
