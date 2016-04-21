@@ -12,7 +12,6 @@ GyroReader::GyroReader() : muan::Updateable(100 * hz) {
 
 bool GyroReader::Init() {
   if (!gyro->InitializeGyro()) {
-    //printf("Gyro init returned false");
     return false;
   }
   return true;
@@ -21,21 +20,14 @@ bool GyroReader::Init() {
 void GyroReader::Calibrate(Time dt) {
   if (deadzone_time > deadzone_time_counter) {
     deadzone_time_counter += dt;
-    // Angle delta_angle = (gyro->ExtractAngle(gyro->GetReading())*rad/s) * dt;
-    // // Do I need this?
   } else {
     Angle delta_angle = (gyro->ExtractAngle(gyro->GetReading()) * rad / s) * dt;
     if (delta_angle < 2 * deg &&
         delta_angle > -2 * deg) {  // TODO(Wesley) Make not bad.
       calibration_drift_angle += delta_angle;
       calibration_time_counter += dt;
-      // printf("%f\t%f\n", calibration_time_counter.to(s),
-      // delta_angle.to(deg));
       if (calibration_time_counter >= calibration_time) {
         calibration_drift = calibration_drift_angle / calibration_time_counter;
-        // printf("[gyro] Final calib val: %f\n", calibration_drift.to(deg/s));
-        // printf("#--- START TRIAL %d ---\n", trial);
-        //printf("[gyro] finished calibrating :)\n");
         is_calibrated = true;
         need_led_switch = true;
       }
@@ -66,17 +58,6 @@ void GyroReader::Update(Time dt) {
                 dt) *
                (360 / degrees_per_circle);
       time += dt;
-      // printf("[gyro] Angle: %f deg\n", angle.to(deg));
-      // printf("%f\t%f\n", time.to(s),  angle.to(deg));
-      // if (time >= 140*s) {
-      // time = 0*s;
-      // angle = 0*rad;
-      // is_calibrated = false;
-      // calibration_time_counter = 0*s;
-      // calibration_drift_angle = 0*rad;
-      // deadzone_time_counter = 0*s;
-      // trial++;
-      //}
     }
   }
 }
