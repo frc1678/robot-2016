@@ -71,6 +71,8 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
       GetRobotString(id) + "/pivot_climb_gains");
   ret.elevator_gains = LoadConstantsFromFile<Length, Voltage>(
       GetRobotString(id) + "/elevator_gains");
+  ret.drivetrain_angle_hella_gains = LoadConstantsFromFile<Angle, Voltage>(
+      GetRobotString(id) + "/drivetrain_angle_hella_gains");
   ret.drivetrain_angle_gains = LoadConstantsFromFile<Angle, Voltage>(
       GetRobotString(id) + "/drivetrain_angle_gains");
   ret.vision_angle_gains = LoadConstantsFromFile<Angle, Voltage>(

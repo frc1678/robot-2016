@@ -3,7 +3,6 @@
 using mutex_lock = std::lock_guard<std::mutex>;
 
 // this code is an ugly hack but thats ok because the world is an ugly hack.
-
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
       gyro_history_(5 * ms),
@@ -123,6 +122,12 @@ void DrivetrainSubsystem::Update(Time dt) {
       bool profile_finished_angle =
           muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 1 * deg;
 
+      if (profiles_finished_time) {
+        angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_hella_gains);
+      } else {
+        angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_gains);
+      }
+
       if (profiles_finished_time &&
           (profile_finished_angle || !use_angle_termination_) &&
           (profile_finished_distance || !use_distance_termination_)) {
@@ -152,7 +157,7 @@ void DrivetrainSubsystem::Update(Time dt) {
   csv_log_["enc_right"] = std::to_string(pos.right_encoder);
   csv_log_["pwm_left"] = std::to_string(out.left_voltage);
   csv_log_["pwm_right"] = std::to_string(out.right_voltage);
-  csv_log_["gyro_angle"] = std::to_string(pos.gyro_angle);
+  csv_log_["gyro_angle"] = std::to_string(gyro_reader_->GetAngle().to(rad));
   csv_log_["gear"] = current_goal_.highgear ? "high" : "low";
   csv_helper_.Update();
   csv_log_.EndLine();  // Flush the current row of the log
@@ -202,7 +207,7 @@ void DrivetrainSubsystem::SetDrivePosition(
 // code
 
 void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
-  AngularVelocity speed = (highgear ? 380 * deg / s : 4.4 * rad /s);
+  AngularVelocity speed = (highgear ? 380 * deg / s : 6.1 * rad /s);
   AngularAcceleration accel = (highgear ? 250 : 500) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
@@ -214,7 +219,7 @@ void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
 
 
 void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
-  AngularVelocity speed = (highgear ? 380 * deg / s : 4.4 * rad /s);
+  AngularVelocity speed = (highgear ? 380 * deg / s : 6.1 * rad /s);
   AngularAcceleration accel = (highgear ? 250 : 500) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
@@ -264,6 +269,7 @@ void DrivetrainSubsystem::FollowMotionProfile(
   SetDrivePosition(&pos);  // Is this bad?
   encoder_offset_ = (pos.left_encoder + pos.right_encoder) / 2;
   gyro_offset_ = gyro_reader_->GetAngle();
+  angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_gains);
   angle_controller_.Reset();
   distance_controller_.Reset();
 }
@@ -294,7 +300,7 @@ Voltage DrivetrainSubsystem::GetAngleFFVoltage(AngularVelocity velocity,
     const auto c1 = 70 / V * (deg / s / s);
     total_output = c2 * velocity + acceleration / c1;
   } else {
-    AngularVelocity max_robot_angular_velocity = 240 * deg / s;
+    AngularVelocity max_robot_angular_velocity = 6.25 * rad / s;
     const auto c2 = 30 * V / max_robot_angular_velocity;
     const auto c1 = 20 / V * (deg / s / s);
     total_output = c2 * velocity + acceleration / c1;
