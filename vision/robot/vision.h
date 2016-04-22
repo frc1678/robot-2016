@@ -28,6 +28,7 @@ class CitrusVision {
   muan::History<Angle, 100> gyro_history_;
 
   bool was_running_profile_;
+  int aligned_for_ = 0;
   muan::Timer align_timer_;
 
   bool is_found_ = false;

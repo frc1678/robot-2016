@@ -1,27 +1,33 @@
 // Init
 DropBall
 SetWedge: false
-RunIntake: 1
+RunIntake: 2
 Shift: false
 
 // Move arm to intake
 CheckArmCalibration
 SetArmPosition: 6
 
-Wait: 0.1
+WaitForBall
 
 // I can't believe it's not splines!(TM)
-DriveStraightAtAngle: 2.1, 28.0, false
+WHILE:
+  DriveStraightAtAngle: 2.1, 29.0, false
+ALSO:
+  Wait: 0.2
+  RunIntake: 0
 Shift: true
-DriveStraightAtAngle: 10.0, 0.0, true
+WHILE:
+  DriveStraightAtAngle: 13.0, 0.0, true
+ALSO:
+  EncoderWait: 8.5
+  SetArmPosition: 3
 
 // Turn towards goal
 Shift: false
-COMPLETE ALL:
-  AbsolutePointTurn: -30.0
-  SetArmPosition: 3
+AbsolutePointTurn: -46.0
 
-Wait: 0.65
+Wait: 0.2
 Align
 Shoot
 
@@ -35,27 +41,25 @@ COMPLETE ALL:
 // Drive under low bar and move to intake position
 Shift: true
 WHILE:
-  DriveStraightAtAngle: -12.0, -4.0, true
+  DriveStraightAtAngle: -14.5, -4.0, true
 ALSO:
-  EncoderWait: -5.5
-  COMPLETE ALL:
-    SetArmPosition: 6
-    RunIntake: 2
+  SetArmPosition: 6
+  RunIntake: 2
 
 WaitForBall
 
 // Drive under low bar and turn
 WHILE:
-  DriveStraightAtAngle: 12.0, -4.5, true
+  DriveStraightAtAngle: 15.0, -4.5, true
 ALSO:
-  Wait: 0.75
+  EncoderWait: 1.0
   RunIntake: 0
-
-Shift: false
-COMPLETE ALL:
-  AbsolutePointTurn: -30.0
+  EncoderWait: 7.5
   SetArmPosition: 3
 
-Wait: 0.65
+Shift: false
+AbsolutePointTurn: -46.0
+
+Wait: 0.2
 Align
 Shoot
