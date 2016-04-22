@@ -14,4 +14,4 @@ Shoot
 Wait: 0.6
 
 AbsolutePointTurn: 0.0
-DriveStraightAtAngle: -9.0, 0.0, false
+DriveStraightAtAngle: -11.0, 0.0, false
