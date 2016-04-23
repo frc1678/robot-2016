@@ -13,13 +13,10 @@ PointTurn: angle: -25.0
 
 //Raise wedge up
 SetWedge: true
-Wait: seconds: 1.5
-//Align
+Wait: seconds: 0.4
+Align
 Wait: 0.3
-//Align
 Shoot
-
-Wait: 1.0
 
 //Go to the side
 AbsolutePointTurn: -90.0
