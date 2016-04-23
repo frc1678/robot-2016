@@ -249,6 +249,7 @@ bool AutoFunction::DropBall(CitrusRobot* robot) {
 bool toStartVision = true;
 bool AutoFunction::Align(CitrusRobot* robot) {
   if (robot->vision_.RunVision(true)) {
+    robot->subsystems_.arm.Shoot(false);
     return true;
   }
 

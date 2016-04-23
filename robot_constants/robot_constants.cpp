@@ -38,12 +38,12 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
 
     ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
 
-    ret.camera_offset = -0.64;  // TODO(Wesley) convert to unit?
+    ret.camera_offset = -0.9;  // TODO(Wesley) convert to unit?
     ret.pivot_efficiency = .6;
     ret.camera_scaling_factor = 1.01;
 
     ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
-    ret.auto_shot_goals = {40.5 * deg, 0 * m, 5500 * rev / (60 * s)};
+    ret.auto_shot_goals = {41.5 * deg, 0 * m, 5500 * rev / (60 * s)};
     ret.fender_shot_goals = {10 * deg, 0 * m, 5500 * rev / (60 * s)};
   } else if (id == RobotIdentifier::APPA) {
     ret.pivot_calibration_offset = 24.0 * deg;
@@ -71,8 +71,6 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
       GetRobotString(id) + "/pivot_climb_gains");
   ret.elevator_gains = LoadConstantsFromFile<Length, Voltage>(
       GetRobotString(id) + "/elevator_gains");
-  ret.drivetrain_angle_hella_gains = LoadConstantsFromFile<Angle, Voltage>(
-      GetRobotString(id) + "/drivetrain_angle_hella_gains");
   ret.drivetrain_angle_gains = LoadConstantsFromFile<Angle, Voltage>(
       GetRobotString(id) + "/drivetrain_angle_gains");
   ret.vision_angle_gains = LoadConstantsFromFile<Angle, Voltage>(

@@ -53,9 +53,11 @@ bool CitrusVision::RunVision(bool run) {
           subsystems_.drive.PointTurn(
             GetAngleOff() + (subsystems_.drive.GetGyroAngle() - gyro_history_.GoBack(160*ms)));
         }
+        aligned_for_ = 0;
         return false;
       } else {
-        return true;
+        aligned_for_++;
+        return aligned_for_ > 4;
       }
     }
   } else {
