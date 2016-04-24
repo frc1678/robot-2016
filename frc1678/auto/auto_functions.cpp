@@ -248,8 +248,7 @@ bool AutoFunction::DropBall(CitrusRobot* robot) {
 
 bool toStartVision = true;
 bool AutoFunction::Align(CitrusRobot* robot) {
-  if (robot->vision_.RunVision(true)) {
-    robot->subsystems_.arm.Shoot(false);
+  if (robot->vision_.RunVision()) {
     return true;
   }
 
@@ -257,6 +256,15 @@ bool AutoFunction::Align(CitrusRobot* robot) {
 }
 
 bool AutoFunction::StopDriving(CitrusRobot* robot) {
-  // driveSystem->DriveStraight(0,0);
+  robot->subsystems_.drive.CancelMotionProfile();
+  newDriveYoloState = true;
+  newDriveState = true;
+  newDriveYoloAtAngleState = true;
+  newDriveYoloAtAngleState = true;
+  newDriveAtAngleState = true;
+  newTurnState = true;
+  newAbsTurnState = true;
+  newArmPosition = true;
+  newEncoderWaitState = true;
   return true;
 }

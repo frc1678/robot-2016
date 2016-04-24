@@ -18,48 +18,52 @@ ALSO:
   RunIntake: 0
 Shift: true
 WHILE:
-  DriveStraightAtAngle: 13.0, 0.0, true
+  DriveStraightAtAngle: 15.0, 0.0, true
 ALSO:
-  EncoderWait: 8.5
+  EncoderWait: 7.5
   SetArmPosition: 3
+
+StopDriving
 
 // Turn towards goal
 Shift: false
-AbsolutePointTurn: -46.0
+AbsolutePointTurn: -55.0
 
 Wait: 0.2
 Align
+Wait: 0.05
 Shoot
 
-Wait: 0.1
+Wait: 0.05
 
 // Turn to prep for low bar
 COMPLETE ALL:
   AbsolutePointTurn: -4.0
   SetArmPosition: 5
 
+RunIntake: 1
 // Drive under low bar and move to intake position
 Shift: true
-WHILE:
-  DriveStraightAtAngle: -14.5, -4.0, true
-ALSO:
+COMPLETE ALL:
+  DriveStraightAtAngle: -16.5, -4.0, true
   SetArmPosition: 6
-  RunIntake: 2
 
+StopDriving
 WaitForBall
 
 // Drive under low bar and turn
 WHILE:
-  DriveStraightAtAngle: 15.0, -4.5, true
-ALSO:
-  EncoderWait: 1.0
-  RunIntake: 0
-  EncoderWait: 7.5
+  EncoderWait: 8.0
   SetArmPosition: 3
+ALSO:
+  DriveStraightAtAngle: 17.0, -4.5, true
+
+StopDriving
 
 Shift: false
-AbsolutePointTurn: -46.0
+AbsolutePointTurn: -55.0
 
 Wait: 0.2
 Align
+Wait: 0.05
 Shoot

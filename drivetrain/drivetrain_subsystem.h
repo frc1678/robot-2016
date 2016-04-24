@@ -52,8 +52,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   bool IsProfileComplete();
   void CancelMotionProfile();
 
-  void PointTurn(Angle angle, bool highgear = false);
-  void AbsolutePointTurn(Angle angle, bool highgear = false);
+  void PointTurn(Angle angle, bool highgear = false, bool distance_term = false, bool angle_term = false);
+  void AbsolutePointTurn(Angle angle, bool highgear = false, bool distance_term = false, bool angle_term = false);
   void DriveDistance(Length distance, bool highgear = false);
   void DriveDistanceAtAngle(Length distance, Angle angle,
                             bool highgear = false);

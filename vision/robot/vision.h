@@ -11,7 +11,7 @@ class CitrusVision {
  public:
   CitrusVision(RobotSubsystems& subsystems, RobotConstants constants);
   void Update();
-  bool RunVision(bool run);
+  bool RunVision();
   bool GetAligned();
   bool IsSeeing() { return is_found_; }
   bool HasConnection() {return has_connection_; }

@@ -38,7 +38,7 @@ class CitrusRobot : public IterativeRobot {
   CitrusVision vision_;
 
   ColorLight lights_;
-  std::unique_ptr<DigitalOutput> l_pow_, l_red_, l_green_, l_blue_;
+  std::unique_ptr<DigitalOutput> l_red_, l_green_, l_blue_;
 
   DigitalInput *switch_one;
   DigitalInput *switch_two;

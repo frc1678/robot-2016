@@ -30,7 +30,7 @@ typename muan::PidController<I, T>::PidGains LoadConstantsFromFile(
 RobotConstants GenerateRobotConstants(RobotIdentifier id) {
   RobotConstants ret;
   if (id == RobotIdentifier::SSBB) {
-    ret.pivot_calibration_offset = 21.2 * deg;
+    ret.pivot_calibration_offset = 23.4 * deg;
 
     ret.pivot_gains = {140 * V / rad, 0 * V / (rad * s), 2 * V / (rad / s)};
     ret.pivot_climb_gains = {100 * V / rad, 40 * V / (rad * s),
@@ -38,11 +38,11 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
 
     ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
 
-    ret.camera_offset = -0.9;  // TODO(Wesley) convert to unit?
-    ret.pivot_efficiency = .6;
+    ret.camera_offset = 2.3;  // TODO(Wesley) convert to unit?
+    ret.pivot_efficiency = .92;
     ret.camera_scaling_factor = 1.01;
 
-    ret.long_shot_goals = {42 * deg, .33 * m, 6500 * rev / (60 * s)};
+    ret.long_shot_goals = {41 * deg, .33 * m, 6500 * rev / (60 * s)};
     ret.auto_shot_goals = {41.5 * deg, 0 * m, 5500 * rev / (60 * s)};
     ret.fender_shot_goals = {10 * deg, 0 * m, 5500 * rev / (60 * s)};
   } else if (id == RobotIdentifier::APPA) {
