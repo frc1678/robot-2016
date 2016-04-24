@@ -15,6 +15,9 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *driveStraight =
       new AvailableCppCommandDeclaration((void *)AutoFunction::DriveStraight, "DriveStraight", {DataType::FLOAT, DataType::BOOLEAN});
 
+  AvailableCppCommandDeclaration *driveSlowStraight =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::DriveSlowStraight, "DriveSlowStraight", {DataType::FLOAT, DataType::BOOLEAN});
+
   AvailableCppCommandDeclaration *driveYolo =
       new AvailableCppCommandDeclaration((void *)AutoFunction::DriveYolo, "DriveYolo", {DataType::FLOAT, DataType::BOOLEAN});
 
@@ -68,7 +71,7 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   
 
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, driveYolo, driveYoloAtAngle, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, encoderWait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge, waitForBall, dropBall, stopDriving};
+      driveStraight, driveSlowStraight, driveYolo, driveYoloAtAngle, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, encoderWait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge, waitForBall, dropBall, stopDriving};
   state.declareAvailableCppCommands(commands);
 
   try {

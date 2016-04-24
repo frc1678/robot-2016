@@ -237,6 +237,17 @@ void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
   FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, true);
 }
 
+void DrivetrainSubsystem::DriveSlowDistance(Length distance, bool highgear) {
+  Velocity speed = (highgear ? 3.0 : 1.1) * m / s;
+  Acceleration accel = 6 * ft / s / s;
+  using muan::TrapezoidalMotionProfile;
+  auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(distance, speed,
+                                                               accel);
+  auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
+      0 * rad, 1 * rad / s, 1 * rad / s / s);
+  FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, true);
+}
+
 void DrivetrainSubsystem::DriveDistanceAtAngle(Length distance, Angle angle,
                                                bool highgear) {
   Velocity speed = (highgear ? 3.0 : 1.44) * m / s;

@@ -4,8 +4,8 @@ Shift: false
 
 //Saves time by going to position while driving
 COMPLETE ALL:
-  SetArmPosition: INTAKE: 2
-  DriveStraight: 12.0, false
+  SetArmPosition: DEFENSE: 4
+  DriveSlowStraight: 12.0, false
 
 //Inital turn for shot
 SetArmPosition: AUTO: 3
@@ -15,8 +15,9 @@ PointTurn: angle: -25.0
 SetWedge: true
 Wait: seconds: 0.4
 Align
-Wait: 0.3
+Wait: seconds: 0.3
 Shoot
+Wait: seconds: 0.3
 
 //Go to the side
 AbsolutePointTurn: -90.0
@@ -24,5 +25,4 @@ DriveStraight: 4.5, false
 PointTurn: angle: 80.0
 
 //Drive over defense on right
-Shift: false
 DriveStraight: -11.0, false
