@@ -60,12 +60,15 @@ LemonScriptRunner::LemonScriptRunner(const std::string &auto_routine_file,
   AvailableCppCommandDeclaration *dropBall =
       new AvailableCppCommandDeclaration((void *)AutoFunction::DropBall, "DropBall", {});
 
+  AvailableCppCommandDeclaration *stopDriving =
+      new AvailableCppCommandDeclaration((void *)AutoFunction::StopDriving, "StopDriving", {});
+
   AvailableCppCommandDeclaration *setWedge =
       new AvailableCppCommandDeclaration((void *)AutoFunction::SetWedge, "SetWedge", {DataType::BOOLEAN});
   
 
   std::vector<const AvailableCppCommandDeclaration *> commands = {
-      driveStraight, driveYolo, driveYoloAtAngle, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, encoderWait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge, waitForBall, dropBall};
+      driveStraight, driveYolo, driveYoloAtAngle, driveStraightAtAngle, pointTurn, absolutePointTurn, wait, encoderWait, shoot, runIntake, setArmPosition, checkArmCalibration, align, shift, setWedge, waitForBall, dropBall, stopDriving};
   state.declareAvailableCppCommands(commands);
 
   try {

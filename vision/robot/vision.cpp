@@ -37,32 +37,29 @@ void CitrusVision::Update() {
   angle_log_.EndLine();
 }
 
-bool CitrusVision::RunVision(bool run) {
-  if (run) {
-    if (!subsystems_.drive.IsProfileComplete()) {
-      was_running_profile_ = true;
-      return false;
-    } else {
-      if (was_running_profile_) {
-        align_timer_.Reset();
-        was_running_profile_ = false;
-      }
-      if (!GetAligned()) {
-        if (align_timer_.Get() > 0.2*s) {
-          // There is usually 160 ms of lag between the image capture and being received by the robot code
-          subsystems_.drive.PointTurn(
-            GetAngleOff() + (subsystems_.drive.GetGyroAngle() - gyro_history_.GoBack(160*ms)));
-        }
-        aligned_for_ = 0;
-        return false;
-      } else {
+bool CitrusVision::RunVision() {
+  if (!subsystems_.drive.IsProfileComplete()) {
+    was_running_profile_ = true;
+  } else {
+    if (was_running_profile_) {
+      align_timer_.Reset();
+      was_running_profile_ = false;
+    }
+
+    if (align_timer_.Get() > 0.1*s) {
+      if (GetAligned()) {
         aligned_for_++;
         return aligned_for_ > 4;
+      } else {
+        // There is usually 160 ms of lag between the image capture and being received by the robot code
+        subsystems_.drive.Shift(false);
+        subsystems_.drive.PointTurn(
+            GetAngleOff() + (subsystems_.drive.GetGyroAngle() - gyro_history_.GoBack(160*ms)), false, false, true);
+        aligned_for_ = 0;
       }
     }
-  } else {
-    return false;
   }
+  return false;
 }
 
 bool CitrusVision::GetAligned() {

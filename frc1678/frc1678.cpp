@@ -50,7 +50,6 @@ CitrusRobot::CitrusRobot()
   switch_one = new DigitalInput(23);
   switch_two = new DigitalInput(24);
 
-  l_pow_ = std::make_unique<DigitalOutput>(25);
   l_red_ = std::make_unique<DigitalOutput>(7);
   l_green_ = std::make_unique<DigitalOutput>(8);
   l_blue_ = std::make_unique<DigitalOutput>(9);
@@ -123,7 +122,7 @@ void CitrusRobot::TeleopPeriodic() {
   }
   if (align_->ButtonPressed()) {
     // !button_was_pressed needs to be first due to short-circuiting logic
-    if (!button_was_pressed_ && vision_.RunVision(true) && shootable_ && !subsystems_.arm.IsShooting()) {
+    if (!button_was_pressed_ && vision_.RunVision() && shootable_ && !subsystems_.arm.IsShooting()) {
       subsystems_.arm.Shoot(false);
       button_was_pressed_ = true;
     }
@@ -134,18 +133,21 @@ void CitrusRobot::TeleopPeriodic() {
       was_running_vision_ = false;
     }
     button_was_pressed_ = false;
-    vision_.RunVision(false);
   }
   if (cancel_profile_->ButtonClicked()) {
-    subsystems_.drive.CancelMotionProfile();
+    //subsystems_.drive.CancelMotionProfile();
+    subsystems_.drive.UpdateConstants();
+    subsystems_.drive.Shift(false);
+    drivetrain_goal.highgear = false;
+    subsystems_.drive.PointTurn(5*deg, false, false, true);
   }
   if (shift_high_->ButtonClicked()) {
     subsystems_.drive.Shift(true);
-    in_highgear_ = true;
+    drivetrain_goal.highgear = true;
   }
   if (shift_low_->ButtonClicked()) {
     subsystems_.drive.Shift(false);
-    in_highgear_ = false;
+    drivetrain_goal.highgear = false;
   }
   if (tuck_pos_->ButtonClicked()) {
     subsystems_.arm.GoToTuckSpin();
@@ -244,7 +246,6 @@ void CitrusRobot::TeleopPeriodic() {
 void CitrusRobot::SetDriveGoal(DrivetrainGoal* drivetrain_goal) {
   drivetrain_goal->steering = j_wheel_->GetX();
   drivetrain_goal->throttle = j_stick_->GetY();
-  drivetrain_goal->highgear = in_highgear_;
   drivetrain_goal->quickturn = quick_turn_->ButtonPressed();
   drivetrain_goal->control_loop_driving = false;
 }
@@ -379,7 +380,6 @@ void CitrusRobot::SetLightColor(int r, int g, int b) {
   l_red_->Set(r);
   l_green_->Set(g);
   l_blue_->Set(b);
-  l_pow_->Set(0);
 }
 
 void CitrusRobot::UpdateAutoRoutine() {

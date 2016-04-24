@@ -98,6 +98,8 @@ class ArmSubsystem : public muan::Updateable {
 
   std::unique_ptr<DigitalInput> ball_sensor_;
 
+  std::unique_ptr<DigitalOutput> camera_light_;
+
   PivotController pivot_controller_;
   ElevatorController elevator_controller_;
   ShooterBang shooter_controller_;

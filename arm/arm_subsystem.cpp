@@ -45,6 +45,9 @@ ArmSubsystem::ArmSubsystem()
 
   ball_sensor_ = std::make_unique<DigitalInput>(RobotPorts::ball_sensor);
 
+  camera_light_ = std::make_unique<DigitalOutput>(25);
+  camera_light_->Set(1);
+
   shot_timer_.Start();
 
   thresh_ = 0.5 * deg;
@@ -280,7 +283,7 @@ void ArmSubsystem::GoToTuckSpin() {
 }
 
 void ArmSubsystem::GoToIntakeSpin() {
-  ArmGoal goal{2.5 * deg, 0 * m, 6500 * rev / (60 * s)};
+  ArmGoal goal{3.0 * deg, 0 * m, 6500 * rev / (60 * s)};
   proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
@@ -296,7 +299,7 @@ void ArmSubsystem::GoToFender() {
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{2.5 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{3.0 * deg, 0 * m, 0 * rev / (60 * s)};
   proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
@@ -350,7 +353,10 @@ void ArmSubsystem::DropBall() {
   ball_pinch_->Set(true);
 }
 
-void ArmSubsystem::SetHoodOpen(bool open) { shooter_hood_->Set(open); }
+void ArmSubsystem::SetHoodOpen(bool open) {
+  shooter_hood_->Set(open);
+  camera_light_->Set(open);
+}
 
 void ArmSubsystem::SetEnabled(bool enabled) { enabled_ = enabled; }
 
