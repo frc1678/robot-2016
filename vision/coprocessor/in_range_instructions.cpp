@@ -42,7 +42,19 @@ InRangeInstructions::InRangeInstructions(cv::Scalar low, cv::Scalar high,
   colorspace_ = colorspace;
 }
 
+void InRangeInstructions::WriteInstructions(std::string filename) {
+  std::ofstream file(filename);
+  file << colorspace_ << " " << low_[0] << " " << low_[1] << " " << low_[2]
+       << " " << high_[0] << " " << high_[1] << " " << high_[2] << '\n';
+  file.close();
+}
+
 void InRangeInstructions::Thresh(cv::Mat& image) {
   cv::cvtColor(image, image, colorspace_);
   cv::inRange(image, low_, high_, image);
+}
+
+void InRangeInstructions::Set(cv::Scalar low, cv::Scalar high) {
+  low_ = low;
+  high_ = high;
 }

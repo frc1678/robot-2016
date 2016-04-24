@@ -135,11 +135,7 @@ void CitrusRobot::TeleopPeriodic() {
     button_was_pressed_ = false;
   }
   if (cancel_profile_->ButtonClicked()) {
-    //subsystems_.drive.CancelMotionProfile();
-    subsystems_.drive.UpdateConstants();
-    subsystems_.drive.Shift(false);
-    drivetrain_goal.highgear = false;
-    subsystems_.drive.PointTurn(5*deg, false, false, true);
+    subsystems_.drive.CancelMotionProfile();
   }
   if (shift_high_->ButtonClicked()) {
     subsystems_.drive.Shift(true);

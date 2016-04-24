@@ -11,6 +11,7 @@ class InRangeInstructions {
   InRangeInstructions(cv::Scalar low, cv::Scalar high, int colorspace);
   void Thresh(cv::Mat& image);
   void WriteInstructions(std::string filename);
+  void Set(cv::Scalar low, cv::Scalar high);
 
  private:
   int colorspace_;
