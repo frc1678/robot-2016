@@ -41,10 +41,7 @@ class CitrusRobot : public IterativeRobot {
   CitrusVision vision_;
 
   ColorLight lights_;
-  std::unique_ptr<DigitalOutput> l_red_, l_green_, l_blue_;
 
-  DigitalInput *switch_one;
-  DigitalInput *switch_two;
   Timer *camera_timer_ = new Timer();
 
   bool is_wedge_deployed_ = false;
@@ -72,11 +69,8 @@ class CitrusRobot : public IterativeRobot {
   void UpdateLights();
   void ColorLights(ColorLight color);
   void SetLightColor(int r, int g, int b);
-<<<<<<< HEAD
-=======
   ColorLight FlashLights(ColorLight color_one, ColorLight color_two, bool off_between = false);
 
->>>>>>> 8abaf17... Refactor lights
   void UpdateButtons();
   ~CitrusRobot();
 };

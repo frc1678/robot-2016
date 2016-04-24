@@ -48,8 +48,9 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
-  switch_one = new DigitalInput(23);
-  switch_two = new DigitalInput(24);
+  switch_one = std::make_unique<DigitalInput>(23);
+  switch_two = std::make_unique<DigitalInput>(24);
+  switch_three = std::make_unique<DigitalInput>(22);
 
   l_red_ = std::make_unique<DigitalOutput>(7);
   l_green_ = std::make_unique<DigitalOutput>(8);
@@ -394,14 +395,19 @@ void CitrusRobot::SetLightColor(int r, int g, int b) {
 void CitrusRobot::UpdateAutoRoutine() {
   std::map<int8_t, std::string> auto_map;
 
-  auto_map[0b00000011] = "one_ball.auto";
-  auto_map[0b00000001] = "two_ball.auto";
-  auto_map[0b00000010] = "class_d_left.auto";
-  auto_map[0b00000000] = "class_d_right.auto";
+  auto_map[0b00000111] = "one_ball.auto";
+  auto_map[0b00000110] = "two_ball.auto";
+  auto_map[0b00000101] = "class_d_left.auto";
+  auto_map[0b00000100] = "class_d_right.auto";
+  auto_map[0b00000011] = "class_a_left_right.auto";
+  auto_map[0b00000010] = "class_a_right_right.auto";
+  auto_map[0b00000001] = "class_a_left_left.auto";
+  auto_map[0b00000000] = "class_a_right_left.auto";
 
   int8_t auto_number = 0b00000000;
   auto_number |= (switch_one->Get() ? 0 : 1) << 0;
   auto_number |= (switch_two->Get() ? 0 : 1) << 1;
+  auto_number |= (switch_three->Get() ? 0 : 1) << 2;
 
   if (auto_routine_ != auto_map[auto_number]) { // If the routine was just changed
     if (auto_runner != nullptr) {
