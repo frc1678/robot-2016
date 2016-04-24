@@ -351,7 +351,7 @@ void CitrusRobot::UpdateLights() {
 
 ColorLight CitrusRobot::FlashLights(ColorLight color_one, ColorLight color_two, bool off_between) {
   auto color = (static_cast<int>(muan::now().to(s)) % 2) ? color_one : color_two;
-  if (off_between && fmod(muan::now().to(s), 1) < 0.5) color = ColorLight::OFF;
+  if (off_between && fmod(muan::now().to(s / 2), 0.5) < 0.25) color = ColorLight::OFF;
   return color;
 }
 

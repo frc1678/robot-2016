@@ -299,7 +299,7 @@ void ArmSubsystem::GoToFender() {
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{3.0 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{3.6 * deg, 0 * m, 0 * rev / (60 * s)};
   proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
