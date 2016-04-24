@@ -18,6 +18,8 @@ class ObjectTracker {
   ~ObjectTracker();
   TrackerResults Update(cv::Mat& image);
 
+  void SetThresholds(cv::Scalar low, cv::Scalar high);
+
  private:
   InRangeInstructions range;
   ShapeDetector detector;
