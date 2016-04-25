@@ -239,6 +239,9 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
       case INTAKE_SPIN:
         robot->subsystems_.arm.GoToIntakeSpin();
         break;
+      case CLASS_A:
+        robot->subsystems_.arm.GoToClassA();
+        break;
     }
 
     newArmPosition = false;

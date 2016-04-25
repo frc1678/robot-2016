@@ -15,7 +15,8 @@ enum Position {
   AUTO_SHOT,
   DEFENSE,
   TUCK_SPIN,
-  INTAKE_SPIN
+  INTAKE_SPIN,
+  CLASS_A
 };
 
 enum IntakeStatus {

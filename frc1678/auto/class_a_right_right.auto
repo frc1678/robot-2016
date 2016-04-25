@@ -1,14 +1,10 @@
 CheckArmCalibration
 SetWedge: false
-Shift: true
-
-
-DriveStraight: -1.0, true
-Wait: 99999.0
+Shift: false
 
 //Saves time by going to position while driving
 COMPLETE ALL:
-  SetArmPosition: DEFENSE: 4
+  SetArmPosition: CLASS_A: 7
   DriveSlowStraight: 12.0, false
 
 //Inital turn for shot
@@ -24,9 +20,8 @@ Shoot
 Wait: seconds: 0.3
 
 //Go to the side
-AbsolutePointTurn: -90.0
-DriveStraight: 5.5, false
-PointTurn: angle: 80.0
+AbsolutePointTurn: 90.0
+DriveStraightAtAngle: -3.7, 90.0, false
 
 //Drive over defense on left
-DriveStraight: -11.0, false
+DriveStraightAtAngle: -11.0, 0.0, false
