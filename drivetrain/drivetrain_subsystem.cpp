@@ -6,7 +6,7 @@ using mutex_lock = std::lock_guard<std::mutex>;
 DrivetrainSubsystem::DrivetrainSubsystem()
     : muan::Updateable(200 * hz),
       gyro_history_(5 * ms),
-      angle_controller_(RobotConstants::GetInstance().drivetrain_angle_gains),
+      angle_controller_(RobotConstants::GetInstance().drivetrain_angle_turn_gains),
       distance_controller_(RobotConstants::GetInstance().drivetrain_distance_gains),
       event_log_("drivetrain_subsystem"),
       csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "goal_dist", "pwm_left",
@@ -120,7 +120,7 @@ void DrivetrainSubsystem::Update(Time dt) {
           muan::abs(distance_from_start - distance_profile_->Calculate(t)) <
           8 * cm;
       bool profile_finished_angle =
-          muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 0.95 * deg;
+          muan::abs(angle_from_start - angle_profile_->Calculate(t)) < 0.90 * deg;
       bool profile_finished_angular_velocity = muan::abs((last_angle_ - angle_from_start) / dt) < 7 * deg / s;
 
       if (profiles_finished_time &&
@@ -160,11 +160,6 @@ void DrivetrainSubsystem::Update(Time dt) {
 }
 
 void DrivetrainSubsystem::UpdateConstants() {
-  RobotConstants::ReloadConstants();
-  angle_controller_.SetGains(
-      RobotConstants::GetInstance().drivetrain_angle_gains);
-  distance_controller_.SetGains(
-      RobotConstants::GetInstance().drivetrain_distance_gains);
 }
 
 void DrivetrainSubsystem::SetDriveGoal(const DrivetrainGoal &goal) {
@@ -211,6 +206,7 @@ void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear, bool distance_te
       0 * m, 10 * ft / s, 10 * ft / s / s);
   auto ap =
       std::make_unique<TrapezoidalMotionProfile<Angle>>(angle, speed, accel);
+  angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_turn_gains);
   FollowMotionProfile(std::move(dp), std::move(ap), highgear, distance_term, angle_term);
 }
 
@@ -223,6 +219,7 @@ void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear, bool dis
       0 * m, 10 * ft / s, 10 * ft / s / s);
   auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
       angle - gyro_reader_->GetAngle() - gyro_zero_offset_, speed, accel);
+  angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_turn_gains);
   FollowMotionProfile(std::move(dp), std::move(ap), highgear, distance_term, angle_term);
 }
 
@@ -234,6 +231,7 @@ void DrivetrainSubsystem::DriveDistance(Length distance, bool highgear) {
                                                                accel);
   auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
       0 * rad, 1 * rad / s, 1 * rad / s / s);
+  angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_drive_gains);
   FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, true);
 }
 
@@ -259,6 +257,7 @@ void DrivetrainSubsystem::DriveDistanceAtAngle(Length distance, Angle angle,
                                                                accel);
   auto ap = std::make_unique<TrapezoidalMotionProfile<Angle>>(
       angle - gyro_reader_->GetAngle(), angular_speed, angular_accel);
+  angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_drive_gains);
   FollowMotionProfile(std::move(dp), std::move(ap), highgear, true, true);
 }
 
@@ -277,7 +276,6 @@ void DrivetrainSubsystem::FollowMotionProfile(
   SetDrivePosition(&pos);  // Is this bad?
   encoder_offset_ = (pos.left_encoder + pos.right_encoder) / 2;
   gyro_offset_ = gyro_reader_->GetAngle();
-  angle_controller_.SetGains(RobotConstants::GetInstance().drivetrain_angle_gains);
   angle_controller_.Reset();
   distance_controller_.Reset();
 }

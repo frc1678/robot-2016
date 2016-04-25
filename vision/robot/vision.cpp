@@ -46,10 +46,10 @@ bool CitrusVision::RunVision() {
       was_running_profile_ = false;
     }
 
-    if (align_timer_.Get() > 0.1*s) {
+    if (align_timer_.Get() > 0.15*s) {
       if (GetAligned()) {
         aligned_for_++;
-        return aligned_for_ > 4;
+        return aligned_for_ > 2; // useless
       } else {
         // There is usually 160 ms of lag between the image capture and being received by the robot code
         subsystems_.drive.Shift(false);
@@ -63,7 +63,7 @@ bool CitrusVision::RunVision() {
 }
 
 bool CitrusVision::GetAligned() {
-  return (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < 1.25 * deg));
+  return (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < 1.0 * deg));
 }
 
 void CitrusVision::ReadPosition() {
