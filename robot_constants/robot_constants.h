@@ -20,10 +20,8 @@ class RobotConstants {
   muan::PidController<Angle, Voltage>::PidGains pivot_gains;
   muan::PidController<Angle, Voltage>::PidGains pivot_climb_gains;
 
-  muan::PidController<Angle, Voltage>::PidGains drivetrain_angle_turn_gains;
-  muan::PidController<Angle, Voltage>::PidGains drivetrain_angle_drive_gains;
+  muan::PidController<Angle, Voltage>::PidGains drivetrain_angle_gains;
   muan::PidController<Length, Voltage>::PidGains drivetrain_distance_gains;
-  muan::PidController<Angle, Voltage>::PidGains vision_angle_gains;
 
   muan::PidController<Length, Voltage>::PidGains elevator_gains;
 

@@ -12,7 +12,6 @@
 #include "muan/logging/text_log.h"
 #include "muan/logging/csv_log.h"
 #include "muan/utils/math_utils.h"
-#include "muan/utils/history.h"
 #include "frc1678/robot_ports.h"
 #include "drivetrain/drivetrain.h"
 #include "gyro/gyro_reader.h"
@@ -25,11 +24,6 @@ using drivetrain::control_loops::DrivetrainOutput;
 using drivetrain::control_loops::DrivetrainStatus;
 using drivetrain::control_loops::DrivetrainLoop;
 
-enum DriveMode {
-  OPERATOR = 0,
-  MOTION_PROFILE
-};
-
 class DrivetrainSubsystem : public muan::Updateable {
  public:
   DrivetrainSubsystem();
@@ -37,8 +31,6 @@ class DrivetrainSubsystem : public muan::Updateable {
 
   void Update(Time dt) override;
   void Start();
-  void SetVisionTargetAngle(Angle vision_target_angle);
-  void RunVisionTracking(bool vision);
   void UpdateConstants();
   void SetDriveGoal(const DrivetrainGoal& goal);
   Length GetDistanceDriven();
@@ -52,8 +44,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   bool IsProfileComplete();
   void CancelMotionProfile();
 
-  void PointTurn(Angle angle, bool highgear = false, bool distance_term = false, bool angle_term = false);
-  void AbsolutePointTurn(Angle angle, bool highgear = false, bool distance_term = false, bool angle_term = false);
+  void PointTurn(Angle angle, bool highgear = false);
+  void AbsolutePointTurn(Angle angle, bool highgear = false);
   void DriveDistance(Length distance, bool highgear = false);
   void DriveDistanceAtAngle(Length distance, Angle angle,
                             bool highgear = false);
@@ -76,9 +68,8 @@ class DrivetrainSubsystem : public muan::Updateable {
   std::unique_ptr<Encoder> left_encoder_, right_encoder_;
   std::unique_ptr<Solenoid> shifting_;
 
-  muan::History<Angle, 100> gyro_history_;
-
-  DriveMode mode_ = OPERATOR;
+  bool is_operator_controlled_ = true;
+  bool is_loop_highgear = true;
 
   bool is_enabled_ = false;
 
