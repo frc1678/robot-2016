@@ -275,6 +275,13 @@ void ArmSubsystem::GoToTuck() {
   SetHoodOpen(false);
 }
 
+void ArmSubsystem::GoToClassA() {
+  ArmGoal goal{10 * deg, 0 * m, 0 * rev / (60 * s)};
+  proxy_position_override_ = false;
+  SetGoal(goal);
+  SetHoodOpen(false);
+}
+
 void ArmSubsystem::GoToTuckSpin() {
   ArmGoal goal{0 * deg, 0 * m, 6500 * rev / (60 * s)};
   proxy_position_override_ = false;
