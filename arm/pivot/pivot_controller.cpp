@@ -92,17 +92,28 @@ Voltage PivotController::UpdateClimb(Time dt, Angle encoder_angle,
     case PivotState::PREP_MOVING:
       state_ = PivotState::MOVING;
       out_voltage = 0 * V;
+      tuck_timer_ = 0 * s;
       break;
     case PivotState::MOVING:
-      out_voltage = climb_controller_.Calculate(dt, goal_ - angle) +
-                    GetClimbFFVoltage(angle);
-      if (muan::abs(goal_ - angle) < thresh_) {
-        state_ = PivotState::PREP_STOP;
-        brake_timer_ = 0 * s;
+      if (goal_ != 0 * deg) {
+        out_voltage = climb_controller_.Calculate(dt, goal_ - angle) +
+                      GetClimbFFVoltage(angle);
+        if (muan::abs(goal_ - angle) < thresh_) {
+          state_ = PivotState::PREP_STOP;
+          brake_timer_ = 0 * s;
+        }
+      } else {
+        tuck_timer_ += dt;
+        if (tuck_timer_ < 0.08 * s) {
+          out_voltage = -12 * V;
+        } else {
+          state_ = PivotState::PREP_STOP;
+          brake_timer_ = 0 * s;
+        }
       }
       break;
     case PivotState::PREP_STOP:
-      out_voltage = GetClimbFFVoltage(angle);
+      out_voltage = (goal_ != 0 * deg ? GetClimbFFVoltage(angle) : -8 * V);
       brake_timer_ += dt;
       if (brake_timer_ > disk_brake_time) {
         state_ = PivotState::FINISHED;

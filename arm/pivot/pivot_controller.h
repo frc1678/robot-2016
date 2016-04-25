@@ -44,6 +44,7 @@ class PivotController {
   bool calibrated_ = false;
   const Time disk_brake_time = .2 * s;
   Time brake_timer_;
+  Time tuck_timer_;
   Angle calibration_offset_ = 0 * deg;
 
   double pivot_efficiency;

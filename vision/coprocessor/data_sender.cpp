@@ -8,7 +8,7 @@
 
 void sendData();
 
-CitrusSocket connection(9999);
+CitrusSocket connection(0);
 std::mutex position_mutex;
 TrackerResults position_;
 

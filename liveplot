@@ -1,5 +1,5 @@
 gnuplot liveplot.gnu &
 
 sshpass -p "" ssh admin@roborio-1678-frc.local > /tmp/liveplot.csv <<'ENDSSH'
-tail -f /home/lvuser/logs/2016-03-20_11-20-05/drivetrain_subsystem.csv
+tail -f /home/lvuser/logs/2016-04-26_12-17-23/angles.csv
 ENDSSH

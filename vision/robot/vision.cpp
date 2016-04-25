@@ -59,11 +59,12 @@ bool CitrusVision::RunVision() {
       }
     }
   }
+
   return false;
 }
 
 bool CitrusVision::GetAligned() {
-  return (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < 1.0 * deg));
+  return (is_found_ && has_connection_ && (muan::abs(GetAngleOff()) < 1.2 * deg));
 }
 
 void CitrusVision::ReadPosition() {
