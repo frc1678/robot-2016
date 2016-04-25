@@ -111,7 +111,7 @@ void DrivetrainSubsystem::Update(Time dt) {
 
       Voltage out_left = -feed_forward_angle - correction_angle +
                          feed_forward_distance + correction_distance;
-      Voltage out_right = -feed_forward_angle + correction_angle +
+      Voltage out_right = feed_forward_angle + correction_angle +
                           feed_forward_distance + correction_distance;
 
       out.left_voltage = out_left.to(V);
