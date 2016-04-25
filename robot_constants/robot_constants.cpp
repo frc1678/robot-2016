@@ -39,7 +39,7 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
     ret.elevator_gains = {60 * V / m, 10 * V / (m * s), 0 * V / (m / s)};
 
     ret.camera_offset = 2.3;  // TODO(Wesley) convert to unit?
-    ret.pivot_efficiency = .92;
+    ret.pivot_efficiency = 0.75;
     ret.camera_scaling_factor = 1.01;
 
     ret.long_shot_goals = {41 * deg, .33 * m, 6500 * rev / (60 * s)};
@@ -71,8 +71,10 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
       GetRobotString(id) + "/pivot_climb_gains");
   ret.elevator_gains = LoadConstantsFromFile<Length, Voltage>(
       GetRobotString(id) + "/elevator_gains");
-  ret.drivetrain_angle_gains = LoadConstantsFromFile<Angle, Voltage>(
-      GetRobotString(id) + "/drivetrain_angle_gains");
+  ret.drivetrain_angle_turn_gains = LoadConstantsFromFile<Angle, Voltage>(
+      GetRobotString(id) + "/drivetrain_angle_turn_gains");
+  ret.drivetrain_angle_drive_gains = LoadConstantsFromFile<Angle, Voltage>(
+      GetRobotString(id) + "/drivetrain_angle_drive_gains");
   ret.vision_angle_gains = LoadConstantsFromFile<Angle, Voltage>(
       GetRobotString(id) + "/vision_angle_gains");
   ret.drivetrain_distance_gains = LoadConstantsFromFile<Length, Voltage>(

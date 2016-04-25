@@ -8,44 +8,45 @@ Shift: false
 CheckArmCalibration
 SetArmPosition: 6
 
-WaitForBall
-
 // I can't believe it's not splines!(TM)
 WHILE:
-  DriveStraightAtAngle: 2.1, 29.0, false
+  DriveYoloAtAngle: 2.1, 23.0, false
 ALSO:
   Wait: 0.2
   RunIntake: 0
 Shift: true
 WHILE:
-  DriveStraightAtAngle: 15.0, 0.0, true
-ALSO:
   EncoderWait: 7.5
   SetArmPosition: 3
+  EncoderWait: 1.0
+  Shift: false
+ALSO:
+  DriveStraightAtAngle: 15.0, -4.0, true
 
 StopDriving
 
 // Turn towards goal
 Shift: false
-AbsolutePointTurn: -55.0
+AbsolutePointTurn: -56.3
 
-Wait: 0.2
+Wait: 0.4
 Align
-Wait: 0.05
 Shoot
 
-Wait: 0.05
 
 // Turn to prep for low bar
-COMPLETE ALL:
-  AbsolutePointTurn: -4.0
-  SetArmPosition: 5
+AbsolutePointTurn: -4.0
 
 RunIntake: 1
 // Drive under low bar and move to intake position
 Shift: true
-COMPLETE ALL:
+WHILE:
   DriveStraightAtAngle: -16.5, -4.0, true
+ALSO:
+  WHILE:
+    EncoderWait: -8.0
+  ALSO:
+    SetArmPosition: 5
   SetArmPosition: 6
 
 StopDriving
@@ -55,15 +56,16 @@ WaitForBall
 WHILE:
   EncoderWait: 8.0
   SetArmPosition: 3
+  EncoderWait: 1.0
+  Shift: false
 ALSO:
   DriveStraightAtAngle: 17.0, -4.5, true
 
 StopDriving
 
 Shift: false
-AbsolutePointTurn: -55.0
+AbsolutePointTurn: -47.9
 
-Wait: 0.2
+Wait: 0.6
 Align
-Wait: 0.05
 Shoot
