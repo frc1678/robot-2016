@@ -96,11 +96,11 @@ void ArmSubsystem::Update(Time dt) {
         elevator_controller_.SetGoal(current_goal_.elevator_goal);
       }
       shooter_controller_.SetGoal(current_goal_.shooter_goal);
-      if(climbing_advance_ && !pivot_controller_.IsDone()) {
+    /* if(climbing_advance_ && !pivot_controller_.IsDone()) {
         pivot_voltage = 6.0 * V;
       } else if (climbing_advance_ && pivot_controller_.IsDone()) {
         pivot_voltage = 0.0 * V;
-      }
+      }*/
       break;
     case ArmState::EXTENDING:
       finished_ = false;
@@ -134,10 +134,10 @@ void ArmSubsystem::Update(Time dt) {
   elevator_motor_a_->Set(-elevator_voltage.to(12 * V));
   elevator_motor_b_->Set(-elevator_voltage.to(12 * V));
         
-  if((ball_sensor_->Get() && climbing_advance_) && (pivot_controller_.GetError() < (3 * deg))){
+ /* if((ball_sensor_->Get() && climbing_advance_) && (pivot_controller_.GetError() < (3 * deg))){
     CompleteClimb();
     climbing_advance_ = false;
-  }
+  } */
 
   SetElevatorBrake(elevator_brake);
 
@@ -275,6 +275,13 @@ void ArmSubsystem::GoToTuck() {
   SetHoodOpen(false);
 }
 
+void ArmSubsystem::GoToClassA() {
+  ArmGoal goal{10 * deg, 0 * m, 0 * rev / (60 * s)};
+  proxy_position_override_ = false;
+  SetGoal(goal);
+  SetHoodOpen(false);
+}
+
 void ArmSubsystem::GoToTuckSpin() {
   ArmGoal goal{0 * deg, 0 * m, 6500 * rev / (60 * s)};
   proxy_position_override_ = false;
@@ -299,7 +306,7 @@ void ArmSubsystem::GoToFender() {
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{3.0 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{3.6 * deg, 0 * m, 0 * rev / (60 * s)};
   proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
@@ -323,14 +330,14 @@ void ArmSubsystem::GoToDefensiveSpin() {
 
 
 void ArmSubsystem::StartClimb() {
-  ArmGoal goal{85 * deg, 0.58 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{87 * deg, 0.58 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   SetHoodOpen(true);
   climbing_advance_ = false;
 }
 
 void ArmSubsystem::ContinueClimb() {
-  ArmGoal goal{97 * deg, 0.58 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{98* deg, 0.58 * m, 0 * rev / (60 * s)};
   SetGoal(goal);
   // I'm sorry, future self. I know you're disappointed in me, but I'm too
   // lazy

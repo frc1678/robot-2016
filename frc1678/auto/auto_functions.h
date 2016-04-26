@@ -15,7 +15,8 @@ enum Position {
   AUTO_SHOT,
   DEFENSE,
   TUCK_SPIN,
-  INTAKE_SPIN
+  INTAKE_SPIN,
+  CLASS_A
 };
 
 enum IntakeStatus {
@@ -29,6 +30,9 @@ void SetUpAutoFunction();
 void DeleteAutoFunction();
 bool SetWedge(CitrusRobot* robot, bool up);
 bool DriveStraight(
+    CitrusRobot* robot,
+    float dist, bool highgear);  // TODO(Wesley) Change name to be the same as elsewhere
+bool DriveSlowStraight(
     CitrusRobot* robot,
     float dist, bool highgear);  // TODO(Wesley) Change name to be the same as elsewhere
 bool DriveYolo(

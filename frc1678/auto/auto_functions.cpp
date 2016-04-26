@@ -28,6 +28,21 @@ bool AutoFunction::DriveStraight(CitrusRobot* robot, float dist, bool highgear) 
   }
 }
 
+bool newDriveSlowState = true;
+bool AutoFunction::DriveSlowStraight(CitrusRobot* robot, float dist, bool highgear) {
+  if (newDriveSlowState) {
+    robot->subsystems_.drive.DriveSlowDistance(dist * ft, highgear);
+    newDriveSlowState = false;
+  }
+
+  if (robot->subsystems_.drive.IsProfileComplete()) {
+    newDriveSlowState = true;
+    return true;
+  } else {
+    return false;
+  }
+}
+
 //TODO(Wesley) Make it so I don't need eyebleach after looking at this function
 bool newDriveYoloState = true;
 Length yolo_start_dist;
@@ -223,6 +238,9 @@ bool AutoFunction::SetArmPosition(CitrusRobot* robot, Position arm_position) {
         break;
       case INTAKE_SPIN:
         robot->subsystems_.arm.GoToIntakeSpin();
+        break;
+      case CLASS_A:
+        robot->subsystems_.arm.GoToClassA();
         break;
     }
 

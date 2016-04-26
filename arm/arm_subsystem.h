@@ -32,6 +32,7 @@ class ArmSubsystem : public muan::Updateable {
   void GoToIntake();
   void GoToDefensive();
   void GoToDefensiveSpin();
+  void GoToClassA();
 
   void StartClimb();
   void ContinueClimb();

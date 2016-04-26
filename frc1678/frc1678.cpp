@@ -11,6 +11,7 @@
 #include "frc1678/frc1678.h"
 #include "robot_constants/robot_constants.h"
 #include <iostream>
+#include "muan/utils/timing_utils.h"
 
 CitrusRobot::CitrusRobot()
     : vision_(subsystems_, RobotConstants::GetInstance()) {
@@ -47,8 +48,9 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
-  switch_one = new DigitalInput(23);
-  switch_two = new DigitalInput(24);
+  switch_one = std::make_unique<DigitalInput>(23);
+  switch_two = std::make_unique<DigitalInput>(24);
+  switch_three = std::make_unique<DigitalInput>(22);
 
   l_red_ = std::make_unique<DigitalOutput>(7);
   l_green_ = std::make_unique<DigitalOutput>(8);
@@ -66,7 +68,6 @@ void CitrusRobot::RobotInit() {
   subsystems_.arm.Start();
   SmartDashboard::PutString("Robot", GetRobotString(GetRobotIdentifier()));
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
-  camera_timer_->Start();
 }
 
 void CitrusRobot::AutonomousInit() {
@@ -101,7 +102,6 @@ void CitrusRobot::DisabledPeriodic() {
   vision_.Update();
   UpdateAutoRoutine();
   UpdateLights();
-  ColorLights();
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
   j_manip_->SetRumble(Joystick::kRightRumble, 0);
   j_manip_->SetRumble(Joystick::kLeftRumble, 0);
@@ -235,7 +235,6 @@ void CitrusRobot::TeleopPeriodic() {
   subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
   UpdateLights();
-  ColorLights();
   UpdateButtons();
 }
 
@@ -270,38 +269,41 @@ void CitrusRobot::UpdateButtons() {
 }
 
 void CitrusRobot::UpdateLights() {
+  ColorLight light_color;
+
   // for enabled
   if (subsystems_.arm.AllIsDone() && !tuck_def_ &&
-      !vision_.IsSeeing()) {  // if arm is at position, not seeing
-    // vision
-    lights_ = ColorLight::RED;
+      !vision_.IsSeeing()) {  // if arm is at position, not seeing // vision
+    light_color = ColorLight::RED;
   } else if (vision_.IsSeeing() && !tuck_def_ &&
              subsystems_.arm.AllIsDone()) {  // if vision sees target + arm is
                                              // done, yellow!
-    lights_ = ColorLight::YELLOW;
+    light_color = ColorLight::YELLOW;
   }
 
+
+  // Aligned and ready to shoot
   if (vision_.GetAligned() && shootable_ && !tuck_def_ &&
       subsystems_.arm.AllIsDone()  &&
-      subsystems_.arm.ShooterSpeeded()) {  // if aligned and ready to shoot
-    lights_ = ColorLight::GREEN;
+      subsystems_.arm.ShooterSpeeded()) {
+    light_color = ColorLight::GREEN;
   }
 
   if (!subsystems_.arm.AllIsDone()) {
-    lights_ = ColorLight::RED;
+    light_color = ColorLight::RED;
   }
 
   if (subsystems_.arm.AllIsDone() && tuck_def_) {
-    lights_ = ColorLight::GREEN;
+    light_color = ColorLight::GREEN;
   }
-  // for intaking
+
   if (!subsystems_.arm.BallIntaked() && intaking_) {
-    lights_ = ColorLight::BLUE;
+    light_color = ColorLight::BLUE;
     time = 0 * s;
   } else if (subsystems_.arm.BallIntaked() && intaking_) {
-    lights_ = ColorLight::GREEN;
-    time += 0.05 * s;
-    if (time < 1.5 * s && !disabled_) {
+    light_color = ColorLight::GREEN;
+    time += 0.02 * s;
+    if (time < 1 * s && !disabled_) {
       j_manip_->SetRumble(Joystick::kLeftRumble, 1);
       j_manip_->SetRumble(Joystick::kRightRumble, 1);
     } else {
@@ -314,40 +316,49 @@ void CitrusRobot::UpdateLights() {
     j_manip_->SetRumble(Joystick::kRightRumble, 0);
   }
 
-  // for disabled
-  if (disabled_ && !subsystems_.drive.gyro_reader_->IsCalibrated()) {
-    lights_ = ColorLight::BLUE;
-  } else if (disabled_) {
+  if (disabled_) {
     j_manip_->SetRumble(Joystick::kRightRumble, 0);
     j_manip_->SetRumble(Joystick::kLeftRumble, 0);
 
-    SmartDashboard::PutString("auto", auto_routine_);
-    if (auto_routine_ == "one_ball.auto") {
-      lights_ = ColorLight::GREEN;
-    } else if (auto_routine_ == "two_ball.auto") {
-      lights_ = ColorLight::RED;
-    } else if (auto_routine_ == "class_d_left.auto") {
-      lights_ = ColorLight::YELLOW;
-    } else if (auto_routine_ == "class_d_right.auto") {
-      lights_ = ColorLight::PINK;
+    if (!subsystems_.drive.gyro_reader_->IsCalibrated()) {
+      light_color = ColorLight::BLUE;
     } else {
-      lights_ = ColorLight::WHITE;
+      SmartDashboard::PutString("auto", auto_routine_);
+      if (auto_routine_ == "one_ball.auto") {
+        light_color = ColorLight::GREEN;
+      } else if (auto_routine_ == "two_ball.auto") {
+        light_color = ColorLight::RED;
+      } else if (auto_routine_ == "class_d_left.auto") {
+        light_color = FlashLights(ColorLight::YELLOW, ColorLight::GREEN);
+      } else if (auto_routine_ == "class_d_right.auto") {
+        light_color = FlashLights(ColorLight::PINK, ColorLight::GREEN);
+      } else if (auto_routine_ == "class_a_left_right.auto") {
+        light_color = FlashLights(ColorLight::YELLOW, ColorLight::BLUE);
+      } else if (auto_routine_ == "class_a_right_right.auto") {
+        light_color = FlashLights(ColorLight::PINK, ColorLight::BLUE);
+      } else if (auto_routine_ == "class_a_left_left.auto") {
+        light_color = FlashLights(ColorLight::YELLOW, ColorLight::RED);
+      } else if (auto_routine_ == "class_a_right_left.auto") {
+        light_color = FlashLights(ColorLight::PINK, ColorLight::RED);
+      } else{
+        light_color = ColorLight::WHITE;
+      }
     }
   }
 
-  if(!vision_.HasConnection()) {
-    if(camera_timer_->Get() < 0.5) {
-      lights_ = ColorLight::OFF;
-    }
-  }
-
-  if(camera_timer_->Get() > 1.0) {
-    camera_timer_->Reset();
-  }
+  light_color = FlashLights(light_color, light_color, !vision_.HasConnection());
+  ColorLights(light_color);
 }
 
-void CitrusRobot::ColorLights() {
-  switch (lights_) {
+ColorLight CitrusRobot::FlashLights(ColorLight color_one, ColorLight color_two, bool off_between) {
+  auto color = (static_cast<int>(muan::now().to(s)) % 2) ? color_one : color_two;
+  if (off_between && fmod(muan::now().to(s / 2), 0.5) < 0.25) color = ColorLight::OFF;
+  return color;
+}
+
+
+void CitrusRobot::ColorLights(ColorLight value) {
+  switch (value) {
     case ColorLight::RED:
       SetLightColor(1, 0, 0);
       break;
@@ -366,6 +377,9 @@ void CitrusRobot::ColorLights() {
     case ColorLight::PINK:
       SetLightColor(1, 0, 1);
       break;
+    case ColorLight::TEAL:
+      SetLightColor(0, 1, 1);
+      break;
     case ColorLight::OFF:
       SetLightColor(0, 0, 0);
       break;
@@ -381,14 +395,19 @@ void CitrusRobot::SetLightColor(int r, int g, int b) {
 void CitrusRobot::UpdateAutoRoutine() {
   std::map<int8_t, std::string> auto_map;
 
-  auto_map[0b00000011] = "one_ball.auto";
-  auto_map[0b00000001] = "two_ball.auto";
-  auto_map[0b00000010] = "class_d_left.auto";
-  auto_map[0b00000000] = "class_d_right.auto";
+  auto_map[0b00000111] = "one_ball.auto";
+  auto_map[0b00000110] = "two_ball.auto";
+  auto_map[0b00000101] = "class_d_left.auto";
+  auto_map[0b00000100] = "class_d_right.auto";
+  auto_map[0b00000011] = "class_a_left_right.auto";
+  auto_map[0b00000010] = "class_a_right_right.auto";
+  auto_map[0b00000001] = "class_a_left_left.auto";
+  auto_map[0b00000000] = "class_a_right_left.auto";
 
   int8_t auto_number = 0b00000000;
   auto_number |= (switch_one->Get() ? 0 : 1) << 0;
   auto_number |= (switch_two->Get() ? 0 : 1) << 1;
+  auto_number |= (switch_three->Get() ? 0 : 1) << 2;
 
   if (auto_routine_ != auto_map[auto_number]) { // If the routine was just changed
     if (auto_runner != nullptr) {
