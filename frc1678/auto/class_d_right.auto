@@ -1,4 +1,5 @@
 CheckArmCalibration
+SetWedge: true
 SetArmPosition: 4
 
 DriveStraight: 12.5, false

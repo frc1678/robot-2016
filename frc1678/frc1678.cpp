@@ -48,8 +48,8 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
-  switch_one = std::make_unique<DigitalInput>(23);
-  switch_two = std::make_unique<DigitalInput>(24);
+  switch_one = std::make_unique<DigitalInput>(24);
+  switch_two = std::make_unique<DigitalInput>(23);
   switch_three = std::make_unique<DigitalInput>(22);
 
   l_red_ = std::make_unique<DigitalOutput>(7);
