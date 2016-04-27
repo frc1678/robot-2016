@@ -56,8 +56,8 @@ RobotConstants GenerateRobotConstants(RobotIdentifier id) {
     ret.auto_shot_goals = {34 * deg, 0 * m, 7000 * rev / (60 * s)};
     ret.fender_shot_goals = {10 * deg, 0 * m, 5500 * rev / (60 * s)};
   } else if (id == RobotIdentifier::COMP) {
-    ret.pivot_calibration_offset = 20.4 * deg;
-    ret.pivot_efficiency = .85;
+    ret.pivot_calibration_offset = 22.0 * deg;
+    ret.pivot_efficiency = .9;
     ret.camera_offset = -.514;
     ret.camera_scaling_factor = 1.1;
 

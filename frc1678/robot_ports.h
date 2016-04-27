@@ -11,9 +11,9 @@ constexpr unsigned int shift = 7;
 
 // Arm Ports
 constexpr unsigned int elevator_motor_a = 4, elevator_motor_b = 5;
-constexpr unsigned int shooter_a = 9, shooter_b = 7;
+constexpr unsigned int shooter_a = 6, shooter_b = 7;
 constexpr unsigned int pivot_motor_a = 2, pivot_motor_b = 3;
-constexpr unsigned int intake_side = 6, intake_front = 8;
+constexpr unsigned int intake_side = 9, intake_front = 8;
 
 constexpr unsigned int pivot_encoder_a = 14, pivot_encoder_b = 15;
 constexpr unsigned int shooter_encoder_a = 16,
