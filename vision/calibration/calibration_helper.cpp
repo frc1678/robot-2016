@@ -26,10 +26,12 @@ void Capture(const std::string& filename, int camera_index = -1) {
   camera.set(CV_CAP_PROP_BRIGHTNESS, 0);  // minimum
   camera.set(CV_CAP_PROP_CONTRAST, 1);    // maximun
   camera.set(CV_CAP_PROP_SATURATION, 1);  // maximun
-  std::string command =
-      "v4l2-ctl -c "
-      "exposure_auto=1,exposure_absolute=5,white_balance_temperature_auto=0,"
-      "white_balance_temperature=8000";
+  std::string command = "v4l2-ctl -d /dev/video" +
+                        std::to_string(camera_index) +
+                        " -c "
+                        "exposure_auto=1,exposure_absolute=5,white_balance_"
+                        "temperature_auto=0,"
+                        "white_balance_temperature=8000";
   system(command.c_str());  // not best way, but it keeps the settings together
 
   int ex = CV_FOURCC('P', 'I', 'M', '1');
