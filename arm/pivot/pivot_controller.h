@@ -14,6 +14,7 @@ class PivotController {
                  bool enabled);
   Voltage UpdateClimb(Time dt, Angle encoder_angle, bool min_hall_triggered,
                       bool enabled);
+  void RecalibratePivot();
   bool ShouldFireBrake();
   bool IsDone();
   bool IsCalibrated();
@@ -31,7 +32,7 @@ class PivotController {
     MOVING,
     PREP_STOP,
     FINISHED,
-    ESTOP
+    ESTOP,
   };
   Angle goal_;
   Angle last_;

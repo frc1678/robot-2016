@@ -10,7 +10,7 @@ DrivetrainSubsystem::DrivetrainSubsystem()
       distance_controller_(
           RobotConstants::GetInstance().drivetrain_distance_gains),
       event_log_("drivetrain_subsystem"),
-      csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "goal_dist", "pwm_left",
+      csv_log_("drivetrain_subsystem", {"enc_left", "enc_right", "goal_dist", "profile_angle", "goal_angle", "pwm_left",
                                         "pwm_right", "gyro_angle", "gear"}),
       csv_helper_(&csv_log_) {
   event_log_.Write("Initializing drivetrain subsystem components...", "INIT",
@@ -142,6 +142,8 @@ void DrivetrainSubsystem::Update(Time dt) {
         event_log_.Write(ss.str(), "MOTION", CODE_STAMP);
       } else {
         csv_log_["goal_dist"] = std::to_string((distance_profile_->Calculate(t) + encoder_offset_).to(m));
+        csv_log_["goal_angle"] = std::to_string((angle_profile_->Calculate(t)).to(rad));
+        csv_log_["profile_angle"] = std::to_string(angle_from_start.to(rad));
       }
     }
   }
@@ -205,7 +207,7 @@ void DrivetrainSubsystem::SetDrivePosition(
 
 void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) { 
   AngularVelocity speed = (highgear ? 380 : 240) * deg / s;
-  AngularAcceleration accel = (highgear ? 250 : 500) * deg / s / s;
+  AngularAcceleration accel = (highgear ? 250 : 350) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
       0 * m, 10 * ft / s, 10 * ft / s / s);
@@ -217,7 +219,7 @@ void DrivetrainSubsystem::PointTurn(Angle angle, bool highgear) {
 
 void DrivetrainSubsystem::AbsolutePointTurn(Angle angle, bool highgear) {
   AngularVelocity speed = (highgear ? 380 : 240) * deg / s;
-  AngularAcceleration accel = (highgear ? 250 : 500) * deg / s / s;
+  AngularAcceleration accel = (highgear ? 250 : 350) * deg / s / s;
   using muan::TrapezoidalMotionProfile;
   auto dp = std::make_unique<TrapezoidalMotionProfile<Length>>(
       0 * m, 10 * ft / s, 10 * ft / s / s);
@@ -310,7 +312,7 @@ Voltage DrivetrainSubsystem::GetAngleFFVoltage(AngularVelocity velocity,
   } else {
     AngularVelocity max_robot_angular_velocity = 240 * deg / s;
     const auto c2 = 24 * V / max_robot_angular_velocity;
-    const auto c1 = 125 * .75 / V * (deg / s / s);
+    const auto c1 = 80 * .75 / V * (deg / s / s);
     total_output = c2 * velocity + acceleration / c1;
   }
   if (std::signbit(total_output.to(V)) != std::signbit(velocity.to(rad / s))) {

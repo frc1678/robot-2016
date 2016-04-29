@@ -62,6 +62,15 @@ ArmSubsystem::~ArmSubsystem() {}
 
 bool ArmSubsystem::IsCalibrated() { return pivot_controller_.IsCalibrated(); }
 
+void ArmSubsystem::RecalibratePivot() {
+  state_ = ArmState::RECALIBRATING;
+}
+
+void ArmSubsystem::StopRecalibrating() {
+  pivot_controller_.RecalibratePivot();
+  state_ = ArmState::FINISHED;
+}
+
 void ArmSubsystem::Update(Time dt) {
   Voltage elevator_voltage = elevator_controller_.Update(
       dt, elevator_encoder_->Get() * .0003191764 * m,
@@ -121,6 +130,9 @@ void ArmSubsystem::Update(Time dt) {
     case ArmState::CLIMBING:
       std::tie(pivot_voltage, pivot_brake, elevator_voltage, elevator_brake) =
           UpdateClimb(dt);
+      break;
+    case ArmState::RECALIBRATING:
+      pivot_brake = false;
       break;
     case ArmState::ESTOP:
       pivot_voltage = elevator_voltage = 0 * V;

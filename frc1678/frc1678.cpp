@@ -37,6 +37,7 @@ CitrusRobot::CitrusRobot()
   run_intake_until_ = std::make_unique<CitrusButton>(j_manip_.get(), 6);
   cancel_profile_ = std::make_unique<CitrusButton>(j_stick_.get(), 8);
   proxy_shot_override_ = std::make_unique<CitrusButton>(j_manip_.get(), 9);
+  recalibrate_pivot_ = std::make_unique<CitrusButton>(j_manip_.get(), 10);
 
   fender_pos_ =
       std::make_unique<CitrusPOV>(j_manip_.get(), 0, POVPosition::SOUTH);
@@ -224,6 +225,14 @@ void CitrusRobot::TeleopPeriodic() {
       subsystems_.arm.proxy_shot_override_ = false;
     } else { subsystems_.arm.proxy_shot_override_ = true; }
   }
+  if(recalibrate_pivot_->ButtonClicked()) {
+    std::cout << "asdf"<<std::endl;
+    subsystems_.arm.RecalibratePivot();
+  }
+  if(recalibrate_pivot_->ButtonReleased()) {
+    std::cout << "hjkl"<<std::endl;
+    subsystems_.arm.StopRecalibrating();
+  }
 
   // Toggle the wedge when the button is deployed
   is_wedge_deployed_ = wedge_toggle_->ButtonClicked() ^ is_wedge_deployed_;
@@ -266,6 +275,7 @@ void CitrusRobot::UpdateButtons() {
   wedge_toggle_->Update();
   cancel_profile_->Update();
   proxy_shot_override_->Update();
+  recalibrate_pivot_->Update();
 }
 
 void CitrusRobot::UpdateLights() {

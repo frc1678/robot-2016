@@ -53,6 +53,9 @@ class ArmSubsystem : public muan::Updateable {
   bool ClimbIsDone();
   bool BallIntaked();
 
+  void RecalibratePivot();
+  void StopRecalibrating();
+
   bool proxy_shot_override_ = false;
   bool proxy_position_override_ = false;
 
@@ -70,7 +73,8 @@ class ArmSubsystem : public muan::Updateable {
     EXTENDING,
     FINISHED,
     CLIMBING,
-    ESTOP
+    ESTOP,
+    RECALIBRATING
   };
 
   enum class ClimbState { PULLING_UP, PIVOTING_ROBOT, DONE };

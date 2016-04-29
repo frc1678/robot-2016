@@ -129,6 +129,11 @@ Voltage PivotController::UpdateClimb(Time dt, Angle encoder_angle,
   return out_voltage;
 }
 
+void PivotController::RecalibratePivot() {
+  offset_ = last_ + offset_;
+}
+
+
 bool PivotController::IsDone() { return state_ == PivotState::FINISHED; }
 
 Voltage PivotController::GetFFVoltage(Angle a) {

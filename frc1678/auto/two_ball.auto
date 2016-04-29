@@ -26,32 +26,33 @@ StopDriving
 
 // Turn towards goal
 Shift: false
-AbsolutePointTurn: -56.3
+AbsolutePointTurn: -58.3
 
 Align
 Shoot
 
 
 // Turn to prep for low bar
-AbsolutePointTurn: -3.2
+AbsolutePointTurn: -2.3
 
 RunIntake: 1
 // Drive under low bar and move to intake position
-Shift: true
+Shift: false
 
 WHILE:
   WaitForBall
 ALSO:
   WHILE:
-    DriveYoloAtAngle: -10.2, -3.2, true
+    DriveYoloAtAngle: -13.0, -2.3, false
   ALSO:
     WHILE:
-      EncoderWait: -9.5
+      EncoderWait: -10.0
     ALSO:
       SetArmPosition: 5
     SetArmPosition: 6
 
 StopDriving
+Shift: true
 
 // Drive under low bar and turn
 WHILE:
@@ -59,12 +60,12 @@ WHILE:
   SetArmPosition: 3
   Shift: false
 ALSO:
-  DriveStraightAtAngle: 17.0, -4.0, true
+  DriveStraightAtAngle: 17.0, -5.0, true
 
 StopDriving
 
 Shift: false
-AbsolutePointTurn: -50.9
+AbsolutePointTurn: -53.9
 
 Align
 Shoot
