@@ -31,6 +31,7 @@ filegroup(
         ":cc-compiler-freebsd",
         ":cc-compiler-local",
         ":cc-compiler-roborio",
+        ":cc-compiler-roborio-osxbuild",
         ":empty",
     ],
 )
@@ -76,6 +77,22 @@ cc_toolchain(
     strip_files = ":empty",
     supports_param_files = 0,
 )
+
+# OSX RoboRIO Toolchain
+cc_toolchain(
+    name = "cc-compiler-roborio-osxbuild",
+    all_files = ":empty",
+    compiler_files = ":empty",
+    cpu = "roborio-osxbuild",
+    dwp_files = ":empty",
+    dynamic_runtime_libs = [":empty"],
+    linker_files = ":empty",
+    objcopy_files = ":empty",
+    static_runtime_libs = [":empty"],
+    strip_files = ":empty",
+    supports_param_files = 0,
+)
+# End RoboRIO Toolchain
 
 # RoboRIO Toolchain
 cc_toolchain(
