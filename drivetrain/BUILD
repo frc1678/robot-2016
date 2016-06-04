@@ -55,6 +55,6 @@ cc_library(
   name = 'drivetrain_subsystem',
   srcs = ['drivetrain_subsystem.cpp'],
   hdrs = ['drivetrain_subsystem.h'],
-  deps = ['drivetrain_lib', '//muan', '//frc1678:robot_ports', '//third_party/wpilib', '//gyro',  '//utils:smart_dashboard_helper', '//muan/unitscpp', '//robot_constants'],
+  deps = ['drivetrain_lib', '//muan', '//frc1678:robot_ports', '//third_party/wpilibsuite:wpilib', '//gyro',  '//utils:smart_dashboard_helper', '//muan/unitscpp', '//robot_constants'],
   visibility = ["//visibility:public"]
 )

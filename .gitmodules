@@ -4,3 +4,9 @@
 [submodule "lemonscript"]
 	path = lemonscript
 	url = https://github.com/donald-pinckney/lemonscript
+[submodule "third_party/wpilibsuite/ntcore"]
+	path = third_party/wpilibsuite/ntcore
+	url = https://github.com/wpilibsuite/ntcore
+[submodule "third_party/wpilibsuite/allwpilib"]
+	path = third_party/wpilibsuite/allwpilib
+	url = https://github.com/wpilibsuite/allwpilib
