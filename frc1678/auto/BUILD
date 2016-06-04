@@ -7,7 +7,7 @@ cc_library(
     '*.h',
   ]),
   deps=[
-    "@wpilib//:main",
+    "//third_party/wpilib",
     "//muan/unitscpp",
     "//muan:utils",
     "//gyro",

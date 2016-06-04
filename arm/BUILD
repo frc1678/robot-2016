@@ -4,7 +4,7 @@ cc_library(
   hdrs = ["arm_subsystem.h"],
   deps = [
     "//muan",
-    "@wpilib//:main",
+    "//third_party/wpilib",
     "//arm/pivot:pivot_controller",
     "//arm/shooter:shooter_controller",
     "//arm/elevator:elevator_controller",
