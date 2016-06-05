@@ -1,17 +1,17 @@
 #include <WPILib.h>
 #include <memory>
 
-#include "robot_constants/robot_identifier.h"
 #include "drivetrain/drivetrain_subsystem.h"
-#include "muan/control/trapezoidal_motion_profile.h"
-#include "utils/citrus_button.h"
 #include "frc1678/auto/auto_routines.h"
-#include "vision/robot/vision.h"
-#include "robot_subsystems.h"
 #include "frc1678/frc1678.h"
-#include "robot_constants/robot_constants.h"
-#include <iostream>
+#include "muan/control/trapezoidal_motion_profile.h"
 #include "muan/utils/timing_utils.h"
+#include "robot_constants/robot_constants.h"
+#include "robot_constants/robot_identifier.h"
+#include "robot_subsystems.h"
+#include "utils/citrus_button.h"
+#include "vision/robot/vision.h"
+#include <iostream>
 
 CitrusRobot::CitrusRobot()
     : vision_(subsystems_, RobotConstants::GetInstance()) {
@@ -49,15 +49,13 @@ CitrusRobot::CitrusRobot()
   run_intake_forever_ = std::make_unique<CitrusAxis>(j_manip_.get(), 3);
   reverse_intake_ = std::make_unique<CitrusAxis>(j_manip_.get(), 2);
 
+  lights_ = std::make_unique<LightController>();
+
   switch_one = std::make_unique<DigitalInput>(24);
   switch_two = std::make_unique<DigitalInput>(23);
   switch_three = std::make_unique<DigitalInput>(22);
 
-  l_red_ = std::make_unique<DigitalOutput>(7);
-  l_green_ = std::make_unique<DigitalOutput>(8);
-  l_blue_ = std::make_unique<DigitalOutput>(9);
-
-  disabled_ = true;
+  lights_->light_data_.disabled = true;
 
   wedge_ = std::make_unique<Solenoid>(5);
 
@@ -89,21 +87,32 @@ void CitrusRobot::TeleopInit() {
   subsystems_.drive.SetEnabled(true);
   subsystems_.arm.SetEnabled(true);
   subsystems_.arm.proxy_shot_override_ = false;
-  disabled_ = false;
+  lights_->light_data_.disabled = false;
   subsystems_.drive.CancelMotionProfile();
 }
 
 void CitrusRobot::DisabledInit() {
   subsystems_.arm.SetEnabled(false);
   subsystems_.drive.SetEnabled(false);
-  disabled_ = true;
+  lights_->light_data_.disabled = true;
 }
 
 void CitrusRobot::DisabledPeriodic() {
   vision_.Update();
   UpdateAutoRoutine();
-  UpdateLights();
   SmartDashboard::PutBoolean("Vision connection", (vision_.HasConnection()));
+
+  {
+    lights_->light_data_.arm_done = subsystems_.arm.AllIsDone();
+    lights_->light_data_.vision_sees = vision_.IsSeeing();
+    lights_->light_data_.vision_aligned = vision_.GetAligned();
+    lights_->light_data_.vision_connected = vision_.HasConnection();
+    lights_->light_data_.shooter_ready = subsystems_.arm.ShooterSpeeded();
+    lights_->light_data_.gyro_calibrated =
+        subsystems_.drive.gyro_reader_->IsCalibrated();
+    lights_->light_data_.ball_intaked = subsystems_.arm.BallIntaked();
+  }
+
   j_manip_->SetRumble(Joystick::kRightRumble, 0);
   j_manip_->SetRumble(Joystick::kLeftRumble, 0);
 }
@@ -123,7 +132,8 @@ void CitrusRobot::TeleopPeriodic() {
   }
   if (align_->ButtonPressed()) {
     // !button_was_pressed needs to be first due to short-circuiting logic
-    if (!button_was_pressed_ && vision_.RunVision() && shootable_ && !subsystems_.arm.IsShooting()) {
+    if (!button_was_pressed_ && vision_.RunVision() && shootable_ &&
+        !subsystems_.arm.IsShooting()) {
       subsystems_.arm.Shoot(false);
       button_was_pressed_ = true;
     }
@@ -148,45 +158,39 @@ void CitrusRobot::TeleopPeriodic() {
   }
   if (tuck_pos_->ButtonClicked()) {
     subsystems_.arm.GoToTuckSpin();
-    shootable_ = false;
-    start_climb_ = false;
-    intaking_ = false;
-    tuck_def_ = true;
+    lights_->light_data_.shoot_pos = false;
+    lights_->light_data_.intake_pos = false;
+    lights_->light_data_.tuck_def_pos = true;
   }
   if (defensive_pos_->ButtonClicked()) {
     subsystems_.arm.GoToDefensiveSpin();
-    shootable_ = false;
-    start_climb_ = false;
-    intaking_ = false;
-    tuck_def_ = true;
+    lights_->light_data_.shoot_pos = false;
+    lights_->light_data_.intake_pos = false;
+    lights_->light_data_.tuck_def_pos = true;
   }
   if (intake_pos_->ButtonClicked()) {
     subsystems_.arm.GoToIntakeSpin();
-    shootable_ = false;
-    start_climb_ = false;
-    intaking_ = true;
-    tuck_def_ = false;
+    lights_->light_data_.shoot_pos = false;
+    lights_->light_data_.intake_pos = true;
+    lights_->light_data_.tuck_def_pos = false;
   }
   if (fender_pos_->ButtonClicked()) {
     subsystems_.arm.GoToFender();
-    shootable_ = false;
-    start_climb_ = false;
-    intaking_ = false;
-    tuck_def_ = false;
+    lights_->light_data_.shoot_pos = false;
+    lights_->light_data_.intake_pos = false;
+    lights_->light_data_.tuck_def_pos = false;
   }
   if (long_pos_->ButtonClicked()) {
     subsystems_.arm.GoToLong();
-    shootable_ = true;
-    start_climb_ = false;
-    intaking_ = false;
-    tuck_def_ = false;
+    lights_->light_data_.shoot_pos = true;
+    lights_->light_data_.intake_pos = false;
+    lights_->light_data_.tuck_def_pos = false;
   }
   if (short_pos_->ButtonClicked()) {
     subsystems_.arm.GoToAutoShot();
-    shootable_ = true;
-    start_climb_ = false;
-    intaking_ = false;
-    tuck_def_ = false;
+    lights_->light_data_.shoot_pos = true;
+    lights_->light_data_.intake_pos = false;
+    lights_->light_data_.tuck_def_pos = false;
   }
   if (run_intake_until_->ButtonPressed()) {
     subsystems_.arm.SetIntake(IntakeGoal::FORWARD_UNTIL);
@@ -201,37 +205,47 @@ void CitrusRobot::TeleopPeriodic() {
 
   if (climb_pos_->ButtonClicked()) {
     subsystems_.arm.StartClimb();
-    shootable_ = false;
-    start_climb_ = true;
-    intaking_ = false;
-    tuck_def_ = false;
+    lights_->light_data_.shoot_pos = false;
+    lights_->light_data_.intake_pos = false;
+    lights_->light_data_.tuck_def_pos = false;
   }
   if (climb_pos_continue_->ButtonClicked()) {
     subsystems_.arm.ContinueClimb();
-    shootable_ = false;
-    start_climb_ = false;
-    intaking_ = false;
-    tuck_def_ = false;
+    lights_->light_data_.shoot_pos = false;
+    lights_->light_data_.intake_pos = false;
+    lights_->light_data_.tuck_def_pos = false;
   }
   if (climb_end_->ButtonClicked()) {
     subsystems_.arm.CompleteClimb();
-    shootable_ = false;
-    start_climb_ = false;
-    intaking_ = false;
-    tuck_def_ = false;
+    lights_->light_data_.shoot_pos = false;
+    lights_->light_data_.intake_pos = false;
+    lights_->light_data_.tuck_def_pos = false;
   }
-  if(proxy_shot_override_->ButtonClicked()) {
-    if(subsystems_.arm.proxy_shot_override_) {
+  if (proxy_shot_override_->ButtonClicked()) {
+    if (subsystems_.arm.proxy_shot_override_) {
       subsystems_.arm.proxy_shot_override_ = false;
-    } else { subsystems_.arm.proxy_shot_override_ = true; }
+    } else {
+      subsystems_.arm.proxy_shot_override_ = true;
+    }
   }
-  if(recalibrate_pivot_->ButtonClicked()) {
-    std::cout << "asdf"<<std::endl;
+  if (recalibrate_pivot_->ButtonClicked()) {
+    std::cout << "asdf" << std::endl;
     subsystems_.arm.RecalibratePivot();
   }
-  if(recalibrate_pivot_->ButtonReleased()) {
-    std::cout << "hjkl"<<std::endl;
+  if (recalibrate_pivot_->ButtonReleased()) {
+    std::cout << "hjkl" << std::endl;
     subsystems_.arm.StopRecalibrating();
+  }
+
+  {
+    lights_->light_data_.arm_done = subsystems_.arm.AllIsDone();
+    lights_->light_data_.vision_sees = vision_.IsSeeing();
+    lights_->light_data_.vision_aligned = vision_.GetAligned();
+    lights_->light_data_.vision_connected = vision_.HasConnection();
+    lights_->light_data_.shooter_ready = subsystems_.arm.ShooterSpeeded();
+    lights_->light_data_.gyro_calibrated =
+        subsystems_.drive.gyro_reader_->IsCalibrated();
+    lights_->light_data_.ball_intaked = subsystems_.arm.BallIntaked();
   }
 
   // Toggle the wedge when the button is deployed
@@ -243,7 +257,6 @@ void CitrusRobot::TeleopPeriodic() {
   SetDriveGoal(&drivetrain_goal);
   subsystems_.drive.SetDriveGoal(drivetrain_goal);
 
-  UpdateLights();
   UpdateButtons();
 }
 
@@ -278,130 +291,6 @@ void CitrusRobot::UpdateButtons() {
   recalibrate_pivot_->Update();
 }
 
-void CitrusRobot::UpdateLights() {
-  ColorLight light_color;
-
-  // for enabled
-  if (subsystems_.arm.AllIsDone() && !tuck_def_ &&
-      !vision_.IsSeeing()) {  // if arm is at position, not seeing // vision
-    light_color = ColorLight::RED;
-  } else if (vision_.IsSeeing() && !tuck_def_ &&
-             subsystems_.arm.AllIsDone()) {  // if vision sees target + arm is
-                                             // done, yellow!
-    light_color = ColorLight::YELLOW;
-  }
-
-
-  // Aligned and ready to shoot
-  if (vision_.GetAligned() && shootable_ && !tuck_def_ &&
-      subsystems_.arm.AllIsDone()  &&
-      subsystems_.arm.ShooterSpeeded()) {
-    light_color = ColorLight::GREEN;
-  }
-
-  if (!subsystems_.arm.AllIsDone()) {
-    light_color = ColorLight::RED;
-  }
-
-  if (subsystems_.arm.AllIsDone() && tuck_def_) {
-    light_color = ColorLight::GREEN;
-  }
-
-  if (!subsystems_.arm.BallIntaked() && intaking_) {
-    light_color = ColorLight::BLUE;
-    time = 0 * s;
-  } else if (subsystems_.arm.BallIntaked() && intaking_) {
-    light_color = ColorLight::GREEN;
-    time += 0.02 * s;
-    if (time < 1 * s && !disabled_) {
-      j_manip_->SetRumble(Joystick::kLeftRumble, 1);
-      j_manip_->SetRumble(Joystick::kRightRumble, 1);
-    } else {
-      j_manip_->SetRumble(Joystick::kLeftRumble, 0);
-      j_manip_->SetRumble(Joystick::kRightRumble, 0);
-    }
-  } else {
-    time = 0 * s;
-    j_manip_->SetRumble(Joystick::kLeftRumble, 0);
-    j_manip_->SetRumble(Joystick::kRightRumble, 0);
-  }
-
-  if (disabled_) {
-    j_manip_->SetRumble(Joystick::kRightRumble, 0);
-    j_manip_->SetRumble(Joystick::kLeftRumble, 0);
-
-    if (!subsystems_.drive.gyro_reader_->IsCalibrated()) {
-      light_color = ColorLight::BLUE;
-    } else {
-      SmartDashboard::PutString("auto", auto_routine_);
-      if (auto_routine_ == "one_ball.auto") {
-        light_color = ColorLight::GREEN;
-      } else if (auto_routine_ == "two_ball.auto") {
-        light_color = ColorLight::RED;
-      } else if (auto_routine_ == "class_d_left.auto") {
-        light_color = FlashLights(ColorLight::YELLOW, ColorLight::GREEN);
-      } else if (auto_routine_ == "class_d_right.auto") {
-        light_color = FlashLights(ColorLight::PINK, ColorLight::GREEN);
-      } else if (auto_routine_ == "class_a_left_right.auto") {
-        light_color = FlashLights(ColorLight::YELLOW, ColorLight::BLUE);
-      } else if (auto_routine_ == "class_a_right_right.auto") {
-        light_color = FlashLights(ColorLight::PINK, ColorLight::BLUE);
-      } else if (auto_routine_ == "class_a_left_left.auto") {
-        light_color = FlashLights(ColorLight::YELLOW, ColorLight::RED);
-      } else if (auto_routine_ == "class_a_right_left.auto") {
-        light_color = FlashLights(ColorLight::PINK, ColorLight::RED);
-      } else{
-        light_color = ColorLight::WHITE;
-      }
-    }
-  }
-
-  light_color = FlashLights(light_color, light_color, !vision_.HasConnection());
-  ColorLights(light_color);
-}
-
-ColorLight CitrusRobot::FlashLights(ColorLight color_one, ColorLight color_two, bool off_between) {
-  auto color = (static_cast<int>(muan::now().to(s)) % 2) ? color_one : color_two;
-  if (off_between && fmod(muan::now().to(s / 2), 0.5) < 0.25) color = ColorLight::OFF;
-  return color;
-}
-
-
-void CitrusRobot::ColorLights(ColorLight value) {
-  switch (value) {
-    case ColorLight::RED:
-      SetLightColor(1, 0, 0);
-      break;
-    case ColorLight::YELLOW:
-      SetLightColor(1, 1, 0);
-      break;
-    case ColorLight::GREEN:
-      SetLightColor(0, 1, 0);
-      break;
-    case ColorLight::BLUE:
-      SetLightColor(0, 0, 1);
-      break;
-    case ColorLight::WHITE:
-      SetLightColor(1, 1, 1);
-      break;
-    case ColorLight::PINK:
-      SetLightColor(1, 0, 1);
-      break;
-    case ColorLight::TEAL:
-      SetLightColor(0, 1, 1);
-      break;
-    case ColorLight::OFF:
-      SetLightColor(0, 0, 0);
-      break;
-  }
-}
-
-void CitrusRobot::SetLightColor(int r, int g, int b) {
-  l_red_->Set(r);
-  l_green_->Set(g);
-  l_blue_->Set(b);
-}
-
 void CitrusRobot::UpdateAutoRoutine() {
   std::map<int8_t, std::string> auto_map;
 
@@ -419,14 +308,17 @@ void CitrusRobot::UpdateAutoRoutine() {
   auto_number |= (switch_two->Get() ? 0 : 1) << 1;
   auto_number |= (switch_three->Get() ? 0 : 1) << 2;
 
-  if (auto_routine_ != auto_map[auto_number]) { // If the routine was just changed
+  if (auto_routine_ !=
+      auto_map[auto_number]) {  // If the routine was just changed
     if (auto_runner != nullptr) {
       delete auto_runner;
     }
-    auto_runner = new LemonScriptRunner("/home/lvuser/" + auto_map[auto_number], this);
+    auto_runner =
+        new LemonScriptRunner("/home/lvuser/" + auto_map[auto_number], this);
   }
 
   auto_routine_ = auto_map[auto_number];
+  lights_->light_data_.auto_selection = auto_routine_;
 }
 
 CitrusRobot::~CitrusRobot() {}

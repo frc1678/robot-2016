@@ -2,15 +2,15 @@
 #define FRC1678_H
 
 #include "frc1678/auto/auto_routines.h"
-#include "vision/robot/vision.h"
+#include "frc1678/lights.h"
 #include "robot_subsystems.h"
+#include "vision/robot/vision.h"
 // class LemonScriptRunner { };
-
-enum class ColorLight { RED = 0, YELLOW, GREEN, TEAL, BLUE, WHITE, PINK, OFF };
 
 class CitrusButton;
 class CitrusAxis;
 class CitrusPOV;
+class LightController;
 
 class CitrusRobot : public IterativeRobot {
  private:
@@ -18,11 +18,11 @@ class CitrusRobot : public IterativeRobot {
   std::string auto_routine_;
   std::unique_ptr<Solenoid> wedge_;
 
-  std::unique_ptr<DigitalOutput> l_pow_, l_red_, l_green_, l_blue_;
-
   std::unique_ptr<DigitalInput> switch_one, switch_two, switch_three;
 
   std::unique_ptr<Joystick> j_wheel_, j_stick_, j_manip_;
+
+  std::unique_ptr<LightController> lights_;
 
   // Avery's buttons
   std::unique_ptr<CitrusButton> shoot_, align_, shift_high_, shift_low_,
@@ -31,23 +31,20 @@ class CitrusRobot : public IterativeRobot {
   // Kelly's buttons
   std::unique_ptr<CitrusButton> tuck_pos_, defensive_pos_, climb_pos_,
       climb_pos_continue_, climb_end_, intake_pos_, wedge_toggle_,
-      run_intake_until_, cancel_profile_, proxy_shot_override_, recalibrate_pivot_;
+      run_intake_until_, cancel_profile_, proxy_shot_override_,
+      recalibrate_pivot_;
   std::unique_ptr<CitrusPOV> fender_pos_, long_pos_, short_pos_;
   std::unique_ptr<CitrusAxis> run_intake_forever_, reverse_intake_;
-
 
  public:
   RobotSubsystems subsystems_;
   CitrusVision vision_;
 
-  ColorLight lights_;
-
-  Timer *camera_timer_ = new Timer();
+  Timer* camera_timer_ = new Timer();
 
   bool is_wedge_deployed_ = false;
   bool in_highgear_;
   bool shootable_ = false;
-  bool start_climb_ = false;
   bool intaking_ = false;
   bool tuck_def_ = false;
   bool disabled_;
@@ -65,11 +62,6 @@ class CitrusRobot : public IterativeRobot {
   void DisabledPeriodic();
   void TeleopPeriodic();
   void SetDriveGoal(DrivetrainGoal* drivetrain_goal);
-
-  void UpdateLights();
-  void ColorLights(ColorLight color);
-  void SetLightColor(int r, int g, int b);
-  ColorLight FlashLights(ColorLight color_one, ColorLight color_two, bool off_between = false);
 
   void UpdateButtons();
   ~CitrusRobot();
