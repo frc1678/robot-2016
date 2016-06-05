@@ -111,6 +111,7 @@ void CitrusRobot::DisabledPeriodic() {
     lights_->light_data_.gyro_calibrated =
         subsystems_.drive.gyro_reader_->IsCalibrated();
     lights_->light_data_.ball_intaked = subsystems_.arm.BallIntaked();
+    lights_->UpdateLights();
   }
 
   j_manip_->SetRumble(Joystick::kRightRumble, 0);
@@ -246,6 +247,9 @@ void CitrusRobot::TeleopPeriodic() {
     lights_->light_data_.gyro_calibrated =
         subsystems_.drive.gyro_reader_->IsCalibrated();
     lights_->light_data_.ball_intaked = subsystems_.arm.BallIntaked();
+    lights_->UpdateLights();
+    j_manip_->SetRumble(Joystick::kRightRumble, lights_->ShouldRumble());
+    j_manip_->SetRumble(Joystick::kLeftRumble, lights_->ShouldRumble());
   }
 
   // Toggle the wedge when the button is deployed

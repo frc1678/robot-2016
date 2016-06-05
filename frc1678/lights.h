@@ -27,6 +27,7 @@ class LightController {
   void UpdateLights();
 
   LightData light_data_;
+  bool ShouldRumble();
 
  private:
   std::unique_ptr<DigitalOutput> l_pow_, l_red_, l_green_, l_blue_;
@@ -41,7 +42,6 @@ class LightController {
   void SetLightColor(int r, int g, int b);
   ColorLight FlashLights(ColorLight color_one, ColorLight color_two,
                          bool off_between = false);
-  bool ShouldRumble();
 };
 
 #endif
