@@ -266,11 +266,13 @@ toolchain {
   cxx_builtin_include_directory: "/usr/local/include"
   cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/include/"
   cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/usr/include/"
+  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9/include"
+  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9/include-fixed"
   tool_path { name: "gcov" path: "/usr/bin/arm-frc-linux-gnueabi-gcov" }
 
   # C(++) compiles invoke the compiler (as that is the one knowing where
   # to find libraries), but we provide LD so other rules can invoke the linker.
-  tool_path { name: "ld" path: "/usr/local/bin/arm-frc-linux-gnueabi-ld" }
+  tool_path { name: "ld" path: "/usr/bin/arm-frc-linux-gnueabi-ld" }
 
   tool_path { name: "nm" path: "/usr/bin/arm-frc-linux-gnueabi-nm" }
   tool_path { name: "objcopy" path: "/usr/bin/arm-frc-linux-gnueabi-objcopy" }
@@ -498,7 +500,7 @@ toolchain {
   tool_path { name: "cpp" path: "/usr/bin/cpp" }
   tool_path { name: "dwp" path: "/usr/bin/dwp" }
   tool_path { name: "gcc" path: "osx_cc_wrapper.sh" }
-  cxx_flag: "-std=c++0x"
+  cxx_flag: "-std=c++1y"
   ar_flag: "-static"
   ar_flag: "-s"
   ar_flag: "-o"
