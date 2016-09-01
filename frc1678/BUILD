@@ -23,7 +23,7 @@ cc_library(
 cc_binary(
   name="frc1678",
   deps=[
-    "@wpilib//:main",
+    "//third_party/wpilibsuite:wpilib",
     ":robot_subsystems",
     "//muan/unitscpp",
     "//muan:multithreading",
