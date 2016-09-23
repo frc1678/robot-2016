@@ -232,7 +232,7 @@ std::tuple<Voltage, bool, Voltage, bool> ArmSubsystem::UpdateClimb(Time dt) {
       pivot_brake = true;
       elevator_brake = elevator_controller_.ShouldFireBrake();
       if (elevator_controller_.IsDone()) {
-        pivot_controller_.SetGoal(85 * deg, thresh_);
+        pivot_controller_.SetGoal(75 * deg, thresh_);
         climb_state_ = ClimbState::PIVOTING_ROBOT;
       }
       climbing_done_ = false;
@@ -302,7 +302,7 @@ void ArmSubsystem::GoToTuckSpin() {
 }
 
 void ArmSubsystem::GoToIntakeSpin() {
-  ArmGoal goal{3.0 * deg, 0 * m, 6500 * rev / (60 * s)};
+  ArmGoal goal{6.0 * deg, 0 * m, 6500 * rev / (60 * s)};
   proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
@@ -318,7 +318,7 @@ void ArmSubsystem::GoToFender() {
 }
 
 void ArmSubsystem::GoToIntake() {
-  ArmGoal goal{3.6 * deg, 0 * m, 0 * rev / (60 * s)};
+  ArmGoal goal{6.6 * deg, 0 * m, 0 * rev / (60 * s)};
   proxy_position_override_ = false;
   SetGoal(goal);
   SetHoodOpen(false);
